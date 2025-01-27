@@ -1,7 +1,7 @@
 import { create } from 'zustand';
-import { PitchStore } from './types';
+import { PitchStore, Pitch } from './types';
 
-const initialPitches = {
+const initialPitches: Record<string, Pitch> = {
   'demo-pitch-1': {
     id: 'demo-pitch-1',
     title: 'RadiantHue',
@@ -24,7 +24,9 @@ const initialPitches = {
         timestamp: 'Jan 15, 2025',
         changes: 'Updated market positioning'
       }
-    ]
+    ],
+    aiCoachSummary: "Strong pitch with clear market positioning and technical insights.",
+    feedback: []
   }
 };
 

@@ -1,39 +1,50 @@
-import React, { useState } from 'react';
-
-import FeedView from '../FeedView';
-import DashboardView from '../DashboardView';
-import CollaborateView from '../CollaborateView';
-import ProfileView from '../ProfileView';
-import AICoach from '../AICoach';
-
+import { useState } from 'react';
+import { styled } from '@mui/material/styles';
 import {
   AppBar,
   Toolbar,
-  Typography,
   IconButton,
-  Badge,
+  Avatar,
   Box,
-  Fab,
   ThemeProvider,
   CssBaseline,
-  Avatar,
+  Badge,
+  Fab,
   Menu,
   MenuItem
 } from '@mui/material';
-import {
-  Menu as MenuIcon,
-  Add,
-  Group,
-  Notifications,
-  Brightness4,
-  Brightness7
-} from '@mui/icons-material';
+import { User, Bell, Plus, Users, Moon, Sun } from 'lucide-react';
 import { getTheme } from '../../styles/theme';
 import useStore from '../../store';
+import FeedView from '../FeedView';
+import DashboardView from '../DashboardView';
+import ProfileView from '../ProfileView';
+import AICoach from '../AICoach';
+import CoachToolbar from '../shared/CoachToolbar';
+import { ViewType } from '../../store/types';
 
-const AppShell: React.FC = () => {
+
+
+const StyledAppBar = styled(AppBar)(({ theme }) => ({
+  backgroundColor: theme.palette.background.paper,
+  borderBottom: `1px solid ${theme.palette.divider}`
+}));
+
+const HeaderToolbar = styled(Toolbar)({
+  justifyContent: 'space-between'
+});
+
+const MainContent = styled(Box)(({ theme }) => ({
+  flexGrow: 1,
+  overflow: 'auto',
+  backgroundColor: theme.palette.background.default,
+  position: 'relative',
+  marginTop: '64px'
+}));
+
+function AppShell() {
   const [mode, setMode] = useState<'light' | 'dark'>('light');
-  const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const {
     notifications,
     activeTab,
@@ -44,80 +55,91 @@ const AppShell: React.FC = () => {
     userProfile
   } = useStore();
 
-  const theme = getTheme(mode);
-  const unreadCount = notifications.filter(n => !n.read).length;
-
-  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setMenuAnchor(event.currentTarget);
+  const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
   };
 
-  const handleCloseMenu = () => {
-    setMenuAnchor(null);
+  const handleMenuClose = () => {
+    setAnchorEl(null);
   };
 
-  const toggleTheme = () => {
-    setMode(prevMode => prevMode === 'light' ? 'dark' : 'light');
+  const handleMenuSelect = (view: ViewType) => {
+    setActiveTab(view);
+    handleMenuClose();
+  };
+
+  const handleSignOut = () => {
+    // Add sign out logic here
+    handleMenuClose();
   };
 
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={getTheme(mode)}>
       <CssBaseline />
       <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-        <AppBar position="static" elevation={1}>
-          <Toolbar>
-            <IconButton 
-              edge="start" 
-              color="inherit" 
-              onClick={handleMenu}
-              sx={{ mr: 2 }}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography 
-              variant="h6" 
-              component="div" 
-              sx={{ flexGrow: 1, color: 'inherit' }}
-            >
-              LongJump
-            </Typography>
-            <IconButton color="inherit" onClick={toggleTheme}>
-              {mode === 'light' ? <Brightness4 /> : <Brightness7 />}
-            </IconButton>
-            <IconButton color="inherit">
-              <Badge badgeContent={unreadCount} color="error">
-                <Notifications />
-              </Badge>
-            </IconButton>
-            <IconButton sx={{ ml: 1 }}>
-              <Avatar 
-                src={userProfile?.avatar} 
-                sx={{ width: 32, height: 32 }}
-              />
-            </IconButton>
-          </Toolbar>
-        </AppBar>
+        <StyledAppBar position="fixed" elevation={0}>
+          <HeaderToolbar>
+          <Box 
+  sx={{ 
+    display: 'flex', 
+    alignItems: 'center', 
+    cursor: 'pointer' 
+  }} 
+  onClick={() => setActiveTab('feed')}
+>
+  <img 
+    src="../src/assets/logo.svg" 
+    alt="LongJump Logo" 
+    style={{ 
+      height: 32,  
+      marginRight: 8 
+    }} 
+  />
+</Box>
+
+            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+              <IconButton onClick={() => setMode(prevMode => prevMode === 'light' ? 'dark' : 'light')}>
+                {mode === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+              </IconButton>
+              <IconButton>
+                <Badge badgeContent={notifications.filter(n => !n.read).length} color="error">
+                  <Bell size={20} />
+                </Badge>
+              </IconButton>
+              <IconButton onClick={handleProfileClick}>
+                <Avatar src={userProfile?.avatar}>
+                  <User size={20} />
+                </Avatar>
+              </IconButton>
+            </Box>
+          </HeaderToolbar>
+        </StyledAppBar>
 
         <Menu
-          anchorEl={menuAnchor}
-          open={Boolean(menuAnchor)}
-          onClose={handleCloseMenu}
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleMenuClose}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
         >
-          <MenuItem onClick={() => { setActiveTab('feed'); handleCloseMenu(); }}>Home</MenuItem>
-          <MenuItem onClick={() => { setActiveTab('dashboard'); handleCloseMenu(); }}>My Pitches</MenuItem>
-          <MenuItem onClick={() => { setActiveTab('profile'); handleCloseMenu(); }}>Settings</MenuItem>
+          <MenuItem onClick={() => handleMenuSelect('profile')}>Profile</MenuItem>
+          <MenuItem onClick={() => handleMenuSelect('dashboard')}>My Pitches</MenuItem>
+          <MenuItem onClick={() => handleMenuSelect('settings')}>Account Settings</MenuItem>
+          <MenuItem onClick={handleSignOut}>Sign Out</MenuItem>
         </Menu>
 
-        <Box sx={{ 
-          flex: 1, 
-          overflow: 'auto', 
-          bgcolor: 'background.default',
-          position: 'relative'
-        }}>
+        <MainContent>
           {activeTab === 'feed' && <FeedView />}
           {activeTab === 'dashboard' && <DashboardView />}
-          {activeTab === 'collaborate' && <CollaborateView />}
           {activeTab === 'profile' && <ProfileView />}
-        </Box>
+          {activeTab === 'settings' && <ProfileView />}
+        </MainContent>
 
         {showAICoach && <AICoach />}
 
@@ -133,18 +155,23 @@ const AppShell: React.FC = () => {
             color="primary"
             onClick={() => setShowNewPitchModal(true)}
           >
-            <Add />
+            <Plus />
           </Fab>
           <Fab 
             color="secondary"
             onClick={() => setShowTeamModal(true)}
           >
-            <Group />
+            <Users />
           </Fab>
         </Box>
+
+        <CoachToolbar 
+          onNewPitch={() => setShowNewPitchModal(true)}
+          onTeamClick={() => setShowTeamModal(true)}
+        />
       </Box>
     </ThemeProvider>
   );
-};
+}
 
 export default AppShell;

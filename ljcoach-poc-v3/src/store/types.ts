@@ -24,17 +24,11 @@ export interface ChatMessage {
   pitchId?: string;
 }
 
-export interface Pitch {
-  id: string;
-  title: string;
-  description: string; 
-  playbackId: string;
-  score: number;
-  metrics: Metrics;
-  likes: number;
-  comments: number;
-  transcript?: string;
-  history: PitchVersion[];
+export interface Feedback {
+  author: string;
+  role?: string;
+  text: string;
+  timestamp: string;
 }
 
 export interface Notification {
@@ -43,19 +37,39 @@ export interface Notification {
   read: boolean;
 }
 
+export type ViewType = 'feed' | 'dashboard' | 'collaborate' | 'profile' | 'settings';
+
+export interface Pitch {
+  id: string;
+  title: string;
+  description: string; 
+  playbackId: string;
+  score: number;
+  metrics: Metrics;
+  aiCoachSummary: string;
+  likes: number;
+  comments: number;
+  transcript?: string;
+  timestamp: string;
+  history: PitchVersion[];
+  feedback: Feedback[];
+}
+
 export interface PitchStore {
   // UI State
-  activeTab: 'feed' | 'dashboard' | 'collaborate' | 'profile';
+  activeTab: ViewType;
   expandedCard: string | null;
   showAICoach: boolean;
   showNewPitchModal: boolean;
   showTeamModal: boolean;
-  notifications: Notification[];
-  userProfile: UserProfile;
   
   // Pitch Data
   pitches: Record<string, Pitch>;
   selectedPitch: string | null;
+  
+  // Notifications & User
+  notifications: Notification[];
+  userProfile: UserProfile;
   
   // AI Coach State
   messages: ChatMessage[];
@@ -65,7 +79,7 @@ export interface PitchStore {
   themeMode: 'light' | 'dark';
   
   // Actions
-  setActiveTab: (tab: PitchStore['activeTab']) => void;
+  setActiveTab: (tab: ViewType) => void;
   toggleAICoach: () => void;
   setShowNewPitchModal: (show: boolean) => void;
   setShowTeamModal: (show: boolean) => void;
