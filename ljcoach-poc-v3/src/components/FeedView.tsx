@@ -1,37 +1,14 @@
 import { Container } from '@mui/material';
-import { Trophy } from 'lucide-react';
-import { Box, Typography, Button, Card, CardContent } from '@mui/material';
 import useStore from '../store';
 import PitchCard from '../components/shared/PitchCard';
-
-function WeeklyCompetition() {
-  return (
-    <Card elevation={2} sx={{ mb: 4 }}>
-      <CardContent>
-        <Typography variant="h5" sx={{ mb: 2 }}>Weekly competition</Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 2 }}>
-          <Typography variant="body2" color="text.secondary">30 participants</Typography>
-          <Typography variant="body2" color="text.secondary">•</Typography>
-          <Typography variant="body2" color="text.secondary">3 days left</Typography>
-        </Box>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Trophy color="gold" size={20} />
-            <Typography>Top prize: $500</Typography>
-          </Box>
-          <Button variant="contained" color="primary">Submit your pitch</Button>
-        </Box>
-      </CardContent>
-    </Card>
-  );
-}
+import WeeklyCompetitionCard from '../components/shared/WeeklyCompetitionCard';
 
 function FeedView() {
   const { pitches } = useStore();
 
   return (
-    <Container maxWidth="xl" sx={{ pt: 8, pb: 36, paddingBottom: 'calc(64px + 2.5rem)'  }}>
-      <WeeklyCompetition />
+    <Container maxWidth="xl" sx={{ pt: 8, pb: 36, paddingBottom: 'calc(64px + 2.5rem)' }}>
+      <WeeklyCompetitionCard />
       {Object.values(pitches).map((pitch) => (
         <PitchCard 
           key={pitch.id} 
