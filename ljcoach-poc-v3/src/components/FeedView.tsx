@@ -2,13 +2,21 @@ import { Container } from '@mui/material';
 import useStore from '../store';
 import PitchCard from '../components/shared/PitchCard';
 import WeeklyCompetitionCard from '../components/shared/WeeklyCompetitionCard';
+import React, { useState } from 'react';
 
 function FeedView() {
   const { pitches } = useStore();
+  const [showCompetitionCard, setShowCompetitionCard] = useState(true);
+
+  const handleRemoveCompetitionCard = () => {
+    setShowCompetitionCard(false);
+  };
 
   return (
     <Container maxWidth="xl" sx={{ pt: 8, pb: 36, paddingBottom: 'calc(64px + 2.5rem)' }}>
-      <WeeklyCompetitionCard />
+      {showCompetitionCard && (
+        <WeeklyCompetitionCard onRemove={handleRemoveCompetitionCard} />
+      )}
       {Object.values(pitches).map((pitch) => (
         <PitchCard 
           key={pitch.id} 

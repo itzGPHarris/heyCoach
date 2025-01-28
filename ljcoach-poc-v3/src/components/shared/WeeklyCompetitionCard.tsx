@@ -21,6 +21,17 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import { styled } from '@mui/material/styles';
 
+interface Submission {
+  name: string;
+  submissionName: string;
+  points: number;
+  description: string;
+  thumbnail: string;
+  externalLink: string;
+  rank: number;
+}
+
+
 const StyledCard = styled(Card)(({ theme }) => ({
   marginBottom: theme.spacing(4),
   position: 'relative',
@@ -32,9 +43,10 @@ const StyledCloseButton = styled(Button)(({ theme }) => ({
   right: theme.spacing(1),
 }));
 
-function WeeklyCompetitionCard() {
+function WeeklyCompetitionCard({ onRemove }: { onRemove: () => void }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
 
   const handleViewDetails = () => {
     setIsExpanded(true);
@@ -44,29 +56,31 @@ function WeeklyCompetitionCard() {
     setIsExpanded(false);
   };
 
-  const handleDialogOpen = () => {
-    setIsDialogOpen(true);
-  };
-
   const handleDialogClose = () => {
     setIsDialogOpen(false);
   };
 
-  const leaders = Array.from({ length: 10 }, (_, index) => ({
+  const handleSubmissionClick = (submission: Submission) => {
+    setSelectedSubmission(submission);
+    setIsDialogOpen(true);
+  };
+
+  const leaders: Submission[] = Array.from({ length: 10 }, (_, index) => ({
     name: `Leader ${index + 1}`,
     submissionName: `Submission ${index + 1}`,
     points: Math.floor(Math.random() * 1000),
-  }));
-
-  const leaderboard = Array.from({ length: 25 }, (_, index) => ({
-    name: `Participant ${index + 1}`,
-    submissionName: `Submission ${index + 1}`,
-    points: Math.floor(Math.random() * 1000),
+    description: `This is a short description for submission ${index + 1}.`,
+    thumbnail: "https://via.placeholder.com/150",
+    externalLink: "https://example.com/submission",
+    rank: index + 1,
   }));
 
   return (
     <StyledCard elevation={2}>
-      <StyledCloseButton aria-label="close" onClick={handleHideDetails}>
+      <StyledCloseButton
+        aria-label="close"
+        onClick={() => (isExpanded ? handleHideDetails() : onRemove())}
+      >
         <CloseIcon />
       </StyledCloseButton>
       <CardContent>
@@ -109,8 +123,12 @@ function WeeklyCompetitionCard() {
                 </TableHead>
                 <TableBody>
                   {leaders.map((leader, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{index + 1}</TableCell>
+                    <TableRow
+                      key={index}
+                      onClick={() => handleSubmissionClick(leader)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <TableCell>{leader.rank}</TableCell>
                       <TableCell>
                         <Avatar>{leader.name[0]}</Avatar>
                       </TableCell>
@@ -122,10 +140,7 @@ function WeeklyCompetitionCard() {
                 </TableBody>
               </Table>
             </TableContainer>
-            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}>
-              <Button variant="outlined" onClick={handleDialogOpen}>
-                View Leaderboard
-              </Button>
+            <Box sx={{ mt: 2, display: "flex", justifyContent: "space-between" }}>
               <Button variant="text" color="secondary" onClick={handleHideDetails}>
                 Hide Details
               </Button>
@@ -134,58 +149,53 @@ function WeeklyCompetitionCard() {
         )}
       </CardContent>
 
-      {/* Full-Screen Dialog */}
-      <Dialog fullScreen open={isDialogOpen} onClose={handleDialogClose}>
-        <DialogTitle>
-          Weekly Competition Leaderboard
-          <Button
-            aria-label="close"
-            onClick={handleDialogClose}
-            sx={{ position: 'absolute', right: 8, top: 8 }}
-          >
-            <CloseIcon />
-          </Button>
-        </DialogTitle>
-        <DialogContent>
-          <Typography variant="body1" paragraph>
-            This leaderboard showcases the top participants of this week’s competition.
-          </Typography>
-          <TableContainer component={Paper} sx={{ mt: 2 }}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Rank</TableCell>
-                  <TableCell>Profile</TableCell>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Submission</TableCell>
-                  <TableCell>Points</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {leaderboard.map((participant, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{index + 1}</TableCell>
-                    <TableCell>
-                      <Avatar>{participant.name[0]}</Avatar>
-                    </TableCell>
-                    <TableCell>{participant.name}</TableCell>
-                    <TableCell>{participant.submissionName}</TableCell>
-                    <TableCell>{participant.points}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </DialogContent>
-        <DialogActions>
-          <Button variant="contained" color="primary">
-            Enter Competition
-          </Button>
-          <Button onClick={handleDialogClose} color="secondary">
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
+      {/* Submission Details Dialog */}
+      {selectedSubmission && (
+        <Dialog fullScreen open={isDialogOpen} onClose={handleDialogClose}>
+          <DialogTitle>
+            Submission Details
+            <Button
+              aria-label="close"
+              onClick={handleDialogClose}
+              sx={{ position: "absolute", right: 8, top: 8 }}
+            >
+              <CloseIcon />
+            </Button>
+          </DialogTitle>
+          <DialogContent>
+            <Box sx={{ display: "flex", gap: 2, mb: 4 }}>
+              <img
+                src={selectedSubmission.thumbnail}
+                alt="Submission Thumbnail"
+                style={{ width: 150, height: 150, borderRadius: 8 }}
+              />
+              <Box>
+                <Typography variant="h6">{selectedSubmission.name}</Typography>
+                <Typography>Rank: {selectedSubmission.rank}</Typography>
+                <Typography>Submission Name: {selectedSubmission.submissionName}</Typography>
+                <Typography>Points: {selectedSubmission.points}</Typography>
+              </Box>
+            </Box>
+            <Typography variant="body1" paragraph>
+              {selectedSubmission.description}
+            </Typography>
+            <Button
+              variant="contained"
+              color="primary"
+              href={selectedSubmission.externalLink}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View Submission Page
+            </Button>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleDialogClose} color="secondary">
+              Back to Leaderboard
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
     </StyledCard>
   );
 }
