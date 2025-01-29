@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Card,
   CardContent,
@@ -30,7 +30,6 @@ interface Submission {
   externalLink: string;
   rank: number;
 }
-
 
 const StyledCard = styled(Card)(({ theme }) => ({
   marginBottom: theme.spacing(4),

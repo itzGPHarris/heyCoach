@@ -40,3 +40,12 @@
 .read-the-docs {
   color: #888;
 }
+.visible {
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.hidden {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}

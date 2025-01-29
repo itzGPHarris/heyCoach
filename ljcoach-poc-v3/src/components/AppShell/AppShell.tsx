@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { styled } from '@mui/material/styles';
 import {
   AppBar,
@@ -11,7 +11,7 @@ import {
   Badge,
   Fab,
   Menu,
-  MenuItem
+  MenuItem,
 } from '@mui/material';
 import { User, Bell, Plus, Users, Moon, Sun } from 'lucide-react';
 import { getTheme } from '../../styles/theme';
@@ -24,14 +24,14 @@ import CoachToolbar from '../shared/CoachToolbar';
 import { ViewType } from '../../store/types';
 
 
-
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
-  borderBottom: `1px solid ${theme.palette.divider}`
+  borderBottom: `1px solid ${theme.palette.divider}`,
+  transition: 'opacity 0.3s ease',
 }));
 
 const HeaderToolbar = styled(Toolbar)({
-  justifyContent: 'space-between'
+  justifyContent: 'space-between',
 });
 
 const MainContent = styled(Box)(({ theme }) => ({
@@ -39,12 +39,15 @@ const MainContent = styled(Box)(({ theme }) => ({
   overflow: 'auto',
   backgroundColor: theme.palette.background.default,
   position: 'relative',
-  marginTop: '64px'
+  marginTop: '64px',
 }));
 
 function AppShell() {
   const [mode, setMode] = useState<'light' | 'dark'>('light');
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [isVisible, setIsVisible] = useState(true);
+  const observerRef = useRef<HTMLDivElement>(null);
+
   const {
     notifications,
     activeTab,
@@ -52,8 +55,27 @@ function AppShell() {
     setShowNewPitchModal,
     setShowTeamModal,
     showAICoach,
-    userProfile
+    userProfile,
   } = useStore();
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        console.log('IntersectionObserver:', entry.isIntersecting); // Log visibility changes
+        setIsVisible(entry.isIntersecting);
+      },
+      { threshold: 0.1 }
+    );
+
+    const currentObserverRef = observerRef.current;
+    if (currentObserverRef) {
+      observer.observe(currentObserverRef);
+    }
+
+    return () => {
+      if (currentObserverRef) observer.unobserve(currentObserverRef);
+    };
+  }, []);
 
   const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -69,7 +91,6 @@ function AppShell() {
   };
 
   const handleSignOut = () => {
-    // Add sign out logic here
     handleMenuClose();
   };
 
@@ -77,32 +98,25 @@ function AppShell() {
     <ThemeProvider theme={getTheme(mode)}>
       <CssBaseline />
       <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-        <StyledAppBar position="fixed" elevation={0}>
+        <StyledAppBar position="fixed" elevation={0} className={isVisible ? 'visible' : 'hidden'}>
           <HeaderToolbar>
-          <Box 
-  sx={{ 
-    display: 'flex', 
-    alignItems: 'center', 
-    cursor: 'pointer' 
-  }} 
-  onClick={() => setActiveTab('feed')}
->
-  <img 
-    src="../src/assets/logo.svg" 
-    alt="LongJump Logo" 
-    style={{ 
-      height: 32,  
-      marginRight: 8 
-    }} 
-  />
-</Box>
+            <Box
+              sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}
+              onClick={() => setActiveTab('feed')}
+            >
+              <img
+                src="../src/assets/logo.svg"
+                alt="LongJump Logo"
+                style={{ height: 32, marginRight: 8 }}
+              />
+            </Box>
 
             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-              <IconButton onClick={() => setMode(prevMode => prevMode === 'light' ? 'dark' : 'light')}>
+              <IconButton onClick={() => setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'))}>
                 {mode === 'light' ? <Moon size={20} /> : <Sun size={20} />}
               </IconButton>
               <IconButton>
-                <Badge badgeContent={notifications.filter(n => !n.read).length} color="error">
+                <Badge badgeContent={notifications.filter((n) => !n.read).length} color="error">
                   <Bell size={20} />
                 </Badge>
               </IconButton>
@@ -135,6 +149,7 @@ function AppShell() {
         </Menu>
 
         <MainContent>
+          <div ref={observerRef} style={{ height: 1 }} /> {/* Tracking element */}
           {activeTab === 'feed' && <FeedView />}
           {activeTab === 'dashboard' && <DashboardView />}
           {activeTab === 'profile' && <ProfileView />}
@@ -143,31 +158,29 @@ function AppShell() {
 
         {showAICoach && <AICoach />}
 
-        <Box sx={{ 
-          position: 'fixed', 
-          bottom: 16, 
-          width: '100%', 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          px: 4 
-        }}>
-          <Fab 
-            color="primary"
-            onClick={() => setShowNewPitchModal(true)}
-          >
+        <Box
+          sx={{
+            position: 'fixed',
+            bottom: 16,
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'space-between',
+            px: 4,
+          }}
+          className={isVisible ? 'visible' : 'hidden'}
+        >
+          <Fab color="primary" onClick={() => setShowNewPitchModal(true)}>
             <Plus />
           </Fab>
-          <Fab 
-            color="secondary"
-            onClick={() => setShowTeamModal(true)}
-          >
+          <Fab color="secondary" onClick={() => setShowTeamModal(true)}>
             <Users />
           </Fab>
         </Box>
 
-        <CoachToolbar 
+        <CoachToolbar
           onNewPitch={() => setShowNewPitchModal(true)}
           onTeamClick={() => setShowTeamModal(true)}
+          className={isVisible ? 'visible' : 'hidden'}
         />
       </Box>
     </ThemeProvider>

@@ -1,8 +1,9 @@
 import { Container } from '@mui/material';
+import { useState } from 'react';
+
 import useStore from '../store';
 import PitchCard from '../components/shared/PitchCard';
 import WeeklyCompetitionCard from '../components/shared/WeeklyCompetitionCard';
-import React, { useState } from 'react';
 
 function FeedView() {
   const { pitches } = useStore();
