@@ -5,7 +5,7 @@ export interface Feedback {
   role?: string;
   text: string;
   timestamp: string;
-  pitchId: string; // Ensuring pitchId is always present
+  pitchId: string | null; // Ensuring pitchId is always present
 }
 
 export interface Metrics {
@@ -30,7 +30,7 @@ export interface PitchVersion {
   description: string;
   score: number;
   likes: number;
-  comments: number;
+  comments: number[]; // ✅ Ensuring comments are an array of numbers
   timestamp: string;
   playbackId?: string;
   transcript?: string;
@@ -41,11 +41,12 @@ export interface PitchVersion {
 
 export interface Pitch {
   id: string;
+  pitchId: string;
   title: string;
   description: string;
   score: number;
   likes: number;
-  comments: number;
+  comments: number[]; // ✅ Ensuring comments are an array of numbers
   timestamp: string;
   feedback: Feedback[]; // ✅ Fixed: Ensuring feedback is properly typed
   playbackId?: string;
@@ -55,15 +56,17 @@ export interface Pitch {
   aiCoachSummary?: string;
 }
 
-export type ChatMessage = {
+export interface ChatMessage {  // ✅ Changed `type` to `interface` for better TS support
   id: string;
   text: string;
   sender: 'user' | 'ai';
   timestamp: string;
+  pitchId: string | null;
   fromAI: boolean;
   content: string;
-  pitchId: string;
-};
+}
+// Removed explicit export to avoid conflict
+
 
 export type ViewType = 'feed' | 'dashboard' | 'profile' | 'settings';
 
@@ -81,7 +84,7 @@ export type StoreState = {
   showTeamModal: boolean;
   pitches: Record<string, Pitch>;
   selectedPitch: PitchVersion | null;
-  messages: (Feedback | ChatMessage)[];
+  messages: ChatMessage[]; // ✅ Ensuring messages only contain ChatMessage to prevent type conflict
   coachMessages: ChatMessage[];
   themeMode: 'light' | 'dark';
   notifications: Notification[];
@@ -102,8 +105,9 @@ export type StoreActions = {
   setShowNewPitchModal: (show: boolean) => void;
   setShowTeamModal: (show: boolean) => void;
   setThemeMode: (mode: 'light' | 'dark') => void;
-  getMessagesForPitch: (pitchId: string) => Feedback[];
+  getMessagesForPitch: (pitchId: string) => ChatMessage[]; // ✅ Updated to return only ChatMessage[]
   fetchCompetition: () => Promise<void>;
   fetchPitchAnalysis: (pitchId: string) => Promise<void>;
   addMessage: (message: ChatMessage) => void;
+  setMessages: (messages: ChatMessage[]) => void; // ✅ Added method to ensure message updates maintain type consistency
 };

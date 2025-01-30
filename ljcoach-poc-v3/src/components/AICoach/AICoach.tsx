@@ -1,128 +1,91 @@
-// components/AICoach/AICoach.tsx
-import React, { useState } from 'react';
-import {
-  Box,
-  Paper,
-  TextField,
-  IconButton,
-  Drawer,
-  Typography,
-  useTheme,
-  useMediaQuery
-} from '@mui/material';
-import { Send as SendIcon, Close as CloseIcon } from '@mui/icons-material';
+import { useState } from 'react';
+import { Drawer, Box, TextField, IconButton, Typography, List, ListItem } from '@mui/material';
+import { Send, MessageCircle } from 'lucide-react';
 import useStore from '../../store';
-import ContextPanel from './ContextPanel';
-import { ChatMessage } from '../../store/types';
-// Removed local ChatMessage interface as it conflicts with the imported one
+import { ChatMessage } from '../../store/types'; // ✅ Adjust path if necessary
 
-const AICoach: React.FC = () => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+// Alternative UUID generator to avoid external dependencies
+const generateUUID = () => Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
+
+function AICoach() {
+  const { showAICoach, toggleAICoach, messages, addMessage } = useStore();
   const [input, setInput] = useState('');
-  const { showAICoach, toggleAICoach, coachMessages }: { showAICoach: boolean; toggleAICoach: () => void; coachMessages: ChatMessage[] } = useStore();
 
   const handleSend = () => {
     if (!input.trim()) return;
-    // Add message handling logic here
-    setInput('');
-  };
+    
+    const userMessage: ChatMessage = {
+      id: generateUUID(),
+      timestamp: new Date().toISOString(),
+      sender: "user", // ✅ Explicitly set as "user"
+      text: input,
+      pitchId: null,
+      fromAI: false,
+      content: input
+    };
+    
+    addMessage(userMessage);
+    
+    // Simulate AI response
+    setTimeout(() => {
+      const aiMessage: ChatMessage = {
+        id: generateUUID(),
+        timestamp: new Date().toISOString(),
+        sender: "ai", // ✅ Explicitly set as "ai"
+        text: "Analyzing your pitch...",
+        pitchId: null,
+        fromAI: true,
+        content: "Analyzing your pitch..."
+      };
+    
+      addMessage(aiMessage);
+    }, 1000);
+      };
 
   return (
-    <Drawer
-      anchor={isMobile ? 'bottom' : 'right'}
-      open={showAICoach}
-      onClose={toggleAICoach}
-      variant="persistent"
-      sx={{
-        '& .MuiDrawer-paper': {
-          width: isMobile ? '100%' : '400px',
-          height: isMobile ? '80vh' : '100%'
-        }
-      }}
-    >
-      <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        {/* Header */}
-        <Box sx={{ 
-          p: 2, 
-          borderBottom: 1, 
-          borderColor: 'divider',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}>
+    <>
+      {/* Floating Button to Open Chat */}
+      <IconButton 
+        sx={{ position: 'fixed', bottom: 16, right: 16, bgcolor: 'primary.main', color: 'white' }}
+        onClick={toggleAICoach}
+      >
+        <MessageCircle size={24} />
+      </IconButton>
+      
+      {/* AI Coach Chat Drawer */}
+      <Drawer anchor="bottom" open={showAICoach} onClose={toggleAICoach}>
+        <Box sx={{ p: 2, height: 400, display: 'flex', flexDirection: 'column' }}>
           <Typography variant="h6">AI Coach</Typography>
-          <IconButton onClick={toggleAICoach}>
-            <CloseIcon />
-          </IconButton>
-        </Box>
-
-        {/* Context Panel */}
-        <Box sx={{ height: '30%', borderBottom: 1, borderColor: 'divider' }}>
-          <ContextPanel />
-        </Box>
-
-        {/* Chat Area */}
-        <Box sx={{ 
-          flex: 1, 
-          overflow: 'auto', 
-          p: 2,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 2
-        }}>
-          {coachMessages.map((message, index) => (
-            <ChatBubble key={index} message={message} />
-          ))}
-        </Box>
-
-        {/* Input Area */}
-        <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider' }}>
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <TextField
-              fullWidth
-              variant="outlined"
-              size="small"
-              placeholder="Ask your coach..."
-              value={input}
+          
+          {/* Chat Messages */}
+          <List sx={{ flexGrow: 1, overflowY: 'auto' }}>
+            {messages.map((msg) => (
+              <ListItem key={msg.id} sx={{ justifyContent: msg.sender === 'ai' ? 'flex-start' : 'flex-end' }}>
+                <Box sx={{ p: 1.5, bgcolor: msg.sender === 'ai' ? 'grey.300' : 'primary.light', borderRadius: 2 }}>
+                  <Typography variant="body2">{msg.text}</Typography>
+                </Box>
+              </ListItem>
+            ))}
+          </List>
+          
+          {/* Input Field */}
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <TextField 
+              fullWidth 
+              variant="outlined" 
+              placeholder="Ask the coach a question..."
+              value={input} 
               onChange={(e) => setInput(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSend()}
             />
-            <IconButton 
-              color="primary" 
-              onClick={handleSend}
-              disabled={!input.trim()}
-            >
-              <SendIcon />
+            <IconButton onClick={handleSend} color="primary">
+              <Send />
             </IconButton>
           </Box>
         </Box>
-      </Box>
-    </Drawer>
+      </Drawer>
+    </>
   );
-};
-
-const ChatBubble: React.FC<{ message: ChatMessage }> = ({ message }) => (
-  <Box
-    sx={{
-      alignSelf: message.fromAI ? 'flex-start' : 'flex-end',
-      maxWidth: '80%',
-    }}
-  >
-    <Paper
-      elevation={1}
-      sx={{
-        p: 2,
-        bgcolor: message.fromAI ? 'grey.100' : 'primary.light',
-        color: message.fromAI ? 'text.primary' : 'primary.contrastText',
-      }}
-    >
-      <Typography variant="body1">{message.text}</Typography>
-      <Typography variant="caption" sx={{ display: 'block', mt: 1, opacity: 0.7 }}>
-        {new Date(message.timestamp).toLocaleTimeString()}
-      </Typography>
-    </Paper>
-  </Box>
-);
+}
 
 export default AICoach;

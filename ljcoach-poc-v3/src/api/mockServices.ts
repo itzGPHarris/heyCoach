@@ -66,11 +66,12 @@ export class MockAPIClient {
     // Simulate finding the pitch in a real database
     const updatedPitch: Pitch = {
       id: pitchId,
+      pitchId: pitchId,
       title: updates.title || '',
       description: updates.description || '',
       score: updates.score || 0,
       likes: updates.likes || 0,
-      comments: updates.comments || [],
+      comments: Array.isArray(updates.comments) ? updates.comments : [], // ✅ Ensures comments is always an array
       timestamp: updates.timestamp || new Date().toISOString(),
       feedback: updates.feedback || [],
       history: updates.history || []

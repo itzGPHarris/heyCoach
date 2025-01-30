@@ -143,7 +143,7 @@ function PitchCard({ pitch }: { pitch: PitchVersion }) {
           <Box sx={{ p: 2 }}>
             <Typography variant="subtitle1" gutterBottom>AI Coach Summary</Typography>
             <Typography paragraph>{pitch.aiCoachSummary || 'No AI feedback yet.'}</Typography>
-            <TranscriptSection transcript={pitch.transcript} />
+            <TranscriptSection transcript={pitch.transcript ?? ''} />
           </Box>
         </Collapse>
 

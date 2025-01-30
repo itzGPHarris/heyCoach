@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { StoreState, StoreActions, Pitch, PitchVersion, Feedback, PitchAnalysis, ChatMessage } from './types';
+import { StoreState, StoreActions, Pitch, PitchVersion, PitchAnalysis, ChatMessage } from './types';
 import { MockAPIClient } from '../api/mockServices';
 
 const mockClient = new MockAPIClient();
@@ -7,6 +7,7 @@ const mockClient = new MockAPIClient();
 const initialPitches: Record<string, Pitch> = {
   'demo-pitch-1': {
     id: 'demo-pitch-1',
+    pitchId: 'demo-pitch-1',
     title: 'RadiantHue - Initial Pitch',
     description: 'Sustainable smart lighting with AI-driven efficiency.',
     score: 85,
@@ -22,7 +23,7 @@ const initialPitches: Record<string, Pitch> = {
         description: 'Sustainable smart lighting with AI-driven efficiency.',
         score: 70,
         likes: 2,
-        comments: 1,
+        comments: [1],
         timestamp: '2025-01-01T10:00:00Z',
         playbackId: 'YYtQ34SRyksieH026qohfbOhBNd02LQAK3Fgt8wk5J8tM',
         transcript: "Hi, I'm Harper...",
@@ -37,15 +38,6 @@ const initialPitches: Record<string, Pitch> = {
             text: 'Your pace is a bit fast—try slowing down for better clarity.',
             timestamp: '2025-01-02T12:00:00Z',
             pitchId: 'demo-pitch-1'
-          },
-          {
-            id: 'feedback-2',
-            userId: 'user-456',
-            author: 'Professor Martinez',
-            role: 'Professor',
-            text: 'Good concept, but you need to explain the problem more clearly.',
-            timestamp: '2025-01-03T15:30:00Z',
-            pitchId: 'demo-pitch-1'
           }
         ]
       },
@@ -56,7 +48,7 @@ const initialPitches: Record<string, Pitch> = {
         description: 'Sustainable lighting with AI-driven efficiency and eco-friendliness.',
         score: 78,
         likes: 3,
-        comments: 2,
+        comments: [2],
         timestamp: '2025-01-05T14:30:00Z',
         playbackId: 'abc123',
         transcript: "Hi, I'm Harper, and this is RadiantHue...",
@@ -64,98 +56,12 @@ const initialPitches: Record<string, Pitch> = {
         aiCoachSummary: "Better structure, but pacing could improve.",
         feedback: [
           {
-            id: 'feedback-3',
-            userId: 'user-789',
-            author: 'Mentor Sarah',
-            role: 'Mentor',
-            text: 'Great improvements! Try adding a compelling hook at the beginning.',
-            timestamp: '2025-01-06T10:00:00Z',
-            pitchId: 'demo-pitch-1'
-          },
-          {
-            id: 'feedback-4',
-            userId: 'user-321',
-            author: 'Classmate John',
-            role: 'Classmate',
-            text: 'Your delivery is much smoother now!',
-            timestamp: '2025-01-06T11:20:00Z',
-            pitchId: 'demo-pitch-1'
-          }
-        ]
-      },
-      {
-        id: 'demo-pitch-1-v3',
-        version: '3.0',
-        title: 'RadiantHue - Stronger Pitch',
-        description: 'AI-powered sustainable lighting for modern spaces.',
-        score: 85,
-        likes: 5,
-        comments: 3,
-        timestamp: '2025-01-10T10:45:00Z',
-        playbackId: 'xyz456',
-        transcript: "RadiantHue brings sustainability to your home...",
-        metrics: { clarity: 80, engagement: 78, pacing: 79, structure: 85 },
-        aiCoachSummary: "Solid improvements! Engagement is much stronger.",
-        feedback: [
-          {
-            id: 'feedback-5',
-            userId: 'user-123',
-            author: 'Coach Alex',
-            role: 'AI Coach',
-            text: 'Your clarity is excellent now! Work on emphasizing key takeaways.',
-            timestamp: '2025-01-11T08:45:00Z',
-            pitchId: 'demo-pitch-1'
-          },
-          {
-            id: 'feedback-6',
-            userId: 'user-789',
-            author: 'Mentor Sarah',
-            role: 'Mentor',
-            text: 'Your tone is much more confident—great progress!',
-            timestamp: '2025-01-11T09:30:00Z',
-            pitchId: 'demo-pitch-1'
-          }
-        ]
-      },
-      {
-        id: 'demo-pitch-1-v4',
-        version: '4.0',
-        title: 'RadiantHue - Final Pitch',
-        description: 'The future of smart, AI-driven sustainable lighting.',
-        score: 92,
-        likes: 8,
-        comments: 4,
-        timestamp: '2025-01-15T17:00:00Z',
-        playbackId: 'final789',
-        transcript: "RadiantHue is the future of smart lighting...",
-        metrics: { clarity: 90, engagement: 88, pacing: 87, structure: 92 },
-        aiCoachSummary: "Great work! This is a highly polished pitch.",
-        feedback: [
-          {
-            id: 'feedback-7',
-            userId: 'user-123',
-            author: 'Coach Alex',
-            role: 'AI Coach',
-            text: 'This pitch is well-structured and engaging—fantastic job!',
-            timestamp: '2025-01-16T12:30:00Z',
-            pitchId: 'demo-pitch-1'
-          },
-          {
-            id: 'feedback-8',
-            userId: 'user-321',
-            author: 'Classmate John',
-            role: 'Classmate',
-            text: 'Your best version yet! Very polished and persuasive.',
-            timestamp: '2025-01-16T13:00:00Z',
-            pitchId: 'demo-pitch-1'
-          },
-          {
-            id: 'feedback-9',
+            id: 'feedback-2',
             userId: 'user-456',
             author: 'Professor Martinez',
             role: 'Professor',
-            text: 'Your problem-solution clarity is excellent now—well done!',
-            timestamp: '2025-01-16T14:20:00Z',
+            text: 'Good concept, but you need to explain the problem more clearly.',
+            timestamp: '2025-01-03T15:30:00Z',
             pitchId: 'demo-pitch-1'
           }
         ]
@@ -163,6 +69,8 @@ const initialPitches: Record<string, Pitch> = {
     ]
   }
 };
+
+
 
 const useStore = create<StoreState & StoreActions>((set, get) => ({
   // ✅ Store State
@@ -173,7 +81,7 @@ const useStore = create<StoreState & StoreActions>((set, get) => ({
   showTeamModal: false,
   pitches: initialPitches,
   selectedPitch: null,
-  messages: [] as (Feedback | ChatMessage)[],
+  messages:[] as ChatMessage[],
   coachMessages: [],
   themeMode: 'light',
   notifications: [],
@@ -201,7 +109,6 @@ const useStore = create<StoreState & StoreActions>((set, get) => ({
   },
 
   setActiveTab: (tab: string) => set({ activeTab: tab }),
-  toggleAICoach: () => set((state) => ({ showAICoach: !state.showAICoach })),
   setShowNewPitchModal: (show: boolean) => set({ showNewPitchModal: show }),
   setShowTeamModal: (show: boolean) => set({ showTeamModal: show }),
   setThemeMode: (mode: 'light' | 'dark') => set({ themeMode: mode }),
@@ -229,7 +136,9 @@ const useStore = create<StoreState & StoreActions>((set, get) => ({
         id: `${pitchId}-v${currentPitch.history.length + 1}`,
         version: `v${currentPitch.history.length + 1}`,
         timestamp: new Date().toISOString(),
-        feedback: mergedFeedback
+        feedback: mergedFeedback,
+        comments: updates.comments ?? lastVersion.comments, // Ensure this is a number
+
       };
 
       set({
@@ -250,10 +159,20 @@ const useStore = create<StoreState & StoreActions>((set, get) => ({
     }
   },
 
-  getMessagesForPitch: (pitchId: string): Feedback[] => {
+   // ✅ AI Coach Actions
+   setShowAICoach: (show: boolean) => set({ showAICoach: show }),
+   toggleAICoach: () => set((state) => ({ showAICoach: !state.showAICoach })),
+   
+   
+
+   getMessagesForPitch: (pitchId: string): ChatMessage[] => {
     const state = get();
-    return state.messages.filter((message): message is Feedback => 'pitchId' in message && message.pitchId === pitchId);
+    return state.messages.filter(
+      (message): message is ChatMessage =>
+        'sender' in message && 'fromAI' in message && 'content' in message && message.pitchId === pitchId
+    );
   },
+    
 
   fetchCompetition: async () => {
     set({ isLoading: true });
@@ -281,10 +200,14 @@ const useStore = create<StoreState & StoreActions>((set, get) => ({
   },
 
   addMessage: (message: ChatMessage) => {
-    set(state => ({
-      messages: [...state.messages, message]
-    }));
-  }
+  set(state => ({
+    messages: [...state.messages, message] // ✅ Ensures type consistency
+  }));
+},
+setMessages: (messages: ChatMessage[]) => {
+  set({ messages }); // ✅ Ensures only ChatMessage[] is assigned
+}
 }));
+
 
 export default useStore;
