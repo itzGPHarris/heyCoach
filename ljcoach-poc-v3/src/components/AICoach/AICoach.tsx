@@ -20,7 +20,7 @@ const AICoach: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [input, setInput] = useState('');
-  const { showAICoach, toggleAICoach, coachMessages } = useStore();
+  const { showAICoach, toggleAICoach, coachMessages }: { showAICoach: boolean; toggleAICoach: () => void; coachMessages: ChatMessage[] } = useStore();
 
   const handleSend = () => {
     if (!input.trim()) return;
@@ -117,9 +117,9 @@ const ChatBubble: React.FC<{ message: ChatMessage }> = ({ message }) => (
         color: message.fromAI ? 'text.primary' : 'primary.contrastText',
       }}
     >
-      <Typography variant="body1">{message.content}</Typography>
+      <Typography variant="body1">{message.text}</Typography>
       <Typography variant="caption" sx={{ display: 'block', mt: 1, opacity: 0.7 }}>
-        {message.timestamp.toLocaleTimeString()}
+        {new Date(message.timestamp).toLocaleTimeString()}
       </Typography>
     </Paper>
   </Box>

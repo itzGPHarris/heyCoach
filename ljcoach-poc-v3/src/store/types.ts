@@ -1,6 +1,11 @@
-export interface UserProfile {
-  avatar?: string;
-  name: string;
+export interface Feedback {
+  id: string;
+  userId: string;
+  author: string;
+  role?: string;
+  text: string;
+  timestamp: string;
+  pitchId: string; // Ensuring pitchId is always present
 }
 
 export interface Metrics {
@@ -10,26 +15,57 @@ export interface Metrics {
   structure: number;
 }
 
-export interface PitchVersion {
-  version: string;
-  timestamp: string;
-  changes: string;
-}
-
-export interface ChatMessage {
+export interface PitchAnalysis {
   id: string;
-  content: string;
-  fromAI: boolean;
-  timestamp: Date;
-  pitchId?: string;
-}
-
-export interface Feedback {
-  author: string;
-  role?: string;
-  text: string;
+  pitchId: string;
+  analysis: string;
+  score: number;
   timestamp: string;
 }
+
+export interface PitchVersion {
+  id: string;
+  version: string;
+  title: string;
+  description: string;
+  score: number;
+  likes: number;
+  comments: number;
+  timestamp: string;
+  playbackId?: string;
+  transcript?: string;
+  metrics?: Metrics;
+  aiCoachSummary?: string;
+  feedback: Feedback[]; // ✅ Ensuring feedback exists at the version level
+}
+
+export interface Pitch {
+  id: string;
+  title: string;
+  description: string;
+  score: number;
+  likes: number;
+  comments: number;
+  timestamp: string;
+  feedback: Feedback[]; // ✅ Fixed: Ensuring feedback is properly typed
+  playbackId?: string;
+  transcript?: string;
+  history: PitchVersion[];
+  metrics?: Metrics;
+  aiCoachSummary?: string;
+}
+
+export type ChatMessage = {
+  id: string;
+  text: string;
+  sender: 'user' | 'ai';
+  timestamp: string;
+  fromAI: boolean;
+  content: string;
+  pitchId: string;
+};
+
+export type ViewType = 'feed' | 'dashboard' | 'profile' | 'settings';
 
 export interface Notification {
   id: string;
@@ -37,56 +73,37 @@ export interface Notification {
   read: boolean;
 }
 
-export type ViewType = 'feed' | 'dashboard' | 'collaborate' | 'profile' | 'settings';
-
-export interface Pitch {
-  id: string;
-  title: string;
-  description: string; 
-  playbackId: string;
-  score: number;
-  metrics: Metrics;
-  aiCoachSummary: string;
-  likes: number;
-  comments: number;
-  transcript?: string;
-  timestamp: string;
-  history: PitchVersion[];
-  feedback: Feedback[];
-}
-
-export interface PitchStore {
-  // UI State
-  activeTab: ViewType;
+export type StoreState = {
+  activeTab: string;
   expandedCard: string | null;
   showAICoach: boolean;
   showNewPitchModal: boolean;
   showTeamModal: boolean;
-  
-  // Pitch Data
   pitches: Record<string, Pitch>;
-  selectedPitch: string | null;
-  
-  // Notifications & User
-  notifications: Notification[];
-  userProfile: UserProfile;
-  
-  // AI Coach State
-  messages: ChatMessage[];
-  coachMessages: ChatMessage[];  
-  
-  // Theme
+  selectedPitch: PitchVersion | null;
+  messages: (Feedback | ChatMessage)[];
+  coachMessages: ChatMessage[];
   themeMode: 'light' | 'dark';
-  
-  // Actions
-  setActiveTab: (tab: ViewType) => void;
+  notifications: Notification[];
+  userProfile: { name: string; avatar: string | undefined };
+  isLoading: boolean;
+  error: string | null;
+  competition: { id: string; name: string; date: string } | null;
+  competitions: { id: string; name: string; date: string }[];
+  pitchAnalyses: Record<string, PitchAnalysis>;
+  currentUser: { id: string; name: string; email: string } | null;
+};
+
+export type StoreActions = {
+  updatePitch: (pitchId: string, updates: Partial<PitchVersion>) => Promise<void>;
+  selectPitch: (id: string | null) => void;
+  setActiveTab: (tab: string) => void;
   toggleAICoach: () => void;
   setShowNewPitchModal: (show: boolean) => void;
   setShowTeamModal: (show: boolean) => void;
-  addPitch: (pitch: Pitch) => void;
-  updatePitch: (id: string, updates: Partial<Pitch>) => void;
-  addMessage: (message: Omit<ChatMessage, 'id'>) => void;
-  selectPitch: (id: string | null) => void;
   setThemeMode: (mode: 'light' | 'dark') => void;
-  getMessagesForPitch: (pitchId: string) => ChatMessage[];
-}
+  getMessagesForPitch: (pitchId: string) => Feedback[];
+  fetchCompetition: () => Promise<void>;
+  fetchPitchAnalysis: (pitchId: string) => Promise<void>;
+  addMessage: (message: ChatMessage) => void;
+};

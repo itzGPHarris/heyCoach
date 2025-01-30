@@ -24,7 +24,7 @@ const ContextPanel: React.FC = () => {
   const [tabValue, setTabValue] = React.useState(0);
   const selectedPitch = useStore(state => {
     const pitchId = state.selectedPitch;
-    return pitchId ? state.pitches[pitchId] : null;
+    return typeof pitchId === 'string' ? state.pitches[pitchId] : null;
   });
 
   if (!selectedPitch) {
@@ -74,14 +74,14 @@ const AnalysisView: React.FC<{ pitch: Pitch }> = ({ pitch }) => (
     <ListItem>
       <ListItemText
         primary="Clarity Score"
-        secondary={`${pitch.metrics.clarity}% - ${getScoreDescription(pitch.metrics.clarity)}`}
-      />
+        secondary={pitch.metrics ? `${pitch.metrics.clarity}% - ${getScoreDescription(pitch.metrics.clarity)}` : "No metrics available"}
+        />
     </ListItem>
     <Divider />
     <ListItem>
       <ListItemText
         primary="Engagement Level"
-        secondary={`${pitch.metrics.engagement}% - ${getScoreDescription(pitch.metrics.engagement)}`}
+        secondary={pitch.metrics ? `${pitch.metrics.engagement}% - ${getScoreDescription(pitch.metrics.engagement)}` : "No metrics available"}
       />
     </ListItem>
     <Divider />

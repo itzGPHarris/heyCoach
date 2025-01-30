@@ -37,19 +37,21 @@ interface CoachToolbarProps {
   onSendMessage?: (message: string) => void;
   onNewPitch?: () => void;
   onTeamClick?: () => void;
-  className?: string; // Add className prop
+  className?: string;
+  disabled?: boolean;
 }
 
 const CoachToolbar = ({
   onSendMessage,
   onNewPitch,
   onTeamClick,
-  className, // Add className prop
+  className,
+  disabled = false
 }: CoachToolbarProps) => {
   const [message, setMessage] = useState('');
 
   const handleSend = () => {
-    if (message.trim() && onSendMessage) {
+    if (message.trim() && onSendMessage && !disabled) {
       onSendMessage(message);
       setMessage('');
     }
@@ -63,10 +65,14 @@ const CoachToolbar = ({
   };
 
   return (
-    <ToolbarContainer elevation={3} className={className}> {/* Apply className here */}
+    <ToolbarContainer elevation={3} className={className}>
       <Box sx={{ maxWidth: 'xl', mx: 'auto' }}>
         <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-          <IconButton color="primary" sx={{ p: 1.5 }}>
+          <IconButton 
+            color="primary" 
+            sx={{ p: 1.5 }}
+            disabled={disabled}
+          >
             <MicIcon />
           </IconButton>
 
@@ -76,10 +82,15 @@ const CoachToolbar = ({
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyPress={handleKeyPress}
+            disabled={disabled}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton onClick={handleSend} color="primary">
+                  <IconButton 
+                    onClick={handleSend} 
+                    color="primary"
+                    disabled={disabled || !message.trim()}
+                  >
                     <SendIcon />
                   </IconButton>
                 </InputAdornment>
@@ -89,10 +100,20 @@ const CoachToolbar = ({
         </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
-          <Fab color="primary" size="medium" onClick={onNewPitch}>
+          <Fab 
+            color="primary" 
+            size="medium" 
+            onClick={onNewPitch}
+            disabled={disabled}
+          >
             <AddIcon />
           </Fab>
-          <Fab color="secondary" size="medium" onClick={onTeamClick}>
+          <Fab 
+            color="secondary" 
+            size="medium" 
+            onClick={onTeamClick}
+            disabled={disabled}
+          >
             <GroupIcon />
           </Fab>
         </Box>

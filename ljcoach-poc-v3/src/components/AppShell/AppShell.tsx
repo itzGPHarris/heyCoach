@@ -12,6 +12,9 @@ import {
   Fab,
   Menu,
   MenuItem,
+  Alert,
+  CircularProgress,
+  Button,
 } from '@mui/material';
 import { User, Bell, Plus, Users, Moon, Sun } from 'lucide-react';
 import { getTheme } from '../../styles/theme';
@@ -21,8 +24,7 @@ import DashboardView from '../DashboardView';
 import ProfileView from '../ProfileView';
 import AICoach from '../AICoach';
 import CoachToolbar from '../shared/CoachToolbar';
-import { ViewType } from '../../store/types';
-
+import { ViewType, Notification } from '../../store/types';
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
@@ -39,7 +41,7 @@ const MainContent = styled(Box)(({ theme }) => ({
   overflow: 'auto',
   backgroundColor: theme.palette.background.default,
   position: 'relative',
-  marginTop: '64px',
+  marginTop: '12px',
 }));
 
 function AppShell() {
@@ -56,7 +58,14 @@ function AppShell() {
     setShowTeamModal,
     showAICoach,
     userProfile,
+    isLoading,
+    error,
+    fetchCompetition,
   } = useStore();
+
+  const clearError = () => {
+    // Add logic to clear the error here
+  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -77,6 +86,12 @@ function AppShell() {
     };
   }, []);
 
+  // Fetch competition data when component mounts
+useEffect(() => {
+  console.log('Fetching competition on mount...');
+  fetchCompetition();
+}, []); // ✅ Only runs on mount
+
   const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -92,12 +107,31 @@ function AppShell() {
 
   const handleSignOut = () => {
     handleMenuClose();
+    // Add any sign-out logic here
   };
 
   return (
     <ThemeProvider theme={getTheme(mode)}>
       <CssBaseline />
       <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+
+        {/* Error Handling */}
+        {error && (
+          <Alert severity="error" sx={{ my: 2 }}>
+            {error}
+            <Button size="small" onClick={clearError} sx={{ ml: 2 }}>
+              Dismiss
+            </Button>
+          </Alert>
+        )}
+
+        {/* Loading Indicator */}
+        {isLoading && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+            <CircularProgress />
+          </Box>
+        )}
+
         <StyledAppBar position="fixed" elevation={0} className={isVisible ? 'visible' : 'hidden'}>
           <HeaderToolbar>
             <Box
@@ -116,7 +150,10 @@ function AppShell() {
                 {mode === 'light' ? <Moon size={20} /> : <Sun size={20} />}
               </IconButton>
               <IconButton>
-                <Badge badgeContent={notifications.filter((n) => !n.read).length} color="error">
+                <Badge
+                  badgeContent={notifications.filter((notification: Notification) => !notification.read).length}
+                  color="error"
+                >
                   <Bell size={20} />
                 </Badge>
               </IconButton>

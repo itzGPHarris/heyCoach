@@ -20,10 +20,13 @@ export const useMessages = (pitchId: string | null) => {
     const randomResponse = responses[Math.floor(Math.random() * responses.length)];
     
     addMessage({
+      id: `${Date.now()}`,
+      text: randomResponse,
+      sender: 'ai',
       content: randomResponse,
       fromAI: true,
-      timestamp: new Date(),
-      pitchId: pitchId || undefined
+      timestamp: new Date().toISOString(),
+      pitchId: pitchId || ''
     });
     
     setIsTyping(false);
@@ -33,10 +36,13 @@ export const useMessages = (pitchId: string | null) => {
     if (!content.trim()) return;
     
     addMessage({
+      id: `${Date.now()}`,
+      text: content,
+      sender: 'user',
       content,
       fromAI: false,
-      timestamp: new Date(),
-      pitchId: pitchId || undefined
+      timestamp: new Date().toISOString(),
+      pitchId: pitchId || ''
     });
 
     await simulateAIResponse();

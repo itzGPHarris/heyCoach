@@ -30,7 +30,7 @@ const ProfileView: React.FC = () => {
               alt="User Profile"
               src="/path/to/avatar.jpg" // Replace with actual avatar path
             />
-            <Typography variant="h6">User Name</Typography>
+            <Typography variant="h6">Harper </Typography>
             <Typography variant="subtitle1" color="text.secondary">
               Pitch Enthusiast
             </Typography>
