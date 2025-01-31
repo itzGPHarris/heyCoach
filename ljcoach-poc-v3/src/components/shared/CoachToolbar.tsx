@@ -1,19 +1,6 @@
-import { useState } from 'react';
-import {
-  Box,
-  TextField,
-  IconButton,
-  Paper,
-  InputAdornment,
-  Fab,
-  styled,
-} from '@mui/material';
-import {
-  Mic as MicIcon,
-  ArrowUpward as SendIcon,
-  Add as AddIcon,
-  Group as GroupIcon,
-} from '@mui/icons-material';
+import { useState, useEffect } from 'react';
+import { Box, TextField, IconButton, Paper, InputAdornment, styled } from '@mui/material';
+import { Mic as MicIcon, ArrowUpward as SendIcon } from '@mui/icons-material';
 
 const ToolbarContainer = styled(Paper)(({ theme }) => ({
   position: 'fixed',
@@ -22,8 +9,9 @@ const ToolbarContainer = styled(Paper)(({ theme }) => ({
   right: 0,
   padding: theme.spacing(2),
   borderRadius: 0,
-  zIndex: theme.zIndex.appBar,
+  zIndex: 9999,
   backgroundColor: theme.palette.background.paper,
+  transition: 'max-height 0.3s ease-in-out',
 }));
 
 const CoachInput = styled(TextField)(({ theme }) => ({
@@ -34,22 +22,19 @@ const CoachInput = styled(TextField)(({ theme }) => ({
 }));
 
 interface CoachToolbarProps {
-  onSendMessage?: (message: string) => void;
-  onNewPitch?: () => void;
-  onTeamClick?: () => void;
-  className?: string; // Add className prop
+  onSendMessage: (message: string) => void;
 }
 
-const CoachToolbar = ({
-  onSendMessage,
-  onNewPitch,
-  onTeamClick,
-  className, // Add className prop
-}: CoachToolbarProps) => {
+const CoachToolbar = ({ onSendMessage }: CoachToolbarProps) => {
   const [message, setMessage] = useState('');
 
+  useEffect(() => {
+    console.log('CoachToolbar mounted');
+    return () => console.log('CoachToolbar unmounted');
+  }, []);
+
   const handleSend = () => {
-    if (message.trim() && onSendMessage) {
+    if (message.trim()) {
       onSendMessage(message);
       setMessage('');
     }
@@ -63,7 +48,7 @@ const CoachToolbar = ({
   };
 
   return (
-    <ToolbarContainer elevation={3} className={className}> {/* Apply className here */}
+    <ToolbarContainer elevation={3} sx={{ display: 'block !important' }}>
       <Box sx={{ maxWidth: 'xl', mx: 'auto' }}>
         <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
           <IconButton color="primary" sx={{ p: 1.5 }}>
@@ -72,7 +57,7 @@ const CoachToolbar = ({
 
           <CoachInput
             fullWidth
-            placeholder="Hi Harper! Ask Coach a question"
+            placeholder="Ask the Coach a question..."
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyPress={handleKeyPress}
@@ -86,15 +71,6 @@ const CoachToolbar = ({
               ),
             }}
           />
-        </Box>
-
-        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
-          <Fab color="primary" size="medium" onClick={onNewPitch}>
-            <AddIcon />
-          </Fab>
-          <Fab color="secondary" size="medium" onClick={onTeamClick}>
-            <GroupIcon />
-          </Fab>
         </Box>
       </Box>
     </ToolbarContainer>
