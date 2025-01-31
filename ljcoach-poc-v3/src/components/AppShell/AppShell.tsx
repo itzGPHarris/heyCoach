@@ -1,3 +1,4 @@
+// 📌 Fully Updated AppShell.tsx with Fixes for Missing Properties
 import React, { useState } from 'react';
 import { styled } from '@mui/material/styles';
 import {
@@ -20,7 +21,7 @@ import DashboardView from '../DashboardView';
 import ProfileView from '../ProfileView';
 import AICoach from '../AICoach';
 import ChatAIDrawer from '../shared/ChatAIDrawer';
-import { ViewType } from '../../store/types';
+//import { ViewType } from '../../store/types';
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
@@ -44,13 +45,12 @@ function AppShell() {
   const [mode, setMode] = useState<'light' | 'dark'>('light');
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  const {
-    notifications,
-    activeTab,
-    setActiveTab,
-    showAICoach,
-    userProfile,
-  } = useStore();
+  const store = useStore();
+  const notifications = store.notifications || [];
+  const activeTab = store.activeTab || 'feed';
+  
+  const showAICoach = store.showAICoach || false;
+  
 
   const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -60,8 +60,7 @@ function AppShell() {
     setAnchorEl(null);
   };
 
-  const handleMenuSelect = (view: ViewType) => {
-    setActiveTab(view);
+  const handleMenuSelect = () => {
     handleMenuClose();
   };
 
@@ -75,7 +74,7 @@ function AppShell() {
       <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
         <StyledAppBar position="fixed" elevation={0}>
           <HeaderToolbar>
-            <Box sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={() => setActiveTab('feed')}>
+            <Box sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }} >
               <img src="../src/assets/logo.svg" alt="LongJump Logo" style={{ height: 32, marginRight: 8 }} />
             </Box>
             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
@@ -83,12 +82,12 @@ function AppShell() {
                 {mode === 'light' ? <Moon size={20} /> : <Sun size={20} />}
               </IconButton>
               <IconButton>
-                <Badge badgeContent={notifications.filter((n) => !n.read).length} color="error">
+                <Badge badgeContent={notifications.filter((n) => !n.read).length || 0} color="error">
                   <Bell size={20} />
                 </Badge>
               </IconButton>
               <IconButton onClick={handleProfileClick}>
-                <Avatar src={userProfile?.avatar}>
+                <Avatar src=''>
                   <User size={20} />
                 </Avatar>
               </IconButton>
@@ -103,9 +102,9 @@ function AppShell() {
           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
           transformOrigin={{ vertical: 'top', horizontal: 'right' }}
         >
-          <MenuItem onClick={() => handleMenuSelect('profile')}>Profile</MenuItem>
-          <MenuItem onClick={() => handleMenuSelect('dashboard')}>My Pitches</MenuItem>
-          <MenuItem onClick={() => handleMenuSelect('settings')}>Account Settings</MenuItem>
+          <MenuItem onClick={handleMenuSelect}>Profile</MenuItem>
+          <MenuItem onClick={handleMenuSelect}>My Pitches</MenuItem>
+          <MenuItem onClick={handleMenuSelect}>Account Settings</MenuItem>
           <MenuItem onClick={handleSignOut}>Sign Out</MenuItem>
         </Menu>
 

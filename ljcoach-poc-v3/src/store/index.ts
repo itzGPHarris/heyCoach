@@ -1,81 +1,106 @@
+// 📌 Fully Updated store/index.ts with Fixes for Errors
 import { create } from 'zustand';
-import { PitchStore, Pitch } from './types';
+import { MockAPIClient } from '../api/mockServices';
+import { StoreState, StoreActions, ChatMessage, ViewType, Notification, PitchAnalysis, Pitch } from './types';
 
-const initialPitches: Record<string, Pitch> = {
-  'demo-pitch-1': {
-    id: 'demo-pitch-1',
-    title: 'RadiantHue',
-    description: 'Sustainable smart lighting solution that reduces energy consumption by 75% while improving workplace productivity.',
-    timestamp: 'Just now',
-    playbackId: 'your-mux-playback-id',
-    score: 92,
-    metrics: {
-      clarity: 90,
-      engagement: 85,
-      pacing: 86,
-      structure: 89
-    },
-    likes: 12,
-    comments: 2,
-    transcript: "Hi, I'm Harper Lewis\nMarket Problem\nSolution Overview\nTechnology Demo\nMarket Size & Opportunity\nFinancial Projections\nCall to Action",
-    history: [
-      {
-        version: '2.1',
-        timestamp: 'Jan 15, 2025',
-        changes: 'Updated market positioning'
+const mockClient = new MockAPIClient();
+
+export const useStore = create<StoreState & StoreActions>((set, get) => ({
+  pitches: {},
+  activePitchVersion: 0,
+  selectedPitch: null,
+  messages: [] as ChatMessage[],
+  coachMessages: [] as ChatMessage[],
+  showAICoach: false,
+  themeMode: 'light',
+  notifications: [] as Notification[],
+  isLoading: true,
+  error: null,
+  competition: null,
+  competitions: [],
+  pitchAnalyses: {},
+  currentUser: null,
+  expandedCard: null,
+  showNewPitchModal: false,
+  showTeamModal: false,
+  activeTab: 'feed' as ViewType,
+  activeCompetition: null,
+
+  setActivePitchVersion: (version) => set({ activePitchVersion: version }),
+
+  fetchPitches: async () => {
+    set({ isLoading: true });
+    try {
+      const fetchedPitches = await mockClient.getPitchesMock(); // ✅ Fixed API call
+      set({ pitches: fetchedPitches, isLoading: false });
+    } catch (error) {
+      console.error("Error fetching pitches:", error);
+      set({ isLoading: false, error: "Failed to load pitches." });
+    }
+  },
+
+  fetchPitchAnalysis: async (pitchId: string) => {
+    set({ isLoading: true, error: null });
+    try {
+      const analysis = (await mockClient.analyzePitch(pitchId)) as PitchAnalysis;
+      set((state) => ({
+        pitchAnalyses: { ...state.pitchAnalyses, [pitchId]: {
+          ...analysis,
+          analysis: analysis.aiSummary || 'No analysis available',
+          score: analysis.metrics && 
+          typeof analysis.metrics.clarity === 'number' &&
+          typeof analysis.metrics.engagement === 'number' &&
+          typeof analysis.metrics.pacing === 'number' &&
+          typeof analysis.metrics.structure === 'number'
+     ? (analysis.metrics.clarity + analysis.metrics.engagement + 
+        analysis.metrics.pacing + analysis.metrics.structure) / 4
+     : 0,
+           }},
+        isLoading: false,
+      }));
+    } catch (error) {
+      console.error(`Error fetching pitch analysis for ${pitchId}:`, error);
+      set({ error: 'Failed to fetch pitch analysis', isLoading: false });
+    }
+  },
+
+  updatePitch: async (pitchId: string, updates: Partial<Pitch>) => {
+    set({ isLoading: true });
+    try {
+      const state = get();
+      const updatedPitches = { ...state.pitches };
+      if (updatedPitches[pitchId]) {
+        updatedPitches[pitchId] = { ...updatedPitches[pitchId], ...updates };
       }
-    ],
-    aiCoachSummary: "Strong pitch with clear market positioning and technical insights.",
-    feedback: []
-  }
-};
+      set({ pitches: updatedPitches, isLoading: false });
+    } catch (error) {
+      console.error(`Error updating pitch ${pitchId}:`, error);
+      set({ isLoading: false, error: 'Failed to update pitch.' });
+    }
+  },
 
-const useStore = create<PitchStore>(
-  (set, get) => ({
-    // UI State
-    activeTab: 'feed',
-    expandedCard: null,
-    showAICoach: false,
-    showNewPitchModal: false,
-    showTeamModal: false,
-    pitches: initialPitches,
-    selectedPitch: null,
-    messages: [],
-    coachMessages: [],
-    themeMode: 'light',
-    notifications: [],
-    userProfile: {
-      name: 'Guest User',
-      avatar: undefined
-    },
+  addPitch: (pitch: Pitch) => set((state) => ({ pitches: { ...state.pitches, [pitch.id]: pitch } })),
+  
+  selectPitch: (id: string | null) => {
+    if (!id) {
+      set({ selectedPitch: null });
+      return;
+    }
+    const state = get();
+    const pitch = state.pitches[id];
+    if (pitch) {
+      set({ selectedPitch: pitch.history[pitch.history.length - 1] });
+    } else {
+      console.error(`Pitch ID ${id} not found.`);
+    }
+  },
 
-    // Actions
-    setActiveTab: (tab) => set({ activeTab: tab }),
-    toggleAICoach: () => set((state) => ({ showAICoach: !state.showAICoach })),
-    setShowNewPitchModal: (show) => set({ showNewPitchModal: show }),
-    setShowTeamModal: (show) => set({ showTeamModal: show }),
-    addPitch: (pitch) => 
-      set((state) => ({
-        pitches: { ...state.pitches, [pitch.id]: pitch }
-      })),
-    updatePitch: (id, updates) =>
-      set((state) => ({
-        pitches: {
-          ...state.pitches,
-          [id]: { ...state.pitches[id], ...updates }
-        }
-      })),
-    addMessage: (message) =>
-      set((state) => ({
-        messages: [...state.messages, { ...message, id: Date.now().toString() }]
-      })),
-    selectPitch: (id) => set({ selectedPitch: id }),
-    setThemeMode: (mode) => set({ themeMode: mode }),
-    getMessagesForPitch: (pitchId) => {
-      const { messages } = get();
-      return messages.filter(message => message.pitchId === pitchId);
-    },
-  })
-);
+  toggleAICoach: () => set((state) => ({ showAICoach: !state.showAICoach })),
+  setThemeMode: (mode: 'light' | 'dark') => set({ themeMode: mode }),
+  getMessagesForPitch: (pitchId: string) => get().messages.filter((message) => message.pitchId === pitchId),
+  setActiveCompetition: (competitionId: string) => set({ activeCompetition: competitionId }),
+  setShowNewPitchModal: (show: boolean) => set({ showNewPitchModal: show }),
+  setShowTeamModal: (show: boolean) => set({ showTeamModal: show }),
+}));
 
 export default useStore;

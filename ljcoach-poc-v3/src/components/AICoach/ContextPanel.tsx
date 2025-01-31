@@ -24,7 +24,7 @@ const ContextPanel: React.FC = () => {
   const [tabValue, setTabValue] = React.useState(0);
   const selectedPitch = useStore(state => {
     const pitchId = state.selectedPitch;
-    return pitchId ? state.pitches[pitchId] : null;
+    return typeof pitchId === 'string' ? state.pitches[pitchId] : null;
   });
 
   if (!selectedPitch) {
