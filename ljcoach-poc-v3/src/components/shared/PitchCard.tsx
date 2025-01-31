@@ -2,38 +2,28 @@ import { useState } from 'react';
 import { styled } from '@mui/material/styles';
 import { 
   Card, CardContent, CardHeader, 
-  Collapse, Typography, Grid, Box,
-  Paper,
-  IconButton
+  Collapse, Typography, Box,
+  Paper, IconButton, TextField, Button
 } from '@mui/material';
 import { ChevronRight, ChevronDown, BarChart2, MessageSquare, Clock, Star, ThumbsUp } from 'lucide-react';
 import MuxPlayer from '@mux/mux-player-react';
-import ChatInput from './ChatInput';
 import TranscriptSection from './TranscriptSection';
 import { PitchVersion } from '../../store/types';
 
-// ✅ Function to Format Timestamp to 12-Hour PDT Format
-const formatTimestamp = (timestamp: string) => {
+const formatTimestamp = (timestamp?: string) => {
+  if (!timestamp) return 'N/A';
   const date = new Date(timestamp);
   return new Intl.DateTimeFormat('en-US', {
-    timeZone: 'America/Los_Angeles', // ✅ PDT timezone
+    timeZone: 'America/Los_Angeles',
     hour: 'numeric',
     minute: 'numeric',
     hour12: true,
     month: 'short',
     day: 'numeric',
     year: 'numeric'
-  }).format(date).replace(',', ' •'); // ✅ Separator for readability
+  }).format(date).replace(',', ' •');
 };
 
-// ✅ Function to Generate a Unique Color for Each User
-const getUserColor = (userId: string) => {
-  const colors = ['#FF5733', '#33A1FF', '#FFC300', '#28A745', '#9B59B6', '#E91E63'];
-  const hash = userId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  return colors[hash % colors.length];
-};
-
-// ✅ Styled Components
 const CommentBox = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(2),
   borderRadius: theme.shape.borderRadius,
@@ -53,65 +43,27 @@ const InteractiveBox = styled(Paper)(({ theme }) => ({
   }
 }));
 
-// ✅ Comment Component (Now With Colored Names)
-const Comment = ({ author, role, text, timestamp, userId }: { 
-  author: string; 
-  role?: string;
-  text: string; 
-  timestamp: string;
-  userId: string;
-}) => (
-  <CommentBox variant="outlined" sx={{ p: 2 }}>
-    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-      <Box>
-        {/* ✅ Apply Unique Color */}
-        <Typography variant="subtitle2" sx={{ color: getUserColor(userId), fontWeight: 'bold' }}>
-          {author}
-        </Typography>
-        {role && <Typography variant="caption" color="text.secondary">{role}</Typography>}
-      </Box>
-      <Typography variant="caption" color="text.secondary">{formatTimestamp(timestamp)}</Typography>
-    </Box>
-    <Typography variant="body2">{text}</Typography>
-  </CommentBox>
-);
-
-// ✅ Metrics Display Component
-const MetricBox = ({ label, value }: { label: string; value: number }) => (
-  <Grid item xs={3} sx={{ textAlign: 'center' }}>
-    <Typography variant="h4" color="primary" sx={{ mb: 0.5 }}>{value}%</Typography>
-    <Typography variant="body2" color="text.secondary">{label}</Typography>
-  </Grid>
-);
-
-function PitchCard({ pitch }: { pitch: PitchVersion }) {
+function PitchCard({ pitch }: { pitch?: PitchVersion }) {
   const [expanded, setExpanded] = useState(false);
   const [feedbackExpanded, setFeedbackExpanded] = useState(false);
+  const [comment, setComment] = useState('');
+
+  if (!pitch) {
+    return <Typography variant="body2" color="error">No pitch data available.</Typography>;
+  }
 
   return (
     <Card sx={{ mb: 4 }}>
-      <CardHeader
-        title={pitch.title}
-        subheader={pitch.description}
-      />
+      <CardHeader title={pitch.title || 'Untitled Pitch'} subheader={pitch.description || 'No description available'} />
       <CardContent>
-        {/* ✅ Display Metadata (Now Uses 12-Hour PDT Format) */}
         <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 2 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Star size={18} color="gold" />
-            <Typography variant="body2">{pitch.score}% Score</Typography>
-          </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <ThumbsUp size={18} color="blue" />
-            <Typography variant="body2">{pitch.likes} Likes</Typography>
-          </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Clock size={18} color="gray" />
-            <Typography variant="body2">{formatTimestamp(pitch.timestamp)}</Typography>
-          </Box>
+          <Star size={18} color="gold" />
+          <Typography variant="body2">{pitch.score ?? 0}% Score</Typography>
+          <ThumbsUp size={18} color="blue" />
+          <Typography variant="body2">{pitch.likes ?? 0} Likes</Typography>
+          <Clock size={18} color="gray" />
+          <Typography variant="body2">{formatTimestamp(pitch.timestamp)}</Typography>
         </Box>
-
-        {/* ✅ MUX Video Player */}
         <Box sx={{ mb: 3, borderRadius: 1, overflow: 'hidden' }}>
           {pitch.playbackId ? (
             <MuxPlayer playbackId={pitch.playbackId} metadata={{ video_title: pitch.title }} streamType="on-demand" />
@@ -119,8 +71,6 @@ function PitchCard({ pitch }: { pitch: PitchVersion }) {
             <Typography variant="body2" color="error">⚠ Playback ID missing.</Typography>
           )}
         </Box>
-
-        {/* ✅ Interactive Pitch Summary */}
         <InteractiveBox onClick={() => setExpanded(!expanded)} sx={{ mb: 2 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -129,25 +79,14 @@ function PitchCard({ pitch }: { pitch: PitchVersion }) {
             </Box>
             <IconButton>{expanded ? <ChevronDown /> : <ChevronRight />}</IconButton>
           </Box>
-          {!expanded && (
-            <Grid container spacing={3} sx={{ mt: 2 }}>
-              <MetricBox label="Clarity" value={pitch.metrics?.clarity || 0} />
-              <MetricBox label="Engagement" value={pitch.metrics?.engagement || 0} />
-              <MetricBox label="Pacing" value={pitch.metrics?.pacing || 0} />
-              <MetricBox label="Structure" value={pitch.metrics?.structure || 0} />
-            </Grid>
-          )}
         </InteractiveBox>
-
         <Collapse in={expanded}>
           <Box sx={{ p: 2 }}>
-            <Typography variant="subtitle1" gutterBottom>AI Coach Summary</Typography>
+            <Typography variant="subtitle1" gutterBottom>AI Coach Analysis</Typography>
             <Typography paragraph>{pitch.aiCoachSummary || 'No AI feedback yet.'}</Typography>
             <TranscriptSection transcript={pitch.transcript ?? ''} />
           </Box>
         </Collapse>
-
-        {/* ✅ Feedback Section */}
         <InteractiveBox onClick={() => setFeedbackExpanded(!feedbackExpanded)} sx={{ mt: 2 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -157,17 +96,30 @@ function PitchCard({ pitch }: { pitch: PitchVersion }) {
             <IconButton>{feedbackExpanded ? <ChevronDown /> : <ChevronRight />}</IconButton>
           </Box>
         </InteractiveBox>
-
         <Collapse in={feedbackExpanded}>
           <Box sx={{ p: 2 }}>
-            {pitch.feedback.length > 0 ? (
-              pitch.feedback.map((comment, index) => (
-                <Comment key={index} userId={comment.userId} author={comment.author} role={comment.role} text={comment.text} timestamp={comment.timestamp} />
-              ))
-            ) : (
+            {pitch.feedback?.length > 0 ? pitch.feedback.map((comment, index) => (
+              <CommentBox key={index} variant="outlined" sx={{ p: 2, mb: 1 }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>{comment.author}</Typography>
+                {comment.role && <Typography variant="caption" color="text.secondary">{comment.role}</Typography>}
+                <Typography variant="body2">{comment.text}</Typography>
+                <Typography variant="caption" color="text.secondary">{formatTimestamp(comment.timestamp)}</Typography>
+              </CommentBox>
+            )) : (
               <Typography variant="body2" color="text.secondary">No feedback yet.</Typography>
             )}
-            <ChatInput onSubmit={(text: string) => console.log('New comment:', text)} placeholder="Add a comment..." />
+            <Box sx={{ display: 'flex', mt: 2 }}>
+              <TextField
+                fullWidth
+                label="Reply to comment"
+                variant="outlined"
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+              />
+              <Button variant="contained" color="primary" sx={{ ml: 2 }} onClick={() => setComment('')}>
+                Reply
+              </Button>
+            </Box>
           </Box>
         </Collapse>
       </CardContent>

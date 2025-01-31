@@ -1,149 +1,55 @@
-// 📌 Updated FeedView.tsx with Full PitchCard Features and Expandable Sections
+import { useState, useEffect } from "react";
+import { Box, CircularProgress } from "@mui/material";
+import Competition from "./shared/Competition";
+import PitchContainer from "./shared/PitchContainer";
 
-import { Container } from '@mui/material';
-
-import TranscriptSection from '../components/shared/TranscriptSection';
-import ChatInput from '../components/shared/ChatInput';
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, Collapse, Typography, Grid, Box, IconButton } from '@mui/material';
-import { ChevronRight, ChevronDown, BarChart2, MessageSquare, Clock, Star, ThumbsUp } from 'lucide-react';
-import MuxPlayer from '@mux/mux-player-react';
-
-const formatTimestamp = (timestamp: string) => {
-  const date = new Date(timestamp);
-  return new Intl.DateTimeFormat('en-US', {
-    timeZone: 'America/Los_Angeles',
-    hour: 'numeric',
-    minute: 'numeric',
-    hour12: true,
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric'
-  }).format(date).replace(',', ' •');
-};
-
-const mockCompetition = {
-  id: 'weekly-challenge',
-  title: 'Weekly Pitch Challenge',
-  description: 'Submit your best pitch and compete with others for the top spot!',
-  prize: '$500 Prize',
-  deadline: formatTimestamp(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()),
-  status: 'Open for Submissions'
-};
-
-const mockLeaders = Array.from({ length: 10 }, (_, index) => ({
-  name: `Leader ${index + 1}`,
-  submissionName: `Submission ${index + 1}`,
-  points: Math.floor(Math.random() * 1000),
-  thumbnail: "https://via.placeholder.com/150",
-  rank: index + 1,
-}));
-
-const mockPitch = {
-  id: 'test-pitch-1',
-  title: 'Sample Pitch',
-  description: 'This is a test pitch to debug rendering issues.',
-  playbackId: 'YYtQ34SRyksieH026qohfbOhBNd02LQAK3Fgt8wk5J8tM',
-  score: 85,
-  metrics: {
-    clarity: 80,
-    engagement: 75,
-    pacing: 78,
-    structure: 82,
-  },
-  aiCoachSummary: 'Your pitch has a strong foundation but could use better pacing.',
-  likes: 10,
-  comments: [],
-  transcript: 'This is a sample transcript.',
-  timestamp: formatTimestamp(new Date().toISOString()),
-  history: [],
-  feedback: [
-    {
-      userId: 'user1',
-      author: 'Coach Harper',
-      role: 'AI Coach',
-      text: 'Consider improving your pitch pacing for better engagement.',
-      timestamp: formatTimestamp(new Date().toISOString()),
-    }
-  ],
-};
-
-const MetricBox = ({ label, value }: { label: string; value: number }) => (
-  <Grid item xs={3} sx={{ textAlign: 'center' }}>
-    <Typography variant="h4" color="primary" sx={{ mb: 0.5 }}>{value}%</Typography>
-    <Typography variant="body2" color="text.secondary">{label}</Typography>
-  </Grid>
-);
-
-function FeedView() {
-  const [expanded, setExpanded] = useState(false);
-  const [feedbackExpanded, setFeedbackExpanded] = useState(false);
-
-  return (
-    
-    <Container maxWidth="xl" sx={{ pt: 8, pb: 36, paddingBottom: 'calc(64px + 2.5rem)' }}>
-      
-      <Card sx={{ mb: 4 }}>
-        <CardHeader title={mockPitch.title} subheader={mockPitch.description} />
-        <CardContent>
-          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 2 }}>
-            <Star size={18} color="gold" />
-            <Typography variant="body2">{mockPitch.score}% Score</Typography>
-            <ThumbsUp size={18} color="blue" />
-            <Typography variant="body2">{mockPitch.likes} Likes</Typography>
-            <Clock size={18} color="gray" />
-            <Typography variant="body2">{mockPitch.timestamp}</Typography>
-          </Box>
-          <Box sx={{ mb: 3, borderRadius: 1, overflow: 'hidden' }}>
-            <MuxPlayer playbackId={mockPitch.playbackId} metadata={{ video_title: mockPitch.title }} streamType="on-demand" />
-          </Box>
-          <Box onClick={() => setExpanded(!expanded)} sx={{ cursor: 'pointer', mb: 2 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <BarChart2 size={20} />
-              <Typography variant="h6">Pitch Summary</Typography>
-              <IconButton>{expanded ? <ChevronDown /> : <ChevronRight />}</IconButton>
-            </Box>
-            {!expanded && (
-              <Grid container spacing={3} sx={{ mt: 2 }}>
-                <MetricBox label="Clarity" value={mockPitch.metrics.clarity} />
-                <MetricBox label="Engagement" value={mockPitch.metrics.engagement} />
-                <MetricBox label="Pacing" value={mockPitch.metrics.pacing} />
-                <MetricBox label="Structure" value={mockPitch.metrics.structure} />
-              </Grid>
-            )}
-          </Box>
-          <Collapse in={expanded}>
-            <Box sx={{ p: 2 }}>
-              <Typography variant="subtitle1" gutterBottom>AI Coach Summary</Typography>
-              <Typography paragraph>{mockPitch.aiCoachSummary}</Typography>
-              <TranscriptSection transcript={mockPitch.transcript} />
-            </Box>
-          </Collapse>
-          <Box onClick={() => setFeedbackExpanded(!feedbackExpanded)} sx={{ cursor: 'pointer', mt: 2 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <MessageSquare size={20} />
-              <Typography variant="h6">Feedback & Comments</Typography>
-              <IconButton>{feedbackExpanded ? <ChevronDown /> : <ChevronRight />}</IconButton>
-            </Box>
-          </Box>
-          <Collapse in={feedbackExpanded}>
-            <Box sx={{ p: 2 }}>
-              {mockPitch.feedback.length > 0 ? (
-                mockPitch.feedback.map((comment, index) => (
-                  <Typography key={index} variant="body2" color="text.secondary">{comment.text}</Typography>
-                ))
-              ) : (
-                <Typography variant="body2" color="text.secondary">No feedback yet.</Typography>
-              )}
-              <ChatInput onSubmit={(text: string) => console.log('New comment:', text)} placeholder="Add a comment..." />
-            </Box>
-          </Collapse>
-        </CardContent>
-      </Card>
-    </Container>
-  );
+interface PitchContainerProps {
+  title: string;
+  description: string;
+  videoUrl: string;
+  score: number;
+  likes: number;
+  lastModified: string;
+  comments: { id: number; author: string; role: string; text: string }[];
 }
 
-export default FeedView;
+const FeedView = () => {
+  const [pitchData, setPitchData] = useState<PitchContainerProps | null>(null);
+  const [loading, setLoading] = useState(true);
 
-// 🚀 Now includes collapsible sections, metrics, feedback, and transcript handling.
+  useEffect(() => {
+    // Simulate fetching pitch data (replace with actual API call if needed)
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const data = {
+          title: "RadiantHue - Initial Pitch",
+          description: "Sustainable smart lighting with AI-driven efficiency.",
+          videoUrl: "sampleVideo123", // Replace with actual playbackId if needed
+          score: 70,
+          likes: 2,
+          lastModified: "Jan 1 • 2025, 2:00 AM",
+          comments: [
+            { id: 1, author: "Jane Doe", role: "Investor", text: "Great pitch! Very clear messaging." },
+            { id: 2, author: "John Smith", role: "Mentor", text: "Consider engaging the audience with a question." },
+          ],
+        };
+        setPitchData(data);
+      } catch (error) {
+        console.error("Error fetching pitch data:", error);
+      }
+      setLoading(false);
+    };
+
+    fetchData();
+  }, []);
+
+  return (
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 2, padding: 2 }}>
+      <Competition />
+      {loading ? <CircularProgress sx={{ alignSelf: "center" }} /> : pitchData && <PitchContainer {...pitchData} />}
+    </Box>
+  );
+};
+
+export default FeedView;
