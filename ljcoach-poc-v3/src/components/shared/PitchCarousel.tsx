@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Box, IconButton, Typography, Button, TextField, Dialog, DialogActions, DialogContent, Slide, Fade } from "@mui/material";
-import { ArrowBackIos, ArrowForwardIos, Star, StarBorder, AddCircleOutline, Edit, Delete, VideoCall } from "@mui/icons-material";
+import { Box, IconButton, Typography, Button, Slide, Fade } from "@mui/material";
+import { ArrowBackIos, ArrowForwardIos, Star, StarBorder, AddCircleOutline, Delete } from "@mui/icons-material";
 import PitchContainer from "./PitchContainer";
 
 interface PitchVersion {
@@ -34,8 +34,8 @@ const PitchCarousel: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [slideDirection, setSlideDirection] = useState<"left" | "right">("left");
   const [isAnimating, setIsAnimating] = useState(false);
-  const [openVideoDialog, setOpenVideoDialog] = useState(false);
-  const [newVideoUrl, setNewVideoUrl] = useState("");
+ // const [openVideoDialog, setOpenVideoDialog] = useState(false);
+ // const [newVideoUrl, setNewVideoUrl] = useState("");
 
   const handleNavigation = (direction: "left" | "right") => {
     if (isAnimating) return;
