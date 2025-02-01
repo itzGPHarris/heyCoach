@@ -3,8 +3,6 @@ import { Box, Card, CardHeader, CardContent, Typography, IconButton, Collapse, B
 import { ExpandMore, Comment, ThumbUp, CalendarToday, Star, BarChart } from "@mui/icons-material";
 import MuxPlayer from "@mux/mux-player-react";
 import { styled } from "@mui/material/styles";
-import PitchAIAnalysis from "./PitchAIAnalysis"; // Import the AI analysis component
-
 
 interface CommentData {
   id: number;
@@ -117,13 +115,7 @@ const PitchContainer: React.FC<PitchContainerProps> = ({ title, description, vid
       <Box sx={{ px: 2, pb: 1 }}>
         <MuxPlayer streamType="on-demand" playbackId={videoUrl} style={{ width: "100%", borderRadius: "12px" }} />
       </Box>
-      
 
-<Collapse in={summaryExpanded} timeout="auto" unmountOnExit>
-  <CardContent>
-    <PitchAIAnalysis />
-  </CardContent>
-</Collapse>
       <Box sx={{ p: 2, backgroundColor: "#fff" }}>
         <Typography variant="h6">AI Coach Summary</Typography>
         <Typography variant="body2" color="textSecondary">
@@ -153,13 +145,10 @@ const PitchContainer: React.FC<PitchContainerProps> = ({ title, description, vid
 
 
       <ExpandableContainer onClick={handleSummaryExpand}>
-  <Typography variant="subtitle1" sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-    <BarChart fontSize="small" />Analysis & Transcript
-  </Typography>
-  <ExpandMoreIcon sx={{ transform: summaryExpanded ? "rotate(180deg)" : "rotate(0deg)" }}>
-    <ExpandMore />
-  </ExpandMoreIcon>
-</ExpandableContainer>
+        <Typography variant="subtitle1"><BarChart fontSize="small" /> Detailed Analysis & Transcript</Typography>
+        <ExpandMoreIcon sx={{ transform: summaryExpanded ? "rotate(180deg)" : "rotate(0deg)" }}><ExpandMore /></ExpandMoreIcon>
+      </ExpandableContainer>
+
       <Collapse in={summaryExpanded} timeout="auto" unmountOnExit>
         <CardContent>
           <Typography variant="h6">AI Coach Detailed Analysis</Typography>
