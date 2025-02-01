@@ -13,7 +13,7 @@ interface CommentData {
 }
 
 interface PitchContainerProps {
-  pitchId: number; // ✅ Ensures `pitchId` is defined
+  pitchId: number;
   title: string;
   description: string;
   videoUrl: string;
@@ -21,43 +21,43 @@ interface PitchContainerProps {
   likes: number;
   lastModified: string;
   comments: CommentData[];
-  onUpdateComments: (newComments: CommentData[]) => void;
+  onUpdateComments: (newComments: CommentData[]) => void; // ✅ Ensure this exists
+
 }
 
 const PitchContainer: React.FC<PitchContainerProps> = ({
   pitchId,
   title,
-  description,
   videoUrl,
   score,
   likes,
   lastModified,
-  comments,
-  onUpdateComments
+  comments
 }) => {
-  const [manualOrientation, setManualOrientation] = useState<"auto" | "portrait" | "landscape">("auto");
+  const [localComments, setLocalComments] = useState<CommentData[]>(comments);
+  const [manualOrientation, setManualOrientation] = useState<"auto" | "portrait" | "landscape">("auto"); // ✅ Added
 
-  const handleSwitchChange = () => {
+  const handleUpdateComments = (newComments: CommentData[]) => {
+    setLocalComments(newComments);
+  };
+
+  const handleToggleOrientation = () => {
     setManualOrientation(manualOrientation === "auto" ? "portrait" : "auto");
   };
 
   return (
     <Card sx={{ width: "100%", mb: 2 }}>
-      <PitchHeader
+      <PitchHeader 
         title={title}
         score={score}
         likes={likes}
         lastModified={lastModified}
-        manualOrientation={manualOrientation}
-        onToggleOrientation={handleSwitchChange}
+        manualOrientation={manualOrientation} // ✅ Pass manual orientation
+        onToggleOrientation={handleToggleOrientation} // ✅ Pass toggle function
       />
-
-      <PitchVideo videoUrl={videoUrl} manualOrientation={manualOrientation} />
-
+      <PitchVideo videoUrl={videoUrl} manualOrientation={manualOrientation} /> {/* ✅ Fixed */}
       <PitchAnalysis />
-
-      {/* ✅ Now correctly passing pitchId */}
-      <PitchComments pitchId={pitchId} comments={comments} onUpdateComments={onUpdateComments} />
+      <PitchComments pitchId={pitchId} comments={localComments} onUpdateComments={handleUpdateComments} />
     </Card>
   );
 };

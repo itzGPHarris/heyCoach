@@ -7,9 +7,10 @@ interface PitchHeaderProps {
   score: number;
   likes: number;
   lastModified: string;
-  manualOrientation: "auto" | "portrait" | "landscape";
-  onToggleOrientation: () => void;
+  manualOrientation: "auto" | "portrait" | "landscape"; // ✅ Required prop
+  onToggleOrientation: () => void; // ✅ Required prop
 }
+
 
 const PitchHeader: React.FC<PitchHeaderProps> = ({ title, score, likes, lastModified, manualOrientation, onToggleOrientation }) => {
   return (

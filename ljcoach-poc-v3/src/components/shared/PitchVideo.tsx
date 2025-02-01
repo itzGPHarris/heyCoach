@@ -4,7 +4,7 @@ import MuxPlayer from "@mux/mux-player-react";
 
 interface PitchVideoProps {
   videoUrl: string;
-  manualOrientation: "auto" | "portrait" | "landscape";
+  manualOrientation: "auto" | "portrait" | "landscape"; // ✅ Add this prop
 }
 
 const PitchVideo: React.FC<PitchVideoProps> = ({ videoUrl, manualOrientation }) => {

@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Box, Typography, Button, Collapse, CardContent, TextField, IconButton, Badge } from "@mui/material";
+import { Box, Typography, Button, Collapse, CardContent, IconButton, Badge } from "@mui/material";
 import { ExpandMore, Comment, ContentCopy } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
-import { fontWeight, padding } from "@mui/system";
 
 interface CommentData {
   id: number;
@@ -14,34 +13,32 @@ interface CommentData {
 interface PitchCommentsProps {
   pitchId: number;
   comments: CommentData[];
-  onUpdateComments: (newComments: CommentData[]) => void;
+  onUpdateComments?: (newComments: CommentData[]) => void; // ✅ Added to ensure updates
 }
 
-const ExpandMoreIcon = styled(IconButton)(({ theme }) => ({
-  transition: theme.transitions.create("transform", { duration: theme.transitions.duration.shortest }),
-}));
-
-const SmallBadge = styled(Badge)(({ theme }) => ({
+const SmallBadge = styled(Badge)({
   "& .MuiBadge-badge": {
-    fontSize: "0.6rem", // ✅ Reduce badge size by 80%
+    fontSize: "0.6rem",
     fontWeight: "bold",
     height: "14px",
     minWidth: "14px",
     padding: "10px 8px",
-    transform: "scale(0.9) translate(120%, -90%)", // ✅ Position near the upper-right of the title
-    backgroundColor: "#ee6600", // ✅ Use primary color for badge background
+    transform: "scale(0.9) translate(120%, -90%)",
+    backgroundColor: "#ee6600",
+    color: "#ffffff",
   },
-}));
+});
 
 const PitchComments: React.FC<PitchCommentsProps> = ({ pitchId, comments, onUpdateComments }) => {
   const [commentsExpanded, setCommentsExpanded] = useState(false);
   const [newCommentsCount, setNewCommentsCount] = useState(comments.length);
+  const [localComments, setLocalComments] = useState(comments);
   const [copied, setCopied] = useState(false);
   const sharableLink = `${window.location.origin}/feedback/${pitchId}`;
 
   useEffect(() => {
     if (commentsExpanded) {
-      setNewCommentsCount(0); // ✅ Reset badge count when comments are viewed
+      setNewCommentsCount(0);
     }
   }, [commentsExpanded]);
 
@@ -51,9 +48,24 @@ const PitchComments: React.FC<PitchCommentsProps> = ({ pitchId, comments, onUpda
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleAddComment = () => {
+    const newComment = {
+      id: Date.now(),
+      author: "New User",
+      role: "User",
+      text: "This is a test comment."
+    };
+
+    const updatedComments = [...localComments, newComment];
+    setLocalComments(updatedComments);
+
+    if (onUpdateComments) {
+      onUpdateComments(updatedComments); // ✅ Updates the parent component
+    }
+  };
+
   return (
     <Box sx={{ mt: 2, p: 2, borderTop: "1px solid #ddd" }}>
-      {/* Expandable Header with Small Notification Badge */}
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }} onClick={() => setCommentsExpanded(!commentsExpanded)}>
         <Box sx={{ position: "relative", display: "inline-flex", alignItems: "center" }}>
           <Comment fontSize="small" />
@@ -64,15 +76,13 @@ const PitchComments: React.FC<PitchCommentsProps> = ({ pitchId, comments, onUpda
             <SmallBadge badgeContent={newCommentsCount} color="primary" />
           )}
         </Box>
-        <ExpandMoreIcon sx={{ transform: commentsExpanded ? "rotate(180deg)" : "rotate(0deg)" }}>
+        <IconButton sx={{ transform: commentsExpanded ? "rotate(180deg)" : "rotate(0deg)" }}>
           <ExpandMore />
-        </ExpandMoreIcon>
+        </IconButton>
       </Box>
 
-      {/* Collapsible Comments Section */}
       <Collapse in={commentsExpanded} timeout="auto" unmountOnExit>
         <CardContent>
-          {/* ✅ Simplified "Copy Link" UI */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
             <IconButton onClick={copyToClipboard} size="small">
               <ContentCopy fontSize="small" />
@@ -86,15 +96,14 @@ const PitchComments: React.FC<PitchCommentsProps> = ({ pitchId, comments, onUpda
             </Typography>
           </Box>
 
-          {comments.length > 0 ? (
-            comments.map((comment) => (
+          {localComments.length > 0 ? (
+            localComments.map((comment) => (
               <Box key={comment.id} sx={{ p: 2, mb: 2, border: "1px solid #ddd", borderRadius: 2 }}>
                 <Typography variant="body2" sx={{ fontWeight: "bold" }}>
                   {comment.author} ({comment.role})
                 </Typography>
                 <Typography variant="body2">{comment.text}</Typography>
 
-                {/* ✅ Reactions & Reply Button */}
                 <Box sx={{ display: "flex", gap: 1, mt: 1, alignItems: "center" }}>
                   {["👍", "🔥", "😂"].map((emoji) => (
                     <Button
@@ -106,8 +115,8 @@ const PitchComments: React.FC<PitchCommentsProps> = ({ pitchId, comments, onUpda
                       {emoji}
                     </Button>
                   ))}
-                  <Button size="small" variant="text">
-                    Reply
+                  <Button size="small" variant="text" onClick={handleAddComment}>
+                    Add Test Comment
                   </Button>
                 </Box>
               </Box>
