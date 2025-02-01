@@ -3,7 +3,7 @@ import { Box, Card, CardContent, Typography, IconButton, Button, Collapse } from
 import { Close, EmojiEvents } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import MuxPlayer from "@mux/mux-player-react";
-import Leaderboard from "./Leaderboard"; // ✅ Import the new leaderboard component
+import Leaderboard from "./Leaderboard"; // ✅ Import the updated leaderboard component
 
 const CompetitionCard = styled(Card)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius * 2,
@@ -16,7 +16,7 @@ const CompetitionBanner = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  background: "linear-gradient(30deg,rgb(251, 0, 255) 0%,rgb(42, 20, 94) 100%)",
+  backgroundColor: theme.palette.primary.main,
   color: "#fff",
   padding: theme.spacing(2),
   borderRadius: theme.shape.borderRadius,
@@ -25,17 +25,40 @@ const CompetitionBanner = styled(Box)(({ theme }) => ({
 
 const Competition: React.FC = () => {
   const [expanded, setExpanded] = useState(false);
-  const [selectedSubmission, setSelectedSubmission] = useState(null);
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
 
-  // 🔹 Mock Leaderboard Data
+  // 🔹 Updated Mock Leaderboard Data
   const mockLeaders = [
-    { rank: 1, name: "Sarah Johnson", submissionName: "Sarah's Pitch", points: 98 },
-    { rank: 2, name: "Mark Lee", submissionName: "Mark's Pitch", points: 92 },
-    { rank: 3, name: "Alex Green", submissionName: "Alex's Pitch", points: 90 },
+    {
+      rank: 1,
+      name: "Sarah Johnson",
+      submissionName: "Sarah's Pitch",
+      points: 98,
+      submissionDetails: "A strong and concise pitch demonstrating clear business vision.",
+      videoId: "mux_video_id_1", // 🔹 Replace with real MUX ID
+      submissionLink: "https://example.com/submissions/sarah-johnson"
+    },
+    {
+      rank: 2,
+      name: "Mark Lee",
+      submissionName: "Mark's Pitch",
+      points: 92,
+      submissionDetails: "A persuasive pitch focusing on user engagement.",
+      videoId: "mux_video_id_2", // 🔹 Replace with real MUX ID
+      submissionLink: "https://example.com/submissions/mark-lee"
+    },
+    {
+      rank: 3,
+      name: "Alex Green",
+      submissionName: "Alex's Pitch",
+      points: 90,
+      submissionDetails: "A well-structured and visually engaging presentation.",
+      videoId: "mux_video_id_3", // 🔹 Replace with real MUX ID
+      submissionLink: "https://example.com/submissions/alex-green"
+    }
   ];
 
   return (
@@ -84,7 +107,7 @@ const Competition: React.FC = () => {
             </Box>
 
             {/* 🔹 Leaderboard Component (Now Under Hero Video) */}
-            <Leaderboard leaders={mockLeaders} onSelectSubmission={setSelectedSubmission} />
+            <Leaderboard leaders={mockLeaders} />
 
             {/* 🔹 Submit Button (Always Visible) */}
             <Button variant="contained" fullWidth sx={{ mt: 2 }}>
