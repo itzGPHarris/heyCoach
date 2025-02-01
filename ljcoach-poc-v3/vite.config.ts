@@ -7,5 +7,9 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 3029
+  },
+  base: './', // Adjusts relative paths for production
+  build: {
+    outDir: 'dist',
   }
 })
