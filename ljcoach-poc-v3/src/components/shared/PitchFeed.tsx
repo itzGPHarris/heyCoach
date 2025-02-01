@@ -55,6 +55,7 @@ const PitchFeed: React.FC = () => {
   const handleDeleteIdea = (id: number) => {
     setPitchIdeas(pitchIdeas.filter((idea) => idea.id !== id));
   };
+  console.log(`📦 [feed] Loaded:`); // Debug log
 
   return (
     <Box sx={{ width: "100%", maxWidth: "600px", margin: "auto", pt: 3 }}>

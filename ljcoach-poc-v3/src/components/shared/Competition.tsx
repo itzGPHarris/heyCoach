@@ -1,80 +1,99 @@
-import { useState } from "react";
-import { Box, Card, CardHeader, CardContent, Typography, Button, Collapse, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Avatar } from "@mui/material";
-import { Trophy, Clock } from "lucide-react";
-import SubmissionPreview from "./SubmissionPreview";
+import React, { useState } from "react";
+import { Box, Card, CardContent, Typography, IconButton, Button, Collapse } from "@mui/material";
+import { Close, EmojiEvents } from "@mui/icons-material";
+import { styled } from "@mui/material/styles";
+import MuxPlayer from "@mux/mux-player-react";
+import Leaderboard from "./Leaderboard"; // ✅ Import the new leaderboard component
 
-const mockCompetition = {
-  title: "Startup Pitch Challenge",
-  description: "Compete with the best startup founders!",
-  prize: "$10,000 Prize",
-  deadline: "March 15, 2025",
-  status: "Open for Submissions",
-};
+const CompetitionCard = styled(Card)(({ theme }) => ({
+  borderRadius: theme.shape.borderRadius * 2,
+  boxShadow: theme.shadows[2],
+  overflow: "hidden",
+  marginBottom: theme.spacing(2),
+}));
 
-const mockLeaders = [
-  { rank: 1, name: "Alice", submissionName: "GreenTech Pitch", points: 95, submissionContent: "A groundbreaking pitch on sustainable energy solutions." },
-  { rank: 2, name: "Bob", submissionName: "AI for Healthcare", points: 90, submissionContent: "An AI-driven solution for early disease detection." },
-  { rank: 3, name: "Charlie", submissionName: "FinTech Innovation", points: 85, submissionContent: "Revolutionizing financial transactions with blockchain." },
-];
+const CompetitionBanner = styled(Box)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  background: "linear-gradient(30deg,rgb(251, 0, 255) 0%,rgb(42, 20, 94) 100%)",
+  color: "#fff",
+  padding: theme.spacing(2),
+  borderRadius: theme.shape.borderRadius,
+  cursor: "pointer",
+}));
 
-interface Leader {
-  rank: number;
-  name: string;
-  submissionName: string;
-  points: number;
-  submissionContent: string;
-}
+const Competition: React.FC = () => {
+  const [expanded, setExpanded] = useState(false);
+  const [selectedSubmission, setSelectedSubmission] = useState(null);
 
-const Competition = () => {
-  const [isCompetitionExpanded, setIsCompetitionExpanded] = useState(false);
-  const [selectedSubmission, setSelectedSubmission] = useState<Leader | null>(null);
+  const handleExpandClick = () => {
+    setExpanded(!expanded);
+  };
+
+  // 🔹 Mock Leaderboard Data
+  const mockLeaders = [
+    { rank: 1, name: "Sarah Johnson", submissionName: "Sarah's Pitch", points: 98 },
+    { rank: 2, name: "Mark Lee", submissionName: "Mark's Pitch", points: 92 },
+    { rank: 3, name: "Alex Green", submissionName: "Alex's Pitch", points: 90 },
+  ];
 
   return (
-    <Card sx={{ mb: 4, borderLeft: "5px solid gold" }}>
-      <CardHeader title={mockCompetition.title} subheader={mockCompetition.description} />
-      <CardContent>
-        <Box sx={{ display: "flex", gap: 2, alignItems: "center", mb: 2 }}>
-          <Trophy size={24} color="gold" />
-          <Typography variant="body2">{mockCompetition.prize}</Typography>
-          <Clock size={18} color="gray" />
-          <Typography variant="body2">Deadline: {mockCompetition.deadline}</Typography>
-        </Box>
-        <Typography variant="body2" color="primary">{mockCompetition.status}</Typography>
-        <Box sx={{ mt: 2, display: "flex", justifyContent: "space-between" }}>
-          <Button variant="outlined" onClick={() => setIsCompetitionExpanded(!isCompetitionExpanded)}>
-            {isCompetitionExpanded ? "Hide Details" : "View Details"}
-          </Button>
-          <Button variant="contained" color="primary">Submit My Pitch</Button>
-        </Box>
-        <Collapse in={isCompetitionExpanded}>
-          <TableContainer component={Paper} sx={{ mt: 2 }}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Rank</TableCell>
-                  <TableCell>Profile</TableCell>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Submission</TableCell>
-                  <TableCell>Points</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {mockLeaders.map((leader, index) => (
-                  <TableRow key={index} style={{ cursor: "pointer" }} onClick={() => setSelectedSubmission(leader)}>
-                    <TableCell>{leader.rank}</TableCell>
-                    <TableCell><Avatar>{leader.name[0]}</Avatar></TableCell>
-                    <TableCell>{leader.name}</TableCell>
-                    <TableCell>{leader.submissionName}</TableCell>
-                    <TableCell>{leader.points}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Collapse>
-      </CardContent>
-      <SubmissionPreview open={!!selectedSubmission} submission={selectedSubmission} onClose={() => setSelectedSubmission(null)} />
-    </Card>
+    <>
+      {/* 🔹 Compact Banner View */}
+      {!expanded && (
+        <CompetitionBanner onClick={handleExpandClick}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <EmojiEvents fontSize="large" />
+            <Typography variant="h6" sx={{ fontWeight: "bold" }}>Current Competition: Best Elevator Pitch</Typography>
+          </Box>
+          <Button variant="contained" size="small">View Competition</Button>
+        </CompetitionBanner>
+      )}
+
+      {/* 🔹 Full Competition Card View */}
+      <Collapse in={expanded} timeout="auto" unmountOnExit>
+        <CompetitionCard>
+          <CardContent>
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
+              <Typography variant="h6" fontWeight="bold">Best Elevator Pitch</Typography>
+              <IconButton onClick={handleExpandClick}>
+                <Close />
+              </IconButton>
+            </Box>
+
+            {/* 🔹 Hero Video & Competition Details */}
+            <Box sx={{ mt: 3 }}>
+              <Typography variant="h6">Competition Overview</Typography>
+              <Typography variant="body2">
+                The Best Elevator Pitch competition challenges you to deliver the most engaging, clear, and concise pitch in under 60 seconds!
+              </Typography>
+
+              {/* 🔹 MUX Hero Video */}
+              <Box sx={{ mt: 2 }}>
+                <MuxPlayer
+                  streamType="on-demand"
+                  playbackId="YOUR_MUX_VIDEO_ID" // 🔹 Replace with real competition admin video
+                  style={{
+                    width: "100%",
+                    borderRadius: "8px",
+                    aspectRatio: "16 / 9",
+                  }}
+                />
+              </Box>
+            </Box>
+
+            {/* 🔹 Leaderboard Component (Now Under Hero Video) */}
+            <Leaderboard leaders={mockLeaders} onSelectSubmission={setSelectedSubmission} />
+
+            {/* 🔹 Submit Button (Always Visible) */}
+            <Button variant="contained" fullWidth sx={{ mt: 2 }}>
+              Submit My Pitch
+            </Button>
+          </CardContent>
+        </CompetitionCard>
+      </Collapse>
+    </>
   );
 };
 

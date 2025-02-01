@@ -1,130 +1,80 @@
-import { useState } from 'react';
-import { styled } from '@mui/material/styles';
-import { 
-  Card, CardContent, CardHeader, 
-  Collapse, Typography, Box,
-  Paper, IconButton, TextField, Button
-} from '@mui/material';
-import { ChevronRight, ChevronDown, BarChart2, MessageSquare, Clock, Star, ThumbsUp } from 'lucide-react';
-import MuxPlayer from '@mux/mux-player-react';
-import TranscriptSection from './TranscriptSection';
-import { PitchVersion } from '../../store/types';
+import React, { useState, useEffect } from "react";
+import { Box, Card, CardMedia, Typography, FormControlLabel, Switch } from "@mui/material";
 
-const formatTimestamp = (timestamp?: string) => {
-  if (!timestamp) return 'N/A';
-  const date = new Date(timestamp);
-  return new Intl.DateTimeFormat('en-US', {
-    timeZone: 'America/Los_Angeles',
-    hour: 'numeric',
-    minute: 'numeric',
-    hour12: true,
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric'
-  }).format(date).replace(',', ' •');
-};
+interface PitchCardProps {
+  title: string;
+  description: string;
+  videoUrl: string;
+}
 
-const CommentBox = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(2),
-  borderRadius: theme.shape.borderRadius,
-  border: `1px solid ${theme.palette.divider}`,
-  backgroundColor: theme.palette.background.default
-}));
+const PitchCard: React.FC<PitchCardProps> = ({ title, description, videoUrl }) => {
+  const [videoOrientation, setVideoOrientation] = useState<"portrait" | "landscape">("landscape");
+  const [manualOrientation, setManualOrientation] = useState<"auto" | "portrait" | "landscape">("auto");
 
-const InteractiveBox = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(2),
-  borderRadius: theme.shape.borderRadius,
-  border: `1px solid ${theme.palette.divider}`,
-  backgroundColor: theme.palette.background.default,
-  cursor: 'pointer',
-  transition: '0.3s',
-  '&:hover': {
-    backgroundColor: theme.palette.action.hover,
-  }
-}));
+  // 🔹 Log when a new PitchCard is created
+  useEffect(() => {
+    console.log(`🚀 [PitchCard] Loaded: ${title}`);
+  }, [title]);
 
-function PitchCard({ pitch }: { pitch?: PitchVersion }) {
-  const [expanded, setExpanded] = useState(false);
-  const [feedbackExpanded, setFeedbackExpanded] = useState(false);
-  const [comment, setComment] = useState('');
+  useEffect(() => {
+    if (!videoUrl || manualOrientation !== "auto") return;
 
-  if (!pitch) {
-    return <Typography variant="body2" color="error">No pitch data available.</Typography>;
-  }
+    const video = document.createElement("video");
+    video.src = videoUrl;
+    video.onloadedmetadata = () => {
+      const newOrientation = video.videoHeight > video.videoWidth ? "portrait" : "landscape";
+      setVideoOrientation(newOrientation);
+      console.log(`🎥 [PitchCard] Detected Orientation: ${newOrientation}`);
+    };
+  }, [videoUrl, manualOrientation]);
+
+  // Use manual override if selected, otherwise auto-detect
+  const effectiveOrientation = manualOrientation === "auto" ? videoOrientation : manualOrientation;
+
+  // 🔹 Log when the user changes the switch
+  const handleSwitchChange = () => {
+    const newMode = manualOrientation === "auto" ? "portrait" : "auto";
+    setManualOrientation(newMode);
+    console.log(`🔄 [PitchCard] Orientation Manually Set To: ${newMode}`);
+  };
+  console.log(`📦 [PitchContainer] Loaded: ${title}`); // Debug log
 
   return (
-    <Card sx={{ mb: 4 }}>
-      <CardHeader title={pitch.title || 'Untitled Pitch'} subheader={pitch.description || 'No description available'} />
-      <CardContent>
-        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 2 }}>
-          <Star size={18} color="gold" />
-          <Typography variant="body2">{pitch.score ?? 0}% Score</Typography>
-          <ThumbsUp size={18} color="blue" />
-          <Typography variant="body2">{pitch.likes ?? 0} Likes</Typography>
-          <Clock size={18} color="gray" />
-          <Typography variant="body2">{formatTimestamp(pitch.timestamp)}</Typography>
-        </Box>
-        <Box sx={{ mb: 3, borderRadius: 1, overflow: 'hidden' }}>
-          {pitch.playbackId ? (
-            <MuxPlayer playbackId={pitch.playbackId} metadata={{ video_title: pitch.title }} streamType="on-demand" />
-          ) : (
-            <Typography variant="body2" color="error">⚠ Playback ID missing.</Typography>
-          )}
-        </Box>
-        <InteractiveBox onClick={() => setExpanded(!expanded)} sx={{ mb: 2 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <BarChart2 size={20} />
-              <Typography variant="h6">Pitch Summary</Typography>
-            </Box>
-            <IconButton>{expanded ? <ChevronDown /> : <ChevronRight />}</IconButton>
-          </Box>
-        </InteractiveBox>
-        <Collapse in={expanded}>
-          <Box sx={{ p: 2 }}>
-            <Typography variant="subtitle1" gutterBottom>AI Coach Analysis</Typography>
-            <Typography paragraph>{pitch.aiCoachSummary || 'No AI feedback yet.'}</Typography>
-            <TranscriptSection transcript={pitch.transcript ?? ''} />
-          </Box>
-        </Collapse>
-        <InteractiveBox onClick={() => setFeedbackExpanded(!feedbackExpanded)} sx={{ mt: 2 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <MessageSquare size={20} />
-              <Typography variant="h6">Feedback & Comments</Typography>
-            </Box>
-            <IconButton>{feedbackExpanded ? <ChevronDown /> : <ChevronRight />}</IconButton>
-          </Box>
-        </InteractiveBox>
-        <Collapse in={feedbackExpanded}>
-          <Box sx={{ p: 2 }}>
-            {pitch.feedback?.length > 0 ? pitch.feedback.map((comment, index) => (
-              <CommentBox key={index} variant="outlined" sx={{ p: 2, mb: 1 }}>
-                <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>{comment.author}</Typography>
-                {comment.role && <Typography variant="caption" color="text.secondary">{comment.role}</Typography>}
-                <Typography variant="body2">{comment.text}</Typography>
-                <Typography variant="caption" color="text.secondary">{formatTimestamp(comment.timestamp)}</Typography>
-              </CommentBox>
-            )) : (
-              <Typography variant="body2" color="text.secondary">No feedback yet.</Typography>
-            )}
-            <Box sx={{ display: 'flex', mt: 2 }}>
-              <TextField
-                fullWidth
-                label="Reply to comment"
-                variant="outlined"
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-              />
-              <Button variant="contained" color="primary" sx={{ ml: 2 }} onClick={() => setComment('')}>
-                Reply
-              </Button>
-            </Box>
-          </Box>
-        </Collapse>
-      </CardContent>
+    <Card sx={{ maxWidth: "100%", position: "relative", mb: 2, overflow: "visible", p: 2 }}>
+      {/* Header: Title & Orientation Switch */}
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
+        <Typography variant="h6" fontWeight="bold">
+          {title}
+        </Typography>
+
+        {/* Orientation Switch */}
+        <FormControlLabel
+          control={<Switch checked={manualOrientation !== "auto"} onChange={handleSwitchChange} />}
+          label={manualOrientation === "auto" ? "Auto" : "Portrait Mode"}
+        />
+      </Box>
+
+      {/* Video Display */}
+      <CardMedia
+        component="video"
+        src={videoUrl}
+        controls
+        sx={{
+          width: "100%",
+          maxHeight: effectiveOrientation === "portrait" ? "80vh" : "auto",
+          objectFit: "cover",
+          aspectRatio: effectiveOrientation === "portrait" ? "9 / 16" : "16 / 9",
+        }}
+      />
+
+      {/* Overlay Text & Description */}
+      <Box sx={{ mt: 2 }}>
+        <Typography variant="body2" color="textSecondary">
+          {description}
+        </Typography>
+      </Box>
     </Card>
   );
-}
+};
 
 export default PitchCard;
