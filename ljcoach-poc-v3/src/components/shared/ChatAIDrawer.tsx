@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Box, IconButton, TextField, Typography, styled, InputAdornment } from "@mui/material";
-import { Mic, Video, Paperclip, ArrowUp, X } from "lucide-react";
+import { Mic, Video, Paperclip, ArrowUp } from "lucide-react";
 
 const ChatContainer = styled(Box)({
   position: "fixed",
@@ -32,7 +32,9 @@ function ChatAIFeed() {
   const [conversation, setConversation] = useState<{ question: string; response?: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const [mediaMode, setMediaMode] = useState<"audio" | "video">("audio");
+  const [recording, setRecording] = useState(false); // ✅ Track recording state
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const recordTimeout = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
@@ -58,6 +60,24 @@ function ChatAIFeed() {
     }
   };
 
+  /** ✅ Press & Hold Recording */
+  const handleMediaPress = () => {
+    recordTimeout.current = setTimeout(() => {
+      setRecording(true);
+      alert(`🎙️ Recording ${mediaMode} started...`);
+    }, 500); // ✅ Hold for 0.5s to start recording
+  };
+
+  const handleMediaRelease = () => {
+    if (recordTimeout.current) {
+      clearTimeout(recordTimeout.current);
+    }
+    if (recording) {
+      setRecording(false);
+      alert(`⏹️ ${mediaMode === "audio" ? "Audio" : "Video"} recording stopped.`);
+    }
+  };
+
   return (
     <ChatContainer>
       {isOpen && (
@@ -67,7 +87,7 @@ function ChatAIFeed() {
             bottom: 60,
             left: 0,
             right: 0,
-            backgroundColor: "#575757", // ✅ Lighter gray background
+            backgroundColor: "#575757",
             color: "white",
             padding: 2,
             borderRadius: "12px 12px 0 0",
@@ -80,9 +100,6 @@ function ChatAIFeed() {
           {/* Header */}
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
             <Typography variant="h6">Coach Chat</Typography>
-            <IconButton onClick={() => setIsOpen(false)}> {/* ✅ Fix Close Button */}
-              <X size={24} />
-            </IconButton>
           </Box>
 
           {/* Conversation Feed */}
@@ -96,17 +113,13 @@ function ChatAIFeed() {
                   color: "white",
                   maxWidth: "75%",
                   alignSelf: index % 2 === 0 ? "flex-start" : "flex-end",
-                  backgroundColor: index % 2 === 0 ? "#0090F2" : "#EDEDED", // ✅ AI Coach = Blue, User = Light Gray
+                  backgroundColor: index % 2 === 0 ? "#0090F2" : "#EDEDED",
                 }}
               >
                 <Typography variant="body1" sx={{ color: index % 2 === 0 ? "white" : "black" }}>
                   {entry.question}
                 </Typography>
-                {entry.response && (
-                  <Typography variant="body2" sx={{ color: "white" }}>
-                    {entry.response}
-                  </Typography>
-                )}
+                {entry.response && <Typography variant="body2">{entry.response}</Typography>}
               </Box>
             ))}
           </Box>
@@ -141,7 +154,14 @@ function ChatAIFeed() {
                     <ArrowUp size={20} />
                   </IconButton>
                 ) : (
-                  <IconButton disabled={loading} onClick={() => setMediaMode(mediaMode === "audio" ? "video" : "audio")}>
+                  <IconButton
+                    disabled={loading}
+                    onClick={() => setMediaMode(mediaMode === "audio" ? "video" : "audio")}
+                    onMouseDown={handleMediaPress} // ✅ Start recording on press
+                    onMouseUp={handleMediaRelease} // ✅ Stop recording on release
+                    onTouchStart={handleMediaPress} // ✅ Mobile support
+                    onTouchEnd={handleMediaRelease} // ✅ Mobile support
+                  >
                     {mediaMode === "audio" ? <Mic size={20} /> : <Video size={20} />}
                   </IconButton>
                 )}
