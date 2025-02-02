@@ -33,7 +33,13 @@ const initialPitchVersions: PitchVersion[] = [
     score: 70,
     likes: 2,
     lastModified: "Jan 1, 2025, 2:00 AM",
-    comments: []
+    comments: [
+      { id: 1, author: "Keeker", role: "Mentor", text: "Great pitch! Consider slowing down your intro." },
+      { id: 2, author: "Dewey Brown", role: "Investor", text: "I love the concept, but can you clarify the pricing model?" },
+      { id: 3, author: "Skippy", role: "Investor", text: "I love the concept, but can you clarify the pricing model?" },
+      { id: 4, author: "John Smith", role: "Investor", text: "I love the concept, but can you clarify the pricing model?" }
+
+    ]
   },
   {
     pitchId: 2,
@@ -44,7 +50,11 @@ const initialPitchVersions: PitchVersion[] = [
     score: 85,
     likes: 5,
     lastModified: "Jan 10, 2025, 11:00 AM",
-    comments: []
+    comments: [
+      { id: 1, author: "Jane Doe", role: "Mentor", text: "Great pitch! Consider slowing down your intro." },
+      { id: 2, author: "John Smith", role: "Investor", text: "I love the concept, but can you clarify the pricing model?" }
+
+    ]
   }
 ];
 
