@@ -40,10 +40,10 @@ const PitchCard: React.FC<PitchCardProps> = ({ title, description, videoUrl }) =
   console.log(`📦 [PitchContainer] Loaded: ${title}`); // Debug log
 
   return (
-    <Card sx={{ maxWidth: "100%", position: "relative", mb: 2, overflow: "visible", p: 2 }}>
+    <Card sx={{ maxWidth: "100%", position: "relative", mb: 2, overflow: "visible", p: 4, ml: 2, mr: 2 }}>
       {/* Header: Title & Orientation Switch */}
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
-        <Typography variant="h6" fontWeight="bold">
+        <Typography variant="h3" fontWeight="bold">
           {title}
         </Typography>
 

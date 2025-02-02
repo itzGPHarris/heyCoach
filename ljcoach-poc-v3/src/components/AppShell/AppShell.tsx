@@ -75,7 +75,7 @@ function AppShell() {
         <StyledAppBar position="fixed" elevation={0}>
           <HeaderToolbar>
             <Box sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }} >
-              <img src="../src/assets/logo.svg" alt="LongJump Logo" style={{ height: 32, marginRight: 8 }} />
+              <img src="./src/assets/longjumplogo-small.png" alt="LongJump Logo" style={{ height: 32, marginRight: 8 }} />
             </Box>
             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
               <IconButton onClick={() => setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'))}>

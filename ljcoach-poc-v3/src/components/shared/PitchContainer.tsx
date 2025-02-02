@@ -46,8 +46,8 @@ const PitchContainer: React.FC<PitchContainerProps> = ({
   };
 
   return (
-    <Card sx={{ width: "100%", mb: 2 }}>
-      <PitchHeader 
+<Card sx={{ width: "95%", maxWidth: "600px", margin: "0 auto", mb: 3, mt: 3, pl:2, pr:2, backgroundColor: "#ffffff", boxShadow: "0px 0px 0px 0px rgba(0,0,0,0.1)" }}>
+<PitchHeader 
         title={title}
         score={score}
         likes={likes}

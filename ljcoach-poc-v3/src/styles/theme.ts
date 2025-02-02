@@ -4,14 +4,15 @@ import { red } from '@mui/material/colors';
 const baseTheme: ThemeOptions = {
   typography: {
     fontFamily: "'Inter', sans-serif",
-    h1: { fontSize: '2.5rem', fontWeight: 600 },
-    h2: { fontSize: '2rem', fontWeight: 600 },
-    h3: { fontSize: '1.75rem', fontWeight: 600 },
+    h1: { fontSize: '2.5rem', fontWeight: 900 },
+    h2: { fontSize: '2rem', fontWeight: 900 },
+    h3: { fontSize: '1.75rem', fontWeight: 900 },
+    h4: { fontSize: '1rem', fontWeight: 900 },
     body1: { fontSize: '1rem', lineHeight: 1.6 },
     body2: { fontSize: '0.875rem', lineHeight: 1.5 },
   },
   shape: {
-    borderRadius: 8,
+    borderRadius: 24,
   },
   breakpoints: {
     values: {
@@ -51,8 +52,8 @@ const lightTheme: ThemeOptions = {
       styleOverrides: {
         root: {
           textTransform: 'none',
-          fontWeight: 600,
-          borderRadius: 8,
+          fontWeight: 900,
+          borderRadius: 16,
         },
       },
     },
@@ -60,7 +61,7 @@ const lightTheme: ThemeOptions = {
       styleOverrides: {
         root: {
           boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
-          borderRadius: 8,
+          borderRadius: 16,
         },
       },
     },
@@ -94,16 +95,16 @@ const darkTheme: ThemeOptions = {
       styleOverrides: {
         root: {
           textTransform: 'none',
-          fontWeight: 600,
-          borderRadius: 8,
+          fontWeight: 900,
+          borderRadius: 16,
         },
       },
     },
     MuiCard: {
       styleOverrides: {
         root: {
-          boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
-          borderRadius: 8,
+          boxShadow: '0px 0px 30px rgba(0, 0, 0, 0.1)',
+          borderRadius: 16,
         },
       },
     },

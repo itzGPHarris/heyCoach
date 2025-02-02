@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Box, IconButton, Typography } from "@mui/material";
-import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
+import { ArrowBackIos, ArrowForwardIos, Star, StarBorder } from "@mui/icons-material";
+import { styled } from "@mui/material/styles";
 import PitchContainer from "./PitchContainer";
 
 interface CommentData {
@@ -47,9 +48,23 @@ const initialPitchVersions: PitchVersion[] = [
   }
 ];
 
+const TransitionBox = styled(Box)({
+  position: "relative",
+  width: "100%",
+  overflow: "hidden",
+});
+
+const AnimatedSlide = styled(Box)(() => ({
+  transition: "transform 0.5s ease-in-out, opacity 0.5s ease-in-out",
+  width: "100%",
+  opacity: 1,
+}));
+
 const PitchCarousel: React.FC = () => {
   const [pitchVersions, setPitchVersions] = useState(initialPitchVersions);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [favoritePitchId, setFavoritePitchId] = useState<number | null>(null); 
+  const [animationStyle, setAnimationStyle] = useState({ transform: "translateX(0)", opacity: 1 });
 
   const updateComments = (pitchId: number, newComments: CommentData[]) => {
     setPitchVersions((prevVersions) =>
@@ -59,37 +74,63 @@ const PitchCarousel: React.FC = () => {
     );
   };
 
-  const handlePrevious = () => {
-    setCurrentIndex((prevIndex) => (prevIndex === 0 ? pitchVersions.length - 1 : prevIndex - 1));
+  const handleNavigation = (direction: "next" | "prev") => {
+    setAnimationStyle({ transform: direction === "next" ? "translateX(-100%)" : "translateX(100%)", opacity: 0 });
+
+    setTimeout(() => {
+      setCurrentIndex((prevIndex) =>
+        direction === "next"
+          ? (prevIndex + 1) % pitchVersions.length
+          : (prevIndex - 1 + pitchVersions.length) % pitchVersions.length
+      );
+      setAnimationStyle({ transform: "translateX(0)", opacity: 1 });
+    }, 300);
   };
 
-  const handleNext = () => {
-    setCurrentIndex((prevIndex) => (prevIndex === pitchVersions.length - 1 ? 0 : prevIndex + 1));
+  const toggleFavorite = (pitchId: number) => {
+    setFavoritePitchId((prevFavorite) => (prevFavorite === pitchId ? null : pitchId));
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
-      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", mb: 2 }}>
-        <IconButton onClick={handlePrevious}>
+    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" , backgroundColor: "#ededed"}}>  
+      {/* Navigation Arrows with Version Number and Favorite Star */}
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", mb: 2, pl: 2, pr: 2 }}>
+        <IconButton onClick={() => handleNavigation("prev")}>
           <ArrowBackIos />
         </IconButton>
-        <Typography variant="h6">Version {pitchVersions[currentIndex].id}</Typography>
-        <IconButton onClick={handleNext}>
+
+        {/* Star Icon for Favoriting */}
+        <IconButton onClick={() => toggleFavorite(pitchVersions[currentIndex].id)}>
+          {favoritePitchId === pitchVersions[currentIndex].id ? (
+            <Star sx={{ color: "#FFD700" }} /> // ✅ Highlighted favorite star
+          ) : (
+            <StarBorder />
+          )}
+        </IconButton>
+
+        <Typography variant="h4">{pitchVersions[currentIndex].title}</Typography>
+
+        <IconButton onClick={() => handleNavigation("next")}>
           <ArrowForwardIos />
         </IconButton>
       </Box>
 
-      <PitchContainer
-        pitchId={pitchVersions[currentIndex].id} // ✅ Ensures unique pitch ID is passed
-        title={pitchVersions[currentIndex].title}
-        description={pitchVersions[currentIndex].description}
-        videoUrl={pitchVersions[currentIndex].videoUrl}
-        score={pitchVersions[currentIndex].score}
-        likes={pitchVersions[currentIndex].likes}
-        lastModified={pitchVersions[currentIndex].lastModified}
-        comments={pitchVersions[currentIndex].comments || []}
-        onUpdateComments={(newComments) => updateComments(pitchVersions[currentIndex].id, newComments)}
-      />
+      {/* Transition Effect on PitchContainer */}
+      <TransitionBox sx={{ width: "100%", display: "flex", justifyContent: "center", backgroundColor: "#ededed", borderRadius: "10px" }}>
+        <AnimatedSlide sx={animationStyle}>
+          <PitchContainer
+            pitchId={pitchVersions[currentIndex].id}
+            title={pitchVersions[currentIndex].title}
+            description={pitchVersions[currentIndex].description}
+            videoUrl={pitchVersions[currentIndex].videoUrl}
+            score={pitchVersions[currentIndex].score}
+            likes={pitchVersions[currentIndex].likes}
+            lastModified={pitchVersions[currentIndex].lastModified}
+            comments={pitchVersions[currentIndex].comments || []}
+            onUpdateComments={(newComments) => updateComments(pitchVersions[currentIndex].id, newComments)}
+          />
+        </AnimatedSlide>
+      </TransitionBox>
     </Box>
   );
 };

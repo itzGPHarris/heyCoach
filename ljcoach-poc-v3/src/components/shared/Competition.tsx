@@ -18,6 +18,7 @@ const CompetitionBanner = styled(Box)(({ theme }) => ({
   justifyContent: "space-between",
   backgroundColor: theme.palette.primary.main,
   color: "#fff",
+  backgroundImage: "linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)",
   padding: theme.spacing(2),
   borderRadius: theme.shape.borderRadius,
   cursor: "pointer",
