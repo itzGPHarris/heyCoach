@@ -1,78 +1,91 @@
-import React, { useState, useEffect } from "react";
-import { Box, Card, CardMedia, Typography, FormControlLabel, Switch } from "@mui/material";
+import React, { useState } from "react";
+import { Box, Card, CardContent, Typography, Switch } from "@mui/material";
+import { ThumbUp, CalendarToday } from "@mui/icons-material";
+import MuxPlayer from "@mux/mux-player-react";
+import PitchAnalysis from "./PitchAnalysis";
+import PitchComments from "./PitchComments";
 
 interface PitchCardProps {
+  pitchId: number;
   title: string;
-  description: string;
   videoUrl: string;
+  score: number;
+  likes: number;
+  lastModified: string;
+  comments: { id: number; author: string; role: string; text: string }[];
 }
 
-const PitchCard: React.FC<PitchCardProps> = ({ title, description, videoUrl }) => {
-  const [videoOrientation, setVideoOrientation] = useState<"portrait" | "landscape">("landscape");
+const PitchCard: React.FC<PitchCardProps> = ({
+  pitchId,
+  title,
+  videoUrl,
+  score,
+  likes,
+  lastModified,
+  comments,
+}) => {
   const [manualOrientation, setManualOrientation] = useState<"auto" | "portrait" | "landscape">("auto");
 
-  // 🔹 Log when a new PitchCard is created
-  useEffect(() => {
-    console.log(`🚀 [PitchCard] Loaded: ${title}`);
-  }, [title]);
-
-  useEffect(() => {
-    if (!videoUrl || manualOrientation !== "auto") return;
-
-    const video = document.createElement("video");
-    video.src = videoUrl;
-    video.onloadedmetadata = () => {
-      const newOrientation = video.videoHeight > video.videoWidth ? "portrait" : "landscape";
-      setVideoOrientation(newOrientation);
-      console.log(`🎥 [PitchCard] Detected Orientation: ${newOrientation}`);
-    };
-  }, [videoUrl, manualOrientation]);
-
-  // Use manual override if selected, otherwise auto-detect
-  const effectiveOrientation = manualOrientation === "auto" ? videoOrientation : manualOrientation;
-
-  // 🔹 Log when the user changes the switch
-  const handleSwitchChange = () => {
-    const newMode = manualOrientation === "auto" ? "portrait" : "auto";
-    setManualOrientation(newMode);
-    console.log(`🔄 [PitchCard] Orientation Manually Set To: ${newMode}`);
+  const handleToggleOrientation = () => {
+    setManualOrientation(manualOrientation === "auto" ? "portrait" : "auto");
   };
-  console.log(`📦 [PitchContainer] Loaded: ${title}`); // Debug log
+  console.log("🚀 Rendering PitchCard with videoUrl:", videoUrl); // ✅ LOG ADDED
 
   return (
-    <Card sx={{ maxWidth: "100%", position: "relative", mb: 2, overflow: "visible", p: 4, ml: 2, mr: 2 }}>
-      {/* Header: Title & Orientation Switch */}
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
-        <Typography variant="h3" fontWeight="bold">
-          {title}
-        </Typography>
-
-        {/* Orientation Switch */}
-        <FormControlLabel
-          control={<Switch checked={manualOrientation !== "auto"} onChange={handleSwitchChange} />}
-          label={manualOrientation === "auto" ? "Auto" : "Portrait Mode"}
+    <Card sx={{ width: "100%", maxWidth: "600px", margin: "0 auto", mb: 2, p: 0, overflow: "hidden",backgroundColor: "#333" }}> 
+      {/* 🔹 Ensure MuxPlayer has no left/right padding */}
+      <Box
+        sx={{
+          width: "10%",
+          height: "auto",
+          overflow: "hidden",
+          padding: "0px", // ✅ Removes padding
+          margin: "0px", // ✅ Removes margins
+        }}
+      >
+        <MuxPlayer
+          streamType="on-demand"
+          playbackId={videoUrl}
+          style={{
+            width: "100%", // ✅ Ensure full width
+            height: "auto", // ✅ Maintain aspect ratio
+            display: "block", // ✅ Remove extra spacing
+            objectFit: "cover", // ✅ Cover the container
+            borderRadius: "12px", // ✅ Matches the design you tested
+          }}
         />
       </Box>
 
-      {/* Video Display */}
-      <CardMedia
-        component="video"
-        src={videoUrl}
-        controls
-        sx={{
-          width: "100%",
-          maxHeight: effectiveOrientation === "portrait" ? "80vh" : "auto",
-          objectFit: "cover",
-          aspectRatio: effectiveOrientation === "portrait" ? "9 / 16" : "16 / 9",
-        }}
-      />
+      {/* 🔹 Pitch Title, Stats, and Switch - Directly Under Video */}
+      <CardContent sx={{ paddingX: 2, paddingTop: 2, paddingBottom: 1 }}>
+        <Typography variant="h6" sx={{ fontWeight: "bold" }}>{title}</Typography>
 
-      {/* Overlay Text & Description */}
-      <Box sx={{ mt: 2 }}>
-        <Typography variant="body2" color="textSecondary">
-          {description}
-        </Typography>
-      </Box>
+        {/* Stats and Orientation Switch */}
+        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mt: 1 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Typography variant="body2" color="textSecondary">
+              <ThumbUp fontSize="small" /> {likes}
+            </Typography>
+            <Typography variant="body2" color="textSecondary">
+              <CalendarToday fontSize="small" /> {lastModified}
+            </Typography>
+            <Typography variant="body2" color="textSecondary">
+              Score: {score}
+            </Typography>
+          </Box>
+
+          {/* Orientation Switch */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Typography variant="body2">h</Typography>
+            <Switch checked={manualOrientation === "portrait"} onChange={handleToggleOrientation} />
+            <Typography variant="body2">v</Typography>
+          </Box>
+        </Box>
+      </CardContent>
+
+      {/* 🔹 Analysis & Comments Stay in the Same Location */}
+      <PitchAnalysis />
+      <PitchComments pitchId={pitchId} comments={comments} />
     </Card>
   );
 };

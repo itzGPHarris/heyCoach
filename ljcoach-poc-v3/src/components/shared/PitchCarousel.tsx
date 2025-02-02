@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Box, IconButton, Typography, Button } from "@mui/material";
 import { ArrowBackIos, ArrowForwardIos, Star, StarBorder, AddCircleOutline, RemoveCircleOutline } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
-import PitchContainer from "./PitchContainer";
+import PitchContainer from "./PitchContainer"; // ✅ Correctly using PitchContainer, NOT PitchCard
 
 interface CommentData {
   id: number;
@@ -31,7 +31,10 @@ const initialPitchVersions: PitchVersion[] = [
     score: 70,
     likes: 2,
     lastModified: "Jan 1, 2025, 2:00 AM",
-    comments: [],
+    comments: [
+      { id: 1, author: "Jane Doe", role: "Mentor", text: "Great pitch! Consider slowing down your intro." },
+      { id: 2, author: "John Smith", role: "Investor", text: "I love the concept, but can you clarify the pricing model?" }
+    ]
   },
   {
     id: 2,
@@ -41,8 +44,10 @@ const initialPitchVersions: PitchVersion[] = [
     score: 85,
     likes: 5,
     lastModified: "Jan 10, 2025, 11:00 AM",
-    comments: [],
-  },
+    comments: [
+      { id: 3, author: "Alice Brown", role: "Coach", text: "The energy was great! Maybe refine the closing." }
+    ]
+  }
 ];
 
 const TransitionBox = styled(Box)({
@@ -118,14 +123,14 @@ const PitchCarousel: React.FC = () => {
       comments: [],
     };
     setPitchVersions([...pitchVersions, newVersion]);
-    setCurrentIndex(pitchVersions.length); // Move to the new version
+    setCurrentIndex(pitchVersions.length);
   };
 
   const handleDeleteVersion = () => {
     if (pitchVersions.length > 1) {
       const updatedVersions = pitchVersions.filter((_, index) => index !== currentIndex);
       setPitchVersions(updatedVersions);
-      setCurrentIndex(0); // Reset to first version
+      setCurrentIndex(0);
     }
   };
 
@@ -137,7 +142,7 @@ const PitchCarousel: React.FC = () => {
           <ArrowBackIos />
         </IconButton>
 
-        <IconButton onClick={() => toggleFavorite(pitchVersions[currentIndex].id)} sx={{ ml: -1 }}>
+        <IconButton onClick={() => toggleFavorite(pitchVersions[currentIndex].id)} sx={{ mr: -4 }}>
           {favoritePitchId === pitchVersions[currentIndex].id ? (
             <Star sx={{ color: "#FFD700" }} />
           ) : (
@@ -145,7 +150,7 @@ const PitchCarousel: React.FC = () => {
           )}
         </IconButton>
 
-        <Typography variant="h6" sx={{ mx: 1 }}>{pitchVersions[currentIndex].title}</Typography>
+        <Typography variant="h4" sx={{ mx: 3 }}>{pitchVersions[currentIndex].title}</Typography>
 
         <IconButton onClick={() => handleNavigation("next")}>
           <ArrowForwardIos />

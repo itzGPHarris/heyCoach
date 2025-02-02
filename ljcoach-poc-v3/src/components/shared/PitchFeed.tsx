@@ -13,8 +13,8 @@ interface PitchIdea {
 
 const PitchFeed: React.FC = () => {
   const [pitchIdeas, setPitchIdeas] = useState<PitchIdea[]>([
-    { id: 1, title: "Startup Funding Pitch", description: "Pitch for potential investors.", videoUrl: "" },
-    { id: 2, title: "Product Demo Pitch", description: "Showcasing product features.", videoUrl: "" },
+    { id: 1, title: "RadientHue", description: "Pitch for potential investors.", videoUrl: "" },
+    { id: 2, title: "GoldenGlam", description: "Showcasing product features.", videoUrl: "" },
   ]);
 
   const handleAddIdea = (title: string, description: string, videoUrl: string) => {
@@ -59,7 +59,7 @@ const PitchFeed: React.FC = () => {
         <Card key={idea.id} sx={{ mb: 4, width: "100%", backgroundColor: "#ededed" }}>
           <CardContent>
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
-              <Typography variant="h6">{idea.title}</Typography>
+              <Typography variant="h2">{idea.title}</Typography>
               <IconButton onClick={() => handleDeleteIdea(idea.id)}>
                 <Delete />
               </IconButton>

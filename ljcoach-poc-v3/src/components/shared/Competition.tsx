@@ -10,6 +10,7 @@ const CompetitionCard = styled(Card)(({ theme }) => ({
   boxShadow: theme.shadows[2],
   overflow: "hidden",
   marginBottom: theme.spacing(2),
+  backgroundImage: "linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)",
 }));
 
 const CompetitionBanner = styled(Box)(({ theme }) => ({
@@ -79,7 +80,7 @@ const Competition: React.FC = () => {
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CompetitionCard>
           <CardContent>
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1}}>
               <Typography variant="h6" fontWeight="bold">Best Elevator Pitch</Typography>
               <IconButton onClick={handleExpandClick}>
                 <Close />

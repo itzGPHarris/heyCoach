@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Typography, Button, Collapse, CardContent, IconButton, Badge } from "@mui/material";
+import { Box, Typography, Button, Collapse, CardContent, IconButton, Badge, TextField } from "@mui/material";
 import { ExpandMore, Comment, ContentCopy } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 
@@ -13,7 +13,7 @@ interface CommentData {
 interface PitchCommentsProps {
   pitchId: number;
   comments: CommentData[];
-  onUpdateComments?: (newComments: CommentData[]) => void; // ✅ Added to ensure updates
+  onUpdateComments?: (newComments: CommentData[]) => void;
 }
 
 const SmallBadge = styled(Badge)({
@@ -34,6 +34,9 @@ const PitchComments: React.FC<PitchCommentsProps> = ({ pitchId, comments, onUpda
   const [newCommentsCount, setNewCommentsCount] = useState(comments.length);
   const [localComments, setLocalComments] = useState(comments);
   const [copied, setCopied] = useState(false);
+  const [replyingTo, setReplyingTo] = useState<number | null>(null);
+  const [replies, setReplies] = useState<{ [key: number]: string }>({});
+  const [reactions, setReactions] = useState<{ [key: number]: { emoji: string; count: number }[] }>({});
   const sharableLink = `${window.location.origin}/feedback/${pitchId}`;
 
   useEffect(() => {
@@ -48,24 +51,53 @@ const PitchComments: React.FC<PitchCommentsProps> = ({ pitchId, comments, onUpda
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleAddComment = () => {
-    const newComment = {
-      id: Date.now(),
-      author: "New User",
-      role: "User",
-      text: "This is a test comment."
-    };
+  const handleAddReaction = (commentId: number, emoji: string) => {
+    const updatedComments = localComments.map((comment) =>
+      comment.id === commentId
+        ? { ...comment, text: `${comment.text} ${emoji}` }
+        : comment
+    );
 
-    const updatedComments = [...localComments, newComment];
     setLocalComments(updatedComments);
 
     if (onUpdateComments) {
-      onUpdateComments(updatedComments); // ✅ Updates the parent component
+      onUpdateComments(updatedComments);
     }
+
+    setReactions((prev) => ({
+      ...prev,
+      [commentId]: prev[commentId]
+        ? [...prev[commentId], { emoji, count: 1 }]
+        : [{ emoji, count: 1 }],
+    }));
+  };
+
+  const handleReplyChange = (commentId: number, text: string) => {
+    setReplies((prev) => ({ ...prev, [commentId]: text }));
+  };
+
+  const handleReplySubmit = (commentId: number) => {
+    if (!replies[commentId]) return;
+
+    const updatedComments = localComments.map((comment) =>
+      comment.id === commentId
+        ? { ...comment, text: `${comment.text}\n\nReply: ${replies[commentId]}` }
+        : comment
+    );
+
+    setLocalComments(updatedComments);
+
+    if (onUpdateComments) {
+      onUpdateComments(updatedComments);
+    }
+
+    setReplies((prev) => ({ ...prev, [commentId]: "" }));
+    setReplyingTo(null);
   };
 
   return (
     <Box sx={{ mt: 2, p: 2, borderTop: "1px solid #ddd" }}>
+      {/* Expandable Header with Notification Badge */}
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }} onClick={() => setCommentsExpanded(!commentsExpanded)}>
         <Box sx={{ position: "relative", display: "inline-flex", alignItems: "center" }}>
           <Comment fontSize="small" />
@@ -83,6 +115,7 @@ const PitchComments: React.FC<PitchCommentsProps> = ({ pitchId, comments, onUpda
 
       <Collapse in={commentsExpanded} timeout="auto" unmountOnExit>
         <CardContent>
+          {/* Copy Feedback Link */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
             <IconButton onClick={copyToClipboard} size="small">
               <ContentCopy fontSize="small" />
@@ -96,6 +129,7 @@ const PitchComments: React.FC<PitchCommentsProps> = ({ pitchId, comments, onUpda
             </Typography>
           </Box>
 
+          {/* Display Comments */}
           {localComments.length > 0 ? (
             localComments.map((comment) => (
               <Box key={comment.id} sx={{ p: 2, mb: 2, border: "1px solid #ddd", borderRadius: 2 }}>
@@ -104,21 +138,39 @@ const PitchComments: React.FC<PitchCommentsProps> = ({ pitchId, comments, onUpda
                 </Typography>
                 <Typography variant="body2">{comment.text}</Typography>
 
+                {/* Reactions & Reply Button */}
                 <Box sx={{ display: "flex", gap: 1, mt: 1, alignItems: "center" }}>
                   {["👍", "🔥", "😂"].map((emoji) => (
                     <Button
                       key={emoji}
                       size="small"
                       variant="text"
-                      onClick={() => console.log(`Reacted with ${emoji} on comment ${comment.id}`)}
+                      onClick={() => handleAddReaction(comment.id, emoji)}
                     >
-                      {emoji}
+                      {emoji} {reactions[comment.id]?.find((r) => r.emoji === emoji)?.count || 0}
                     </Button>
                   ))}
-                  <Button size="small" variant="text" onClick={handleAddComment}>
-                    Add Test Comment
+                  <Button size="small" variant="text" onClick={() => setReplyingTo(comment.id)}>
+                    Reply
                   </Button>
                 </Box>
+
+                {/* Reply Input */}
+                {replyingTo === comment.id && (
+                  <Box sx={{ mt: 1 }}>
+                    <TextField
+                      label="Reply..."
+                      variant="outlined"
+                      size="small"
+                      fullWidth
+                      value={replies[comment.id] || ""}
+                      onChange={(e) => handleReplyChange(comment.id, e.target.value)}
+                    />
+                    <Button variant="contained" size="small" sx={{ mt: 1 }} onClick={() => handleReplySubmit(comment.id)}>
+                      Submit Reply
+                    </Button>
+                  </Box>
+                )}
               </Box>
             ))
           ) : (
