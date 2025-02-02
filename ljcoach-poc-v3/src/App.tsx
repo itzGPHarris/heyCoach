@@ -11,7 +11,7 @@ const App: React.FC = () => {
   useEffect(() => {
     const hideAddressBar = () => {
       if (window.scrollY === 0) {
-        window.scrollTo(0, 1); // ✅ Slight scroll hides the Safari address bar
+        window.scrollTo(0, 1); // ✅ Slight scroll hides the Safari address bar!
       }
     };
 
