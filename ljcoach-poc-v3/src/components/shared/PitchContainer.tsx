@@ -38,6 +38,8 @@ const PitchContainer: React.FC<PitchContainerProps> = ({
 
   const handleToggleOrientation = () => {
     setManualOrientation(manualOrientation === "auto" ? "portrait" : "auto");
+    console.log("🚀 Orientation toggled:", manualOrientation);
+
   };
 
   return (
@@ -45,18 +47,20 @@ const PitchContainer: React.FC<PitchContainerProps> = ({
       
       {/* 🔹 Full-Width Video with No Margins */}
       <Box sx={{ width: "100%", padding: "0px", margin: "0px", overflow: "hidden" }}>
-        <MuxPlayer
-          streamType="on-demand"
-          playbackId={videoUrl}
-          style={{
-            width: "100%",  // ✅ Ensure full width of the card
-            height: "auto",  // ✅ Maintain aspect ratio
-            display: "block", // ✅ Prevents extra spacing
-            objectFit: "cover", // ✅ Ensures full width coverage
-            padding: "0px", // ✅ Removes any padding
-            margin: "0px", // ✅ Removes any margins
-          }}
-        />
+      <MuxPlayer
+  key={manualOrientation} // ✅ Forces re-render when orientation changes
+  streamType="on-demand"
+  playbackId={videoUrl}
+  style={{
+    width: "100%",
+    height: manualOrientation === "portrait" ? "80vh" : "auto", // ✅ Dynamically adjust height
+    display: "block",
+    objectFit: "cover",
+    padding: "0px",
+    margin: "0px",
+    aspectRatio: manualOrientation === "portrait" ? "9 / 16" : "16 / 9", // ✅ Ensure correct aspect ratio
+  }}
+/>
       </Box>
 
       {/* 🔹 Pitch Title, Stats, and Orientation Switch */}
