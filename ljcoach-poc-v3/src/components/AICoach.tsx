@@ -55,7 +55,7 @@ const AICoach: React.FC = () => {
       setMessages(prevMessages => [...prevMessages, aiResponse]);
     }, 1000);
   };
-
+console.log('toggleAICoach')
   return (
     <Paper 
       elevation={4}

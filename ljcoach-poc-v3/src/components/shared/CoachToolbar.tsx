@@ -46,7 +46,7 @@ const CoachToolbar = ({ onSendMessage }: CoachToolbarProps) => {
       handleSend();
     }
   };
-
+console.log('CoachToolbar') 
   return (
     <ToolbarContainer elevation={3} sx={{ display: 'block !important' }}>
       <Box sx={{ maxWidth: 'xl', mx: 'auto' }}>
