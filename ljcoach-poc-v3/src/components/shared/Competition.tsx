@@ -40,7 +40,7 @@ const Competition: React.FC = () => {
       submissionName: "Sarah's Pitch",
       points: 98,
       submissionDetails: "A strong and concise pitch demonstrating clear business vision.",
-      videoId: "mux_video_id_1", // 🔹 Replace with real MUX ID
+      videoId: "ulXSeoy4rgSxgL02hqIlr58BZ66aiXqflANbiakPKLiM", // 🔹 Replace with real MUX ID
       submissionLink: "https://example.com/submissions/sarah-johnson"
     },
     {
@@ -49,7 +49,7 @@ const Competition: React.FC = () => {
       submissionName: "Mark's Pitch",
       points: 92,
       submissionDetails: "A persuasive pitch focusing on user engagement.",
-      videoId: "mux_video_id_2", // 🔹 Replace with real MUX ID
+      videoId: "PUkntYXmIaPE01X7QLd3q2RjFEv2omQ01se00vVbLHtXFI", // 🔹 Replace with real MUX ID
       submissionLink: "https://example.com/submissions/mark-lee"
     },
     {
@@ -58,7 +58,7 @@ const Competition: React.FC = () => {
       submissionName: "Alex's Pitch",
       points: 90,
       submissionDetails: "A well-structured and visually engaging presentation.",
-      videoId: "mux_video_id_3", // 🔹 Replace with real MUX ID
+      videoId: "YYtQ34SRyksieH026qohfbOhBNd02LQAK3Fgt8wk5J8tM", // 🔹 Replace with real MUX ID
       submissionLink: "https://example.com/submissions/alex-green"
     }
   ];
@@ -98,7 +98,7 @@ const Competition: React.FC = () => {
               <Box sx={{ mt: 2 }}>
                 <MuxPlayer
                   streamType="on-demand"
-                  playbackId="YOUR_MUX_VIDEO_ID" // 🔹 Replace with real competition admin video
+                  playbackId="ulXSeoy4rgSxgL02hqIlr58BZ66aiXqflANbiakPKLiM" // 🔹 Replace with real competition admin video
                   style={{
                     width: "100%",
                     borderRadius: "8px",
