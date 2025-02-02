@@ -4,7 +4,7 @@ import Competition from "./shared/Competition"; // ✅ Reintegrate Competition C
 
 const FeedView = () => {
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 2, padding: 2 }}>
+    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: "100vw", overflow: "hidden"  }}>
       <Competition /> {/* ✅ Competition Card appears at the top */}
       <PitchFeed />
     </Box>

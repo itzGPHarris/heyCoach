@@ -7,10 +7,13 @@ import Leaderboard from "./Leaderboard"; // ✅ Import the updated leaderboard c
 
 const CompetitionCard = styled(Card)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius * 2,
-  boxShadow: theme.shadows[2],
-  overflow: "hidden",
-  marginBottom: theme.spacing(2),
-  backgroundImage: "linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)",
+  width: "100%",
+  maxWidth: "600px", // ✅ Keeps it within a reasonable size
+  margin: "0 auto", // ✅ Prevents left-right overflow
+  [theme.breakpoints.down("sm")]: {
+    width: "100%", // ✅ Forces it to fit on smaller screens
+    maxWidth: "100%",
+  },  backgroundImage: "linear-gradient(45deg, #2196F3 10%, #21CBF3 50%)",
 }));
 
 const CompetitionBanner = styled(Box)(({ theme }) => ({
