@@ -34,7 +34,7 @@ function ChatAIFeed() {
   const [mediaMode, setMediaMode] = useState<"audio" | "video">("audio");
   const [recording, setRecording] = useState(false); // ✅ Track recording state
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const recordTimeout = useRef<NodeJS.Timeout | null>(null);
+  const recordTimeout = useRef<ReturnType<typeof setTimeout> | null>(null); // ✅ Fix TypeScript issue
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
