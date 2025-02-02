@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Box, IconButton, Typography } from "@mui/material";
-import { ArrowBackIos, ArrowForwardIos, Star, StarBorder } from "@mui/icons-material";
+import { Box, IconButton, Typography, Button } from "@mui/material";
+import { ArrowBackIos, ArrowForwardIos, Star, StarBorder, AddCircleOutline, RemoveCircleOutline } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import PitchContainer from "./PitchContainer";
 
@@ -31,10 +31,7 @@ const initialPitchVersions: PitchVersion[] = [
     score: 70,
     likes: 2,
     lastModified: "Jan 1, 2025, 2:00 AM",
-    comments: [
-      { id: 1, author: "Jane Doe", role: "Mentor", text: "Great pitch! Consider slowing down your intro." },
-      { id: 2, author: "John Smith", role: "Investor", text: "I love the concept, but can you clarify the pricing model?" }
-    ]
+    comments: [],
   },
   {
     id: 2,
@@ -44,8 +41,8 @@ const initialPitchVersions: PitchVersion[] = [
     score: 85,
     likes: 5,
     lastModified: "Jan 10, 2025, 11:00 AM",
-    comments: []
-  }
+    comments: [],
+  },
 ];
 
 const TransitionBox = styled(Box)({
@@ -60,10 +57,28 @@ const AnimatedSlide = styled(Box)(() => ({
   opacity: 1,
 }));
 
+const DotIndicator = styled(Box)({
+  display: "flex",
+  justifyContent: "center",
+  marginTop: "10px",
+});
+
+const Dot = styled("span")(({ theme }) => ({
+  width: "8px",
+  height: "8px",
+  margin: "0 5px",
+  borderRadius: "50%",
+  backgroundColor: theme.palette.grey[400],
+  transition: "background-color 0.3s",
+  "&.active": {
+    backgroundColor: theme.palette.primary.main,
+  },
+}));
+
 const PitchCarousel: React.FC = () => {
-  const [pitchVersions, setPitchVersions] = useState(initialPitchVersions);
+  const [pitchVersions, setPitchVersions] = useState<PitchVersion[]>(initialPitchVersions);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [favoritePitchId, setFavoritePitchId] = useState<number | null>(null); 
+  const [favoritePitchId, setFavoritePitchId] = useState<number | null>(null);
   const [animationStyle, setAnimationStyle] = useState({ transform: "translateX(0)", opacity: 1 });
 
   const updateComments = (pitchId: number, newComments: CommentData[]) => {
@@ -91,32 +106,54 @@ const PitchCarousel: React.FC = () => {
     setFavoritePitchId((prevFavorite) => (prevFavorite === pitchId ? null : pitchId));
   };
 
+  const handleAddVersion = () => {
+    const newVersion: PitchVersion = {
+      id: pitchVersions.length + 1,
+      title: `Pitch Version ${pitchVersions.length + 1}`,
+      description: "New pitch version description.",
+      videoUrl: "",
+      score: 0,
+      likes: 0,
+      lastModified: new Date().toLocaleDateString(),
+      comments: [],
+    };
+    setPitchVersions([...pitchVersions, newVersion]);
+    setCurrentIndex(pitchVersions.length); // Move to the new version
+  };
+
+  const handleDeleteVersion = () => {
+    if (pitchVersions.length > 1) {
+      const updatedVersions = pitchVersions.filter((_, index) => index !== currentIndex);
+      setPitchVersions(updatedVersions);
+      setCurrentIndex(0); // Reset to first version
+    }
+  };
+
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" , backgroundColor: "#ededed"}}>  
-      {/* Navigation Arrows with Version Number and Favorite Star */}
-      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", mb: 2, pl: 2, pr: 2 }}>
+    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
+      {/* Navigation & Controls */}
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1, width: "100%", mb: 2 }}>
         <IconButton onClick={() => handleNavigation("prev")}>
           <ArrowBackIos />
         </IconButton>
 
-        {/* Star Icon for Favoriting */}
-        <IconButton onClick={() => toggleFavorite(pitchVersions[currentIndex].id)}>
+        <IconButton onClick={() => toggleFavorite(pitchVersions[currentIndex].id)} sx={{ ml: -1 }}>
           {favoritePitchId === pitchVersions[currentIndex].id ? (
-            <Star sx={{ color: "#FFD700" }} /> // ✅ Highlighted favorite star
+            <Star sx={{ color: "#FFD700" }} />
           ) : (
             <StarBorder />
           )}
         </IconButton>
 
-        <Typography variant="h4">{pitchVersions[currentIndex].title}</Typography>
+        <Typography variant="h6" sx={{ mx: 1 }}>{pitchVersions[currentIndex].title}</Typography>
 
         <IconButton onClick={() => handleNavigation("next")}>
           <ArrowForwardIos />
         </IconButton>
       </Box>
 
-      {/* Transition Effect on PitchContainer */}
-      <TransitionBox sx={{ width: "100%", display: "flex", justifyContent: "center", backgroundColor: "#ededed", borderRadius: "10px" }}>
+      {/* PitchContainer with Animation */}
+      <TransitionBox>
         <AnimatedSlide sx={animationStyle}>
           <PitchContainer
             pitchId={pitchVersions[currentIndex].id}
@@ -131,6 +168,23 @@ const PitchCarousel: React.FC = () => {
           />
         </AnimatedSlide>
       </TransitionBox>
+
+      {/* Dot Indicators */}
+      <DotIndicator>
+        {pitchVersions.map((_, index) => (
+          <Dot key={index} className={index === currentIndex ? "active" : ""} />
+        ))}
+      </DotIndicator>
+
+      {/* Add / Delete Version Controls */}
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+        <Button variant="contained" startIcon={<AddCircleOutline />} onClick={handleAddVersion} sx={{ mr: 1 }}>
+          Add Version
+        </Button>
+        <Button variant="contained" color="error" startIcon={<RemoveCircleOutline />} onClick={handleDeleteVersion} disabled={pitchVersions.length <= 1}>
+          Delete Version
+        </Button>
+      </Box>
     </Box>
   );
 };

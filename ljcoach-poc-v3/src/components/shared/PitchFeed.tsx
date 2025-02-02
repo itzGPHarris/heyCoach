@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import { Box, Typography, IconButton, Card, CardContent } from "@mui/material";
+import { Box, Typography, Card, CardContent, IconButton } from "@mui/material";
 import { Delete } from "@mui/icons-material";
-
+import NewIdeaForm from "./NewIdeaForm";
 import PitchCarousel from "./PitchCarousel";
-import NewIdeaForm from "./NewIdeaForm"; // ✅ Import the new component
 
 interface PitchIdea {
   id: number;
@@ -33,29 +32,42 @@ const PitchFeed: React.FC = () => {
   };
 
   return (
-    <Box sx={{ width: "100%", maxWidth: "600px", margin: "auto", pt: 3, pl: 1, pr: 1  }}>
-      {/* Header & New Idea Button */}
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "flex-start",
+        width: "100%",
+        maxWidth: "600px",
+        padding: 1,
+        pb: 3,
+        mb: 5
+      }}
+    >
+      {/* Competition Section 
+      <Competition /> */}
+
+      {/* Header & New Idea Form */}
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 4, width: "95%" }}>
         <Typography variant="h5">Your Pitch Ideas</Typography>
-        <NewIdeaForm onAddIdea={handleAddIdea} /> {/* ✅ Uses the new component */}
+        <NewIdeaForm onAddIdea={handleAddIdea} />
       </Box>
 
-      {/* Scrollable Pitch Feed */}
-      <Box sx={{ overflowY: "auto", maxHeight: "80vh", padding: 1, justifyContent: "center" }}>
-        {pitchIdeas.map((idea) => (
-          <Card key={idea.id} sx={{ mb: 2, width:"98%",  backgroundColor: "#ededed"}}>
-            <CardContent>
-              <Box sx={{ width:"98%", display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3, pr: 1, pl: 1, borderRadius: "10px" }}>
-                <Typography variant="h2">{idea.title}</Typography>
-                <IconButton onClick={() => handleDeleteIdea(idea.id)}>
-                  <Delete />
-                </IconButton>
-              </Box>
-              <PitchCarousel />
-            </CardContent>
-          </Card>
-        ))}
-      </Box>
+      {/* Pitch Ideas */}
+      {pitchIdeas.map((idea) => (
+        <Card key={idea.id} sx={{ mb: 4, width: "100%", backgroundColor: "#ededed" }}>
+          <CardContent>
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
+              <Typography variant="h6">{idea.title}</Typography>
+              <IconButton onClick={() => handleDeleteIdea(idea.id)}>
+                <Delete />
+              </IconButton>
+            </Box>
+            <PitchCarousel />
+          </CardContent>
+        </Card>
+      ))}
     </Box>
   );
 };

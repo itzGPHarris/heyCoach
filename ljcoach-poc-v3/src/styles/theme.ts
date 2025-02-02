@@ -12,7 +12,7 @@ const baseTheme: ThemeOptions = {
     body2: { fontSize: '0.875rem', lineHeight: 1.5 },
   },
   shape: {
-    borderRadius: 24,
+    borderRadius: 1,
   },
   breakpoints: {
     values: {
@@ -53,7 +53,7 @@ const lightTheme: ThemeOptions = {
         root: {
           textTransform: 'none',
           fontWeight: 900,
-          borderRadius: 16,
+          borderRadius: 2,
         },
       },
     },
@@ -61,7 +61,7 @@ const lightTheme: ThemeOptions = {
       styleOverrides: {
         root: {
           boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
-          borderRadius: 16,
+          borderRadius: 2,
         },
       },
     },
@@ -96,7 +96,7 @@ const darkTheme: ThemeOptions = {
         root: {
           textTransform: 'none',
           fontWeight: 900,
-          borderRadius: 16,
+          borderRadius: 2,
         },
       },
     },
@@ -104,7 +104,7 @@ const darkTheme: ThemeOptions = {
       styleOverrides: {
         root: {
           boxShadow: '0px 0px 30px rgba(0, 0, 0, 0.1)',
-          borderRadius: 16,
+          borderRadius: 2,
         },
       },
     },
