@@ -6,14 +6,14 @@ import MuxPlayer from "@mux/mux-player-react";
 import Leaderboard from "./Leaderboard"; // ✅ Import the updated leaderboard component
 
 const CompetitionCard = styled(Card)(({ theme }) => ({
-  borderRadius: theme.shape.borderRadius * 2,
+  borderRadius:  12,
   width: "100%",
   maxWidth: "600px", // ✅ Keeps it within a reasonable size
   margin: "0 auto", // ✅ Prevents left-right overflow
   [theme.breakpoints.down("sm")]: {
     width: "100%", // ✅ Forces it to fit on smaller screens
     maxWidth: "100%",
-  },  backgroundImage: "linear-gradient(45deg, #2196F3 10%, #21CBF3 50%)",
+  },  backgroundImage: "linear-gradient(45deg,rgb(240, 33, 243) 10%,rgba(255, 170, 0, 0.74) 50%)",
 }));
 
 const CompetitionBanner = styled(Box)(({ theme }) => ({
@@ -22,9 +22,9 @@ const CompetitionBanner = styled(Box)(({ theme }) => ({
   justifyContent: "space-between",
   backgroundColor: theme.palette.primary.main,
   color: "#fff",
-  backgroundImage: "linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)",
-  padding: theme.spacing(2),
-  borderRadius: theme.shape.borderRadius,
+  borderRadius:  12,
+backgroundImage: "linear-gradient(45deg,rgb(240, 33, 243) 10%,rgba(255, 170, 0, 0.74) 50%)",
+padding: theme.spacing(2),
   cursor: "pointer",
 }));
 

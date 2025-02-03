@@ -14,11 +14,11 @@ const ChatContainer = styled(Box)({
 });
 
 const ChatInputContainer = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.background.default,
-  padding: theme.spacing(1),
+  backgroundColor: "#0090f2",
+  padding: theme.spacing(2),
   borderTop: `1px solid ${theme.palette.divider}`,
   width: "100%",
-  position: "fixed",
+  position: "relative",
   bottom: 0,
   zIndex: 12,
   display: "flex",
@@ -109,9 +109,9 @@ function ChatAIFeed() {
                 key={index}
                 sx={{
                   p: 2,
-                  borderRadius: 2,
+                  borderRadius: 12,
                   color: "white",
-                  maxWidth: "75%",
+                  maxWidth: "95%",
                   alignSelf: index % 2 === 0 ? "flex-start" : "flex-end",
                   backgroundColor: index % 2 === 0 ? "#0090F2" : "#EDEDED",
                 }}
@@ -130,19 +130,21 @@ function ChatAIFeed() {
       <ChatInputContainer>
         {/* Attachment Icon */}
         <IconButton disabled={loading} component="label">
-          <Paperclip size={20} />
+          <Paperclip size={20} color="#fff" />
           <input type="file" hidden onChange={() => alert("📎 Document uploaded!")} />
         </IconButton>
 
         {/* Chat Input */}
         <TextField
           fullWidth
-          placeholder={loading ? "Waiting for response..." : "Hi Harper! What can I help you with?"}
+          placeholder={loading ? "Waiting for response..." : "Hello!  What can I help you with?"}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           disabled={loading}
           inputRef={inputRef}
           sx={{
+            borderRadius: 2,
+            backgroundColor: "#efefef",
             transition: "width 0.3s ease-in-out",
             width: "100%",
           }}

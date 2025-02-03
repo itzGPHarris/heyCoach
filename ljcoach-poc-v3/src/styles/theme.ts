@@ -30,9 +30,9 @@ const lightTheme: ThemeOptions = {
   palette: {
     mode: 'light',
     primary: {
-      main: '#4F46E5',
+      main: '#333333',
       light: '#818CF8',
-      dark: '#3730A3',
+      dark: '#666666',
     },
     secondary: {
       main: '#10B981',
