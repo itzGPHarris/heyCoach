@@ -1,11 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, Typography, Box, Switch } from "@mui/material";
-//import { CalendarToday } from "@mui/icons-material";
 import MuxPlayer from "@mux/mux-player-react";
 import PitchAnalysis from "./PitchAnalysis";
 import PitchComments from "./PitchComments";
 import LikeIcon from "/img/boosticon.svg"; 
-
 
 interface CommentData {
   id: number;
@@ -23,24 +21,33 @@ interface PitchContainerProps {
   likes: number;
   lastModified: string;
   comments: CommentData[];
-  onUpdateComments?: (newComments: CommentData[]) => void; // ✅ Added this prop
-
+  isPortrait?: boolean; // ✅ Receives detected orientation
+  onUpdateComments?: (newComments: CommentData[]) => void;
 }
 
 const PitchContainer: React.FC<PitchContainerProps> = ({
   pitchId,
+  title,
+  description,
   videoUrl,
   likes,
   lastModified,
-  comments
+  comments,
+  isPortrait = false, // ✅ Default to false (landscape)
 }) => {
-  const [manualOrientation, setManualOrientation] = useState<"auto" | "portrait" | "landscape">("auto");
+  const [manualOrientation, setManualOrientation] = useState<"auto" | "portrait" | "landscape">(isPortrait ? "portrait" : "auto");
+
+  useEffect(() => {
+    setManualOrientation(isPortrait ? "portrait" : "auto"); // ✅ Auto-set based on video upload
+    console.log("📩 Received `isPortrait` from NewIdeaForm:", isPortrait);
+
+  }, [isPortrait]);
 
   const handleToggleOrientation = () => {
     setManualOrientation(manualOrientation === "auto" ? "portrait" : "auto");
     console.log("🚀 Orientation toggled:", manualOrientation);
-
   };
+
   console.log("🚀 Received videoUrl:", videoUrl);
 
   return (
@@ -48,37 +55,51 @@ const PitchContainer: React.FC<PitchContainerProps> = ({
       
       {/* 🔹 Full-Width Video with No Margins */}
       <Box sx={{ width: "100%", padding: "0px", margin: "0px", overflow: "hidden" }}>
-      <MuxPlayer
-  key={manualOrientation} // ✅ Forces re-render when orientation changes
-  streamType="on-demand"
-  playbackId={videoUrl} // ✅ Now using the dynamic prop
-    style={{
-    width: "100%",
-    height: manualOrientation === "portrait" ? "80vh" : "auto", // ✅ Dynamically adjust height
-    display: "block",
-    objectFit: "cover",
-    padding: "0px",
-    margin: "0px",
-    aspectRatio: manualOrientation === "portrait" ? "9 / 16" : "16 / 9", // ✅ Ensure correct aspect ratio
-  }}
-/>
+        {videoUrl.startsWith("blob:") ? (
+          <video
+            src={videoUrl}
+            controls
+            width="100%"
+            style={{
+              borderRadius: "8px",
+              display: "block",
+              objectFit: "cover",
+              padding: "0px",
+              margin: "0px",
+              aspectRatio: manualOrientation === "portrait" ? "9 / 16" : "16 / 9",
+            }}
+          />
+        ) : (
+          <MuxPlayer
+            key={manualOrientation}
+            streamType="on-demand"
+            playbackId={videoUrl}
+            style={{
+              width: "100%",
+              height: manualOrientation === "portrait" ? "80vh" : "auto",
+              display: "block",
+              objectFit: "cover",
+              padding: "0px",
+              margin: "0px",
+              aspectRatio: manualOrientation === "portrait" ? "9 / 16" : "16 / 9",
+            }}
+          />
+        )}
       </Box>
 
       {/* 🔹 Pitch Title, Stats, and Orientation Switch */}
       <CardContent sx={{ paddingX: 2, paddingTop: 2, paddingBottom: 1 }}>
-       
+        <Typography variant="h6" sx={{ fontWeight: "bold" }}>{title}</Typography>
+        <Typography variant="body2" color="textSecondary">{description}</Typography>
 
         {/* Stats and Orientation Switch */}
         <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mt: 1 }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             <img src={LikeIcon} alt="Likes" width="18" height="18" />
             <Typography variant="body2" color="textSecondary">{likes}</Typography>
             <Typography variant="body2" color="textSecondary">
-             Updated: {lastModified}
+              Updated: {lastModified}
             </Typography>
-            {/*<Typography variant="body2" color="textSecondary">
-              Score: {score}
-            </Typography>*/}
           </Box>
 
           {/* Orientation Switch */}
@@ -88,10 +109,9 @@ const PitchContainer: React.FC<PitchContainerProps> = ({
             <Typography variant="body2">Portrait</Typography>
           </Box>
         </Box>
-        {/*<Typography variant="h6" sx={{ fontWeight: "bold" }}>{title}</Typography>*/}
       </CardContent>
 
-      {/* 🔹 Analysis & Comments Stay in the Same Location */}
+      {/* 🔹 Analysis & Transcript */}
       <PitchAnalysis />
       <PitchComments pitchId={pitchId} comments={comments} />
     </Card>

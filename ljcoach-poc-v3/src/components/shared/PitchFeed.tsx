@@ -1,92 +1,48 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Button,
-  Typography,
-  IconButton,
-  Card,
-  CardContent,
-  Menu,
-  MenuItem,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  TextField,
-} from "@mui/material";
+import { Box, Button, Typography, Card, CardContent, IconButton, Menu, MenuItem } from "@mui/material";
 import { AddCircleOutline, MoreVert, Delete, Archive, FileCopy } from "@mui/icons-material";
 import PitchCarousel from "./PitchCarousel";
+import NewIdeaForm from "./NewIdeaForm";
 
 interface PitchIdea {
   id: number;
   title: string;
   description: string;
-  videoUrl: string;
+  videoUrl?: string; // ✅ Ensures `videoUrl` is optional (no null)
+  isPortrait: boolean; // ✅ Ensures `isPortrait` always has a boolean value
 }
 
 const PitchFeed: React.FC = () => {
   const [pitchIdeas, setPitchIdeas] = useState<PitchIdea[]>([
-    { id: 1, title: "RadientHue", description: "Pitch for potential investors.", videoUrl: "" },
-    { id: 2, title: "GlamorGlo", description: "Showcasing product features.", videoUrl: "" },
+    { id: 1, title: "Startup Funding Pitch", description: "Pitch for investors.", videoUrl: "", isPortrait: false },
+    { id: 2, title: "Product Demo Pitch", description: "Showcasing product features.", videoUrl: "", isPortrait: false },
   ]);
 
   const [openDialog, setOpenDialog] = useState(false);
   const [anchorEl, setAnchorEl] = useState<{ [key: number]: HTMLElement | null }>({});
 
-  const [newTitle, setNewTitle] = useState("");
-  const [newDescription, setNewDescription] = useState("");
-  const [newVideoUrl, setNewVideoUrl] = useState("");
-
-  const handleOpenDialog = () => {
-    setNewTitle("");
-    setNewDescription("");
-    setNewVideoUrl("");
-    setOpenDialog(true);
-  };
-
+  const handleOpenDialog = () => setOpenDialog(true);
   const handleCloseDialog = () => setOpenDialog(false);
 
-  const handleVideoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      const videoFile = event.target.files[0];
-      const videoURL = URL.createObjectURL(videoFile);
-      setNewVideoUrl(videoURL);
-    }
-  };
-
-  const handleAddIdea = () => {
-    if (!newTitle.trim()) return;
-
-    const newIdea: PitchIdea = {
-      id: pitchIdeas.length + 1,
-      title: newTitle,
-      description: newDescription,
-      videoUrl: newVideoUrl,
+  const handleAddIdea = (newIdea: { title: string; description: string; videoUrl: string | null; isPortrait: boolean }) => {
+    console.log("🚀 New Idea Created:", newIdea);
+  
+    const ideaWithId: PitchIdea = {
+      id: Date.now(),
+      title: newIdea.title,
+      description: newIdea.description,
+      videoUrl: newIdea.videoUrl ?? "", // ✅ Ensures `videoUrl` is always a string
+      isPortrait: newIdea.isPortrait ?? false, // ✅ Ensures `isPortrait` is always a boolean
     };
-
-    setPitchIdeas([newIdea, ...pitchIdeas]);
-    handleCloseDialog();
+  
+    setPitchIdeas((prevIdeas) => [ideaWithId, ...prevIdeas]);
   };
+  
+  
 
   const handleDeleteIdea = (id: number) => {
     if (window.confirm("Are you sure you want to delete this idea?")) {
       setPitchIdeas(pitchIdeas.filter((idea) => idea.id !== id));
-    }
-  };
-
-  const handleArchiveIdea = (id: number) => {
-    alert(`📁 Idea "${id}" archived.`);
-  };
-
-  const handleCloneIdea = (id: number) => {
-    const originalIdea = pitchIdeas.find((idea) => idea.id === id);
-    if (originalIdea) {
-      const clonedIdea: PitchIdea = {
-        id: Date.now(),
-        title: `Copy of ${originalIdea.title}`,
-        description: originalIdea.description,
-        videoUrl: originalIdea.videoUrl,
-      };
-      setPitchIdeas([clonedIdea, ...pitchIdeas]);
     }
   };
 
@@ -100,7 +56,6 @@ const PitchFeed: React.FC = () => {
 
   return (
     <Box sx={{ width: "100%", maxWidth: "600px", margin: "auto", pt: 3 }}>
-      {/* Header & New Idea Button */}
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
         <Typography variant="h5">Your Pitch Ideas</Typography>
         <Button variant="contained" startIcon={<AddCircleOutline />} onClick={handleOpenDialog}>
@@ -108,15 +63,12 @@ const PitchFeed: React.FC = () => {
         </Button>
       </Box>
 
-      {/* ✅ Fix: Remove explicit scrolling here */}
-      <Box sx={{ mb: 9 }}>
+      <Box>
         {pitchIdeas.map((idea) => (
           <Card key={idea.id} sx={{ mb: 2, boxShadow: 3 }}>
             <CardContent>
               <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
                 <Typography variant="h6">{idea.title}</Typography>
-
-                {/* Meatball Menu */}
                 <IconButton onClick={(e) => handleMenuOpen(e, idea.id)}>
                   <MoreVert />
                 </IconButton>
@@ -125,10 +77,10 @@ const PitchFeed: React.FC = () => {
                   open={Boolean(anchorEl[idea.id])}
                   onClose={() => handleMenuClose(idea.id)}
                 >
-                  <MenuItem onClick={() => { handleMenuClose(idea.id); handleCloneIdea(idea.id); }}>
+                  <MenuItem onClick={() => handleMenuClose(idea.id)}>
                     <FileCopy fontSize="small" sx={{ marginRight: 1 }} /> Clone Idea
                   </MenuItem>
-                  <MenuItem onClick={() => { handleMenuClose(idea.id); handleArchiveIdea(idea.id); }}>
+                  <MenuItem onClick={() => handleMenuClose(idea.id)}>
                     <Archive fontSize="small" sx={{ marginRight: 1 }} /> Archive Idea
                   </MenuItem>
                   <MenuItem onClick={() => { handleMenuClose(idea.id); handleDeleteIdea(idea.id); }} sx={{ color: "red" }}>
@@ -137,52 +89,18 @@ const PitchFeed: React.FC = () => {
                 </Menu>
               </Box>
 
-              {/* ✅ Fix: Ensure PitchCarousel fits properly inside */}
-              <Box sx={{ width: "100%", overflow: "hidden" }}>
-                <PitchCarousel />
-              </Box>
+              {/* ✅ Pass the uploaded video URL & isPortrait to PitchCarousel */}
+              <PitchCarousel 
+  videoUrl={idea.videoUrl ?? ""}  // ✅ Ensures `videoUrl` is always a string
+  isPortrait={idea.isPortrait} 
+/>
             </CardContent>
           </Card>
         ))}
       </Box>
 
       {/* New Idea Dialog */}
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogContent>
-          <Typography variant="h6">Create a New Pitch Idea</Typography>
-          <TextField
-            label="Idea Title"
-            fullWidth
-            variant="outlined"
-            sx={{ mt: 2 }}
-            value={newTitle}
-            onChange={(e) => setNewTitle(e.target.value)}
-          />
-          <TextField
-            label="Description"
-            fullWidth
-            multiline
-            rows={2}
-            variant="outlined"
-            sx={{ mt: 2 }}
-            value={newDescription}
-            onChange={(e) => setNewDescription(e.target.value)}
-          />
-          <Typography variant="body1" sx={{ mt: 2 }}>
-            Upload a Video:
-          </Typography>
-          <input type="file" accept="video/*" onChange={handleVideoUpload} />
-          {newVideoUrl && (
-            <video src={newVideoUrl} controls width="100%" style={{ marginTop: "10px", borderRadius: "8px" }} />
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog} color="secondary">Cancel</Button>
-          <Button onClick={handleAddIdea} variant="contained" color="primary" disabled={!newTitle.trim()}>
-            Add Idea
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <NewIdeaForm open={openDialog} onClose={handleCloseDialog} onSubmit={handleAddIdea} />
     </Box>
   );
 };

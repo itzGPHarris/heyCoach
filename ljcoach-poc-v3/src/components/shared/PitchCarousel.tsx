@@ -21,42 +21,13 @@ interface PitchVersion {
   likes: number;
   lastModified: string;
   comments: CommentData[];
+  isPortrait: boolean;
 }
 
-const initialPitchVersions: PitchVersion[] = [
-  {
-    pitchId: 1,
-    id: 1,
-    title: "RadiantHue Pitch - V1",
-    description: "Pitch for potential investors.",
-    videoUrl: "YYtQ34SRyksieH026qohfbOhBNd02LQAK3Fgt8wk5J8tM",
-    score: 70,
-    likes: 2,
-    lastModified: "Jan 1, 2025, 2:00 AM",
-    comments: [
-      { id: 1, author: "Keeker", role: "Mentor", text: "Great pitch! Consider slowing down your intro." },
-      { id: 2, author: "Dewey Brown", role: "Investor", text: "I love the concept, but can you clarify the pricing model?" },
-      { id: 3, author: "Skippy", role: "Investor", text: "I love the concept, but can you clarify the pricing model?" },
-      { id: 4, author: "John Smith", role: "Investor", text: "I love the concept, but can you clarify the pricing model?" }
-
-    ]
-  },
-  {
-    pitchId: 2,
-    id: 2,
-    title: "RadiantHue Pitch - V2",
-    description: "Showcasing product features.",
-    videoUrl: "PUkntYXmIaPE01X7QLd3q2RjFEv2omQ01se00vVbLHtXFI",
-    score: 85,
-    likes: 5,
-    lastModified: "Jan 10, 2025, 11:00 AM",
-    comments: [
-      { id: 1, author: "Jane Doe", role: "Mentor", text: "Great pitch! Consider slowing down your intro." },
-      { id: 2, author: "John Smith", role: "Investor", text: "I love the concept, but can you clarify the pricing model?" }
-
-    ]
-  }
-];
+interface PitchCarouselProps {
+  videoUrl: string;
+  isPortrait: boolean;
+}
 
 const CarouselWrapper = styled(Box)({
   width: "100%",
@@ -68,21 +39,37 @@ const SlidesContainer = styled(Box)<{ index: number }>(({ index }) => ({
   display: "flex",
   width: "100%",
   transition: "transform 0.5s ease-in-out",
-  transform: `translateX(-${index * 100}%)`, // ✅ Moves one slide at a time
+  transform: `translateX(-${index * 100}%)`,
 }));
 
-const PitchCarousel: React.FC = () => {
-  const [pitchVersions, setPitchVersions] = useState<PitchVersion[]>(initialPitchVersions);
+const DotIndicator = styled(Box)({
+  display: "flex",
+  justifyContent: "center",
+  gap: "8px",
+  marginTop: "12px",
+});
+
+const PitchCarousel: React.FC<PitchCarouselProps> = ({ videoUrl, isPortrait }) => {
+  const [pitchVersions, setPitchVersions] = useState<PitchVersion[]>([
+    {
+      pitchId: 1,
+      id: 1,
+      title: "RadiantHue Pitch - V1",
+      description: "Pitch for potential investors.",
+      videoUrl: videoUrl || "YYtQ34SRyksieH026qohfbOhBNd02LQAK3Fgt8wk5J8tM",
+      score: 70,
+      likes: 2,
+      lastModified: "Jan 1, 2025, 2:00 AM",
+      comments: [
+        { id: 1, author: "Keeker", role: "Mentor", text: "Great pitch! Consider slowing down your intro." },
+        { id: 2, author: "Dewey Brown", role: "Investor", text: "I love the concept, but can you clarify the pricing model?" },
+      ],
+      isPortrait,
+    },
+  ]);
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [favoritePitchId, setFavoritePitchId] = useState<number | null>(null);
-
-  const updateComments = (pitchId: number, newComments: CommentData[]) => {
-    setPitchVersions((prevVersions) =>
-      prevVersions.map((pitch) =>
-        pitch.pitchId === pitchId ? { ...pitch, comments: newComments } : pitch
-      )
-    );
-  };
 
   const handleNavigation = (direction: "next" | "prev") => {
     setCurrentIndex((prevIndex) =>
@@ -92,31 +79,29 @@ const PitchCarousel: React.FC = () => {
     );
   };
 
-  const toggleFavorite = (pitchId: number) => {
-    setFavoritePitchId((prevFavorite) => (prevFavorite === pitchId ? null : pitchId));
-  };
-
   const handleAddVersion = () => {
     const newVersion: PitchVersion = {
-      pitchId: pitchVersions.length + 1,
+      pitchId: Date.now(),
       id: pitchVersions.length + 1,
-      title: `Pitch Version ${pitchVersions.length + 1}`,
-      description: "New pitch version description.",
-      videoUrl: "",
+      title: `Pitch - V${pitchVersions.length + 1}`,
+      description: "A new iteration of the pitch.",
+      videoUrl: videoUrl || "", // ✅ Ensure video URL is always a string
       score: 0,
       likes: 0,
-      lastModified: new Date().toLocaleDateString(),
+      lastModified: new Date().toLocaleString(),
       comments: [],
+      isPortrait,
     };
+
     setPitchVersions([...pitchVersions, newVersion]);
     setCurrentIndex(pitchVersions.length);
   };
 
   const handleDeleteVersion = () => {
     if (pitchVersions.length > 1) {
-      const updatedVersions = pitchVersions.filter((_, index) => index !== currentIndex);
-      setPitchVersions(updatedVersions);
-      setCurrentIndex(0);
+      const newVersions = pitchVersions.filter((_, index) => index !== currentIndex);
+      setPitchVersions(newVersions);
+      setCurrentIndex(Math.max(0, currentIndex - 1));
     }
   };
 
@@ -128,7 +113,7 @@ const PitchCarousel: React.FC = () => {
           <ArrowBackIos />
         </IconButton>
 
-        <IconButton onClick={() => toggleFavorite(pitchVersions[currentIndex].pitchId)} sx={{ mr: -4 }}>
+        <IconButton onClick={() => setFavoritePitchId(pitchVersions[currentIndex].pitchId)} sx={{ mr: -4 }}>
           {favoritePitchId === pitchVersions[currentIndex].pitchId ? (
             <Star sx={{ color: "#FFD700" }} />
           ) : (
@@ -157,19 +142,42 @@ const PitchCarousel: React.FC = () => {
                 likes={pitch.likes}
                 lastModified={pitch.lastModified}
                 comments={pitch.comments || []}
-                onUpdateComments={(newComments) => updateComments(pitch.pitchId, newComments)}
+                isPortrait={pitch.isPortrait}
               />
             </Box>
           ))}
         </SlidesContainer>
       </CarouselWrapper>
 
-      {/* Add / Delete Version Controls */}
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-        <Button variant="contained" startIcon={<AddCircleOutline />} onClick={handleAddVersion} sx={{ mr: 1 }}>
+      {/* Dot Indicators */}
+      <DotIndicator>
+        {pitchVersions.map((_, index) => (
+          <Box
+            key={index}
+            sx={{
+              width: 10,
+              height: 10,
+              borderRadius: "50%",
+              backgroundColor: index === currentIndex ? "#0090F2" : "#C4C4C4",
+              transition: "background-color 0.3s",
+            }}
+          />
+        ))}
+      </DotIndicator>
+
+      {/* Version Controls */}
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", mt: 2 }}>
+        <Button onClick={handleAddVersion} startIcon={<AddCircleOutline />} variant="contained">
           Add Version
         </Button>
-        <Button variant="contained" color="error" startIcon={<RemoveCircleOutline />} onClick={handleDeleteVersion} disabled={pitchVersions.length <= 1}>
+        <Button
+          onClick={handleDeleteVersion}
+          startIcon={<RemoveCircleOutline />}
+          variant="contained"
+          color="error"
+          sx={{ ml: 2 }}
+          disabled={pitchVersions.length <= 1}
+        >
           Delete Version
         </Button>
       </Box>

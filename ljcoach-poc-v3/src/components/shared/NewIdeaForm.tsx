@@ -1,89 +1,82 @@
-import React, { useState } from "react";
-import { Button, Dialog, DialogActions, DialogContent, TextField, Typography } from "@mui/material";
-import { AddCircleOutline } from "@mui/icons-material"; // ✅ Import the missing icon
-
+import { useState } from "react";
+import { Dialog, DialogActions, DialogContent, Button, Typography, TextField } from "@mui/material";
+import VideoUploader from "./VideoUploader";
 
 interface NewIdeaFormProps {
-  onAddIdea: (title: string, description: string, videoUrl: string) => void;
+  open: boolean;
+  onClose: () => void;
+  onSubmit: (data: { title: string; description: string; videoUrl: string | null; isPortrait: boolean }) => void;
 }
 
-const NewIdeaForm: React.FC<NewIdeaFormProps> = ({ onAddIdea }) => {
-  const [openDialog, setOpenDialog] = useState(false);
-  const [newTitle, setNewTitle] = useState("");
-  const [newDescription, setNewDescription] = useState("");
-  const [newVideoUrl, setNewVideoUrl] = useState<string | null>(null);
+const NewIdeaForm: React.FC<NewIdeaFormProps> = ({ open, onClose, onSubmit }) => {
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [isPortrait, setIsPortrait] = useState<boolean>(false); // ✅ Track orientation
 
-  const handleOpenDialog = () => setOpenDialog(true);
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-    setNewTitle("");
-    setNewDescription("");
-    setNewVideoUrl(null);
+  const handleVideoUpload = (url: string) => {
+    setVideoUrl(url);
+  
+    // ✅ Detect video orientation
+    const video = document.createElement("video");
+    video.src = url;
+    video.onloadedmetadata = () => {
+      const videoWidth = video.videoWidth;
+      const videoHeight = video.videoHeight;
+  
+      const detectedOrientation = videoHeight > videoWidth; // ✅ True if portrait
+      setIsPortrait(detectedOrientation);
+  
+      console.log("📸 Video uploaded - Width:", videoWidth, "Height:", videoHeight);
+      console.log("🔄 Detected Orientation:", detectedOrientation ? "Portrait" : "Landscape");
+    };
   };
-
-  const handleVideoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      const videoFile = event.target.files[0];
-      const videoURL = URL.createObjectURL(videoFile);
-      setNewVideoUrl(videoURL);
-    }
+  
+  const handleSubmit = () => {
+    if (!title.trim()) return;
+    onSubmit({ title, description, videoUrl: videoUrl ?? "", isPortrait });
+    console.log("🚀 Submitting New Idea:", { title, description, videoUrl, isPortrait });
+    onClose();
   };
-
-  const handleAddIdea = () => {
-    if (newTitle.trim()) {
-      onAddIdea(newTitle, newDescription, newVideoUrl || "");
-      handleCloseDialog();
-    }
-  };
+  
 
   return (
-    <>
-      <Button variant="contained" 
-        startIcon={<AddCircleOutline />} 
-        onClick={handleOpenDialog}
-        sx={{ backgroundColor: "#003366", "&:hover": { backgroundColor: "#000033" } }}          
-        >
-        New Idea
-      </Button>
+    <Dialog open={open} onClose={onClose}>
+      <DialogContent>
+        <Typography variant="h6">Create a New Pitch Idea</Typography>
+        <TextField
+          label="Idea Title"
+          fullWidth
+          variant="outlined"
+          sx={{ mt: 2 }}
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+        <TextField
+          label="Description"
+          fullWidth
+          multiline
+          rows={2}
+          variant="outlined"
+          sx={{ mt: 2 }}
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
 
-      {/* New Idea Dialog */}
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogContent>
-          <Typography variant="h6">Create a New Pitch Idea</Typography>
-          <TextField
-            label="Idea Title"
-            fullWidth
-            variant="outlined"
-            sx={{ mt: 2 }}
-            value={newTitle}
-            onChange={(e) => setNewTitle(e.target.value)}
-          />
-          <TextField
-            label="Description"
-            fullWidth
-            multiline
-            rows={2}
-            variant="outlined"
-            sx={{ mt: 2 }}
-            value={newDescription}
-            onChange={(e) => setNewDescription(e.target.value)}
-          />
-          <Typography variant="body1" sx={{ mt: 2 }}>
-            Upload a Video:
-          </Typography>
-          <input type="file" accept="video/*" onChange={handleVideoUpload} />
-          {newVideoUrl && (
-            <video src={newVideoUrl} controls width="100%" style={{ marginTop: "10px", borderRadius: "8px" }} />
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog} color="secondary">Cancel</Button>
-          <Button onClick={handleAddIdea} variant="contained" color="primary" disabled={!newTitle.trim()}>
-            Add Idea
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </>
+        {/* ✅ Integrate Video Uploader */}
+        <Typography variant="body1" sx={{ mt: 2 }}>
+          Upload a Video:
+        </Typography>
+        <VideoUploader onVideoSelect={handleVideoUpload} />
+      </DialogContent>
+
+      <DialogActions>
+        <Button onClick={onClose} color="secondary">Cancel</Button>
+        <Button onClick={handleSubmit} variant="contained" color="primary" disabled={!title.trim()}>
+          Add Idea
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 
