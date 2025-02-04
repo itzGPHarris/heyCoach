@@ -3,6 +3,8 @@ import { Box, Button, Typography, Card, CardContent, IconButton, Menu, MenuItem 
 import { AddCircleOutline, MoreVert, Delete, Archive, FileCopy } from "@mui/icons-material";
 import PitchCarousel from "./PitchCarousel";
 import NewIdeaForm from "./NewIdeaForm";
+import { useLocation } from 'react-router-dom';
+
 
 interface PitchIdea {
   id: number;
@@ -11,6 +13,8 @@ interface PitchIdea {
   videoUrl?: string; // ✅ Ensures `videoUrl` is optional (no null)
   isPortrait: boolean; // ✅ Ensures `isPortrait` always has a boolean value
 }
+
+
 
 const PitchFeed: React.FC = () => {
   const [pitchIdeas, setPitchIdeas] = useState<PitchIdea[]>([
@@ -23,6 +27,11 @@ const PitchFeed: React.FC = () => {
 
   const handleOpenDialog = () => setOpenDialog(true);
   const handleCloseDialog = () => setOpenDialog(false);
+
+  const location = useLocation();
+  const firstRunData = location.state || {}; // ✅ Get first-run data
+  const allPitches = firstRunData.idea ? [firstRunData, ...pitchIdeas] : pitchIdeas; // ✅ Inject FirstRun pitch
+  
 
   const handleAddIdea = (newIdea: { title: string; description: string; videoUrl: string | null; isPortrait: boolean }) => {
     console.log("🚀 New Idea Created:", newIdea);
@@ -63,41 +72,43 @@ const PitchFeed: React.FC = () => {
         </Button>
       </Box>
 
-      <Box>
-        {pitchIdeas.map((idea) => (
-          <Card key={idea.id} sx={{ mb: 2, boxShadow: 3 }}>
-            <CardContent>
-              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
-                <Typography variant="h6">{idea.title}</Typography>
-                <IconButton onClick={(e) => handleMenuOpen(e, idea.id)}>
-                  <MoreVert />
-                </IconButton>
-                <Menu
-                  anchorEl={anchorEl[idea.id] || null}
-                  open={Boolean(anchorEl[idea.id])}
-                  onClose={() => handleMenuClose(idea.id)}
-                >
-                  <MenuItem onClick={() => handleMenuClose(idea.id)}>
-                    <FileCopy fontSize="small" sx={{ marginRight: 1 }} /> Clone Idea
-                  </MenuItem>
-                  <MenuItem onClick={() => handleMenuClose(idea.id)}>
-                    <Archive fontSize="small" sx={{ marginRight: 1 }} /> Archive Idea
-                  </MenuItem>
-                  <MenuItem onClick={() => { handleMenuClose(idea.id); handleDeleteIdea(idea.id); }} sx={{ color: "red" }}>
-                    <Delete fontSize="small" sx={{ marginRight: 1 }} /> Delete Idea
-                  </MenuItem>
-                </Menu>
-              </Box>
 
-              {/* ✅ Pass the uploaded video URL & isPortrait to PitchCarousel */}
-              <PitchCarousel 
-  videoUrl={idea.videoUrl ?? ""}  // ✅ Ensures `videoUrl` is always a string
-  isPortrait={idea.isPortrait} 
-/>
-            </CardContent>
-          </Card>
-        ))}
-      </Box>
+
+<Box>
+  {allPitches.map((idea) => (
+    <Card key={idea.id} sx={{ mb: 2, boxShadow: 3 }}>
+      <CardContent>
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
+          <Typography variant="h6">{idea.title || firstRunData.idea}</Typography> {/* ✅ Ensure title is displayed */}
+          <IconButton onClick={(e) => handleMenuOpen(e, idea.id)}>
+            <MoreVert />
+          </IconButton>
+          <Menu
+            anchorEl={anchorEl[idea.id] || null}
+            open={Boolean(anchorEl[idea.id])}
+            onClose={() => handleMenuClose(idea.id)}
+          >
+            <MenuItem onClick={() => handleMenuClose(idea.id)}>
+              <FileCopy fontSize="small" sx={{ marginRight: 1 }} /> Clone Idea
+            </MenuItem>
+            <MenuItem onClick={() => handleMenuClose(idea.id)}>
+              <Archive fontSize="small" sx={{ marginRight: 1 }} /> Archive Idea
+            </MenuItem>
+            <MenuItem onClick={() => { handleMenuClose(idea.id); handleDeleteIdea(idea.id); }} sx={{ color: "red" }}>
+              <Delete fontSize="small" sx={{ marginRight: 1 }} /> Delete Idea
+            </MenuItem>
+          </Menu>
+        </Box>
+
+        {/* ✅ Pass the uploaded video URL & isPortrait to PitchCarousel */}
+        <PitchCarousel 
+          videoUrl={idea.videoUrl ?? firstRunData.videoSrc ?? ""}  // ✅ Ensures `videoUrl` is always a string
+          isPortrait={idea.isPortrait ?? firstRunData.isPortrait ?? false} // ✅ Ensure `isPortrait` is correctly passed
+        />
+      </CardContent>
+    </Card>
+  ))}
+</Box>
 
       {/* New Idea Dialog */}
       <NewIdeaForm open={openDialog} onClose={handleCloseDialog} onSubmit={handleAddIdea} />

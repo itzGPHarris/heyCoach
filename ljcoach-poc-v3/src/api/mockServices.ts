@@ -1,4 +1,3 @@
-// 📌 Fully Updated mockServices.ts with Fixes for updatePitch()
 import { Competition, PitchAnalysis, User, PitchFeedback } from './types';
 import { Pitch, Metrics } from '../store/types'; // ✅ Import `Pitch` from `store/types.ts`
 
@@ -52,21 +51,23 @@ export class MockAPIClient {
       feedback: updates.feedback || [],
       metrics: updates.metrics || defaultMetrics, // ✅ Ensured metrics are always defined
       aiCoachSummary: updates.aiCoachSummary || 'No AI feedback available', // ✅ Added missing aiCoachSummary field
-      history: updates.history || [
-        {
-          id: `${pitchId}-v1`,
-          title: updates.title || 'Version 1',
-          description: updates.description || 'Initial version',
-          playbackId: updates.playbackId || '',
-          timestamp: new Date().toISOString(),
-          score: updates.score || 0,
-          likes: updates.likes || 0,
-          feedback: updates.feedback || [],
-          transcript: updates.transcript || '',
-          aiCoachSummary: updates.aiCoachSummary || 'No AI feedback available',
-          metrics: updates.metrics || defaultMetrics,
-        },
-      ],
+      history: updates.history || [],
+      
+      // ✅ Add missing required fields
+      videoUrl: updates.videoUrl || "https://mock.video.url/sample.mp4", // Use a mock video URL
+      isPortrait: updates.isPortrait ?? false,
+      userId: updates.userId || 'mock-user-id',
+      createdAt: updates.createdAt || new Date().toISOString(),
+      updatedAt: updates.updatedAt || new Date().toISOString(),
+      pitchAnalysisId: updates.pitchAnalysisId || undefined,
+      pitchAnalysis: updates.pitchAnalysis || undefined,
+      competitionId: updates.competitionId || undefined,
+      competition: updates.competition || undefined,
+      user: updates.user || undefined,
+      isPublic: updates.isPublic ?? false,
+      isDeleted: updates.isDeleted ?? false,
+      isFlagged: updates.isFlagged ?? false,
+      isReviewed: updates.isReviewed ?? false,
     };
     
     return Promise.resolve(updatedPitch);

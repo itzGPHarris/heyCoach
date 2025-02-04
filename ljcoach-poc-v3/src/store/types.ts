@@ -83,6 +83,21 @@ export interface Pitch {
   timestamp: string;
   history: PitchVersion[];
   feedback: Feedback[];
+  videoUrl: string; // ✅ Ensure this exists
+  isPortrait: boolean; // ✅ Ensure this exists
+  competitionId?: string; // ✅ Ensure this exists
+  userId: string; // ✅ Ensure this exists
+  createdAt: string; // ✅ Ensure this exists
+  updatedAt: string; // ✅ Ensure this exists
+  pitchAnalysisId?: string; // ✅ Ensure this exists
+  pitchAnalysis?: PitchAnalysis; // ✅ Ensure this exists
+  competition?: Competition; // ✅ Ensure this exists
+  user?: UserProfile; // ✅ Ensure this exists
+  isPublic: boolean; // ✅ Ensure this exists
+  isDeleted: boolean; // ✅ Ensure this exists
+  isFlagged: boolean; // ✅ Ensure this exists
+  isReviewed: boolean; // ✅ Ensure this exists
+  
 }
 
 export interface StoreState {

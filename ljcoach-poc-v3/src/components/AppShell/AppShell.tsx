@@ -1,5 +1,5 @@
-// 📌 Fully Updated AppShell.tsx with Fixes for Missing Properties
 import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import {
   AppBar,
@@ -17,11 +17,20 @@ import { User, Bell, Moon, Sun } from 'lucide-react';
 import { getTheme } from '../../styles/theme';
 import useStore from '../../store';
 import FeedView from '../FeedView';
-import DashboardView from '../DashboardView';
-import ProfileView from '../ProfileView';
 import AICoach from '../AICoach';
 import ChatAIDrawer from '../shared/ChatAIDrawer';
-//import { ViewType } from '../../store/types';
+import PitchCarouselNewUser from '../shared/PitchCarouselNewUser';
+
+const DebugBar = styled('div')({
+  position: 'fixed',
+  top: 55,
+  left: 0,
+  width: '100%',
+  height: '10px',
+  backgroundColor: "white", opacity: 0.01,
+  cursor: 'pointer',
+  zIndex: 1000,
+});
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
@@ -44,13 +53,11 @@ const MainContent = styled(Box)(({ theme }) => ({
 function AppShell() {
   const [mode, setMode] = useState<'light' | 'dark'>('light');
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
   const store = useStore();
   const notifications = store.notifications || [];
-  const activeTab = store.activeTab || 'feed';
-  
   const showAICoach = store.showAICoach || false;
-  
+  const location = useLocation();
+  const firstRunData = location.state || {};
 
   const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -60,16 +67,17 @@ function AppShell() {
     setAnchorEl(null);
   };
 
-  const handleMenuSelect = () => {
-    handleMenuClose();
-  };
-
   const handleSignOut = () => {
     handleMenuClose();
   };
 
   return (
     <ThemeProvider theme={getTheme(mode)}>
+      <DebugBar onClick={() => {
+        localStorage.removeItem('hasSeenOnboarding');
+        window.location.reload();
+      }} />
+
       <CssBaseline />
       <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
         <StyledAppBar position="fixed" elevation={0}>
@@ -102,16 +110,24 @@ function AppShell() {
           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
           transformOrigin={{ vertical: 'top', horizontal: 'right' }}
         >
-          <MenuItem onClick={handleMenuSelect}>Profile</MenuItem>
-          <MenuItem onClick={handleMenuSelect}>My Pitches</MenuItem>
-          <MenuItem onClick={handleMenuSelect}>Account Settings</MenuItem>
+          <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+          <MenuItem onClick={handleMenuClose}>My Pitches</MenuItem>
+          <MenuItem onClick={handleMenuClose}>Account Settings</MenuItem>
           <MenuItem onClick={handleSignOut}>Sign Out</MenuItem>
         </Menu>
 
         <MainContent>
-          {activeTab === 'feed' && <FeedView />}
-          {activeTab === 'dashboard' && <DashboardView />}
-          {activeTab === 'profile' && <ProfileView />}
+          {firstRunData.idea && firstRunData.videoSrc ? (
+            <PitchCarouselNewUser
+              videoUrl={firstRunData.videoSrc}
+              isPortrait={firstRunData.isPortrait ?? false}
+              title={firstRunData.idea}
+            />
+          ) : (
+            <>
+              <FeedView />
+            </>
+          )}
         </MainContent>
 
         {showAICoach && <AICoach />}
