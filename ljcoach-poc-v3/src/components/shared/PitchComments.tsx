@@ -96,10 +96,11 @@ const PitchComments: React.FC<PitchCommentsProps> = ({ pitchId, comments, onUpda
   };
 
   return (
-    <Box sx={{ mt: 2, p: 2, borderTop: "1px solid #ddd" }}>
+    <Box sx={{ mt: 2, pt: 2, borderTop: "1px solid #ccc",  borderRadius: "0 0 8px 8px" // ✅ Top corners rounded
+    }}>
       {/* Expandable Header with Notification Badge */}
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }} onClick={() => setCommentsExpanded(!commentsExpanded)}>
-        <Box sx={{ position: "relative", display: "inline-flex", alignItems: "center" }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer", borderRadius: "0 0 8px 8px" }} onClick={() => setCommentsExpanded(!commentsExpanded)}>
+        <Box sx={{ position: "relative", display: "inline-flex", alignItems: "center", borderRadius: "0 0 8px 8px" }}>
           <Comment fontSize="small" />
           <Typography variant="subtitle1" sx={{ ml: 1 }}>
             Feedback & Comments

@@ -1,8 +1,6 @@
-// Updated on - 2025-02-04, Time: Pacific Time (PT), 14:30
-// Updated ChatAIDrawer.tsx with Debugging for Scroll Event to AI Analysis
 import { useState, useEffect, useRef } from "react";
 import { Box, IconButton, TextField, Typography, styled, InputAdornment, Slide, Button } from "@mui/material";
-import { ArrowUp, XCircle } from "lucide-react";
+import { Paperclip, Mic, Video, ArrowUp, XCircle } from "lucide-react";
 import { useLocation } from "react-router-dom";
 
 const ChatContainer = styled(Box)({
@@ -36,6 +34,7 @@ function ChatAIDrawer({ onOpenAnalysis }: { onOpenAnalysis: () => void }) {
   const [message, setMessage] = useState("");
   const [conversation, setConversation] = useState<{ question: string; response?: string; cta?: boolean }[]>([]);
   const [loading, setLoading] = useState(false);
+  const [mediaMode, setMediaMode] = useState<"audio" | "video">("audio"); // ✅ Toggle between audio & video
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -105,35 +104,70 @@ function ChatAIDrawer({ onOpenAnalysis }: { onOpenAnalysis: () => void }) {
                 {entry.response && <Typography variant="body2">{entry.response}</Typography>}
                 {entry.cta && (
                   <Button
-  variant="contained"
-  size="small"
-  sx={{ mt: 1 }}
-  onClick={() => {
-    console.log("📜 Opening AI Analysis...");
-    onOpenAnalysis();
+                    variant="contained"
+                    size="small"
+                    sx={{ mt: 1 }}
+                    onClick={() => {
+                      console.log("📜 Opening AI Analysis...");
+                      onOpenAnalysis();
 
-    setTimeout(() => {
-      console.log("🚀 Dispatching event globally after ensuring components are loaded...");
-      window.dispatchEvent(new CustomEvent("scrollToAnalysis"));
-    }, 1500); // Increase delay to ensure UI renders
-    setIsOpen(false)
-  }}
->
-  Let's check it out
-</Button>
-                
+                      setTimeout(() => {
+                        console.log("🚀 Dispatching event globally after ensuring components are loaded...");
+                        window.dispatchEvent(new CustomEvent("scrollToAnalysis"));
+                      }, 1500);
+                      setIsOpen(false);
+                    }}
+                  >
+                    Let's check it out
+                  </Button>
                 )}
               </Box>
             ))}
           </Box>
         </Box>
       </Slide>
+
       <ChatInputContainer>
-        <TextField fullWidth placeholder={loading ? "AI Coach is thinking..." : "Hello! What can I help you with?"} value={message} onChange={(e) => setMessage(e.target.value)} disabled={loading} inputRef={inputRef} sx={{ borderRadius: 2, backgroundColor: "#efefef", transition: "width 0.3s ease-in-out", width: "100%" }} InputProps={{ endAdornment: (<InputAdornment position="end"><IconButton onClick={handleSend} color="primary" disabled={loading}><ArrowUp size={20} /></IconButton></InputAdornment>) }} />
+        {/* Attachment Icon */}
+        <IconButton disabled={loading} component="label">
+          <Paperclip size={20} color="#fff" />
+          <input type="file" hidden onChange={() => alert("📎 Document uploaded!")} />
+        </IconButton>
+
+        {/* Chat Input */}
+        <TextField
+          fullWidth
+          placeholder={loading ? "AI Coach is thinking..." : "Hello! What can I help you with?"}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          disabled={loading}
+          inputRef={inputRef}
+          sx={{
+            borderRadius: 2,
+            backgroundColor: "#efefef",
+            transition: "width 0.3s ease-in-out",
+            width: "100%",
+          }}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                {/* ✅ If text is entered, show "Send" button */}
+                {message.trim() ? (
+                  <IconButton onClick={handleSend} color="primary" disabled={loading}>
+                    <ArrowUp size={20} />
+                  </IconButton>
+                ) : (
+                  /* ✅ Otherwise, show media toggle button */
+                  <IconButton disabled={loading} onClick={() => setMediaMode(mediaMode === "audio" ? "video" : "audio")}>
+                    {mediaMode === "audio" ? <Mic size={20} /> : <Video size={20} />}
+                  </IconButton>
+                )}
+              </InputAdornment>
+            ),
+          }}
+        />
       </ChatInputContainer>
     </ChatContainer>
-    
-    
   );
 }
 

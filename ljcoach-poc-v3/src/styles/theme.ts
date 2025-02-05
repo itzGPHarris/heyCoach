@@ -1,9 +1,13 @@
 import { createTheme, responsiveFontSizes, ThemeOptions } from '@mui/material/styles';
 import { red } from '@mui/material/colors';
 
+
+
+
+
 const baseTheme: ThemeOptions = {
   typography: {
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: "Roboto, Inter, sans-serif",
     h1: { fontSize: '2.5rem', fontWeight: 900 },
     h2: { fontSize: '2rem', fontWeight: 900 },
     h3: { fontSize: '1.75rem', fontWeight: 900 },
@@ -12,7 +16,7 @@ const baseTheme: ThemeOptions = {
     body2: { fontSize: '0.875rem', lineHeight: 1.5 },
   },
   shape: {
-    borderRadius: 1,
+    borderRadius: .35,
   },
   breakpoints: {
     values: {

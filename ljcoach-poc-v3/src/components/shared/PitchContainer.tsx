@@ -1,5 +1,8 @@
+// Updated on - 2025-02-04, Time: Pacific Time (PT), 14:30
+
+// Updated PitchContainer.tsx to Restore Stats and Improve Visual Hierarchy
 import React, { useState, useEffect, useRef } from "react";
-import { Card, CardContent, Typography, Box, Switch } from "@mui/material";
+import { Card, CardContent, Typography, Box } from "@mui/material";
 import MuxPlayer from "@mux/mux-player-react";
 import PitchAnalysis from "./PitchAnalysis";
 import PitchComments from "./PitchComments";
@@ -52,7 +55,7 @@ const PitchContainer: React.FC<PitchContainerProps> = ({
         } else {
           console.log("⚠️ analysisRef.current is null. Cannot scroll.");
         }
-      }, 500); // Adds a delay to stabilize layout
+      }, 500);
     };
   
     window.addEventListener("scrollToAnalysis", handleScrollToAnalysis);
@@ -64,13 +67,6 @@ const PitchContainer: React.FC<PitchContainerProps> = ({
   
   }, []);
 
-  const handleToggleOrientation = () => {
-    setManualOrientation(manualOrientation === "auto" ? "portrait" : "auto");
-    console.log("🚀 Orientation toggled:", manualOrientation);
-  };
-
-  console.log("🚀 Received videoUrl:", videoUrl);
-
   return (
     <Card
       sx={{
@@ -80,10 +76,10 @@ const PitchContainer: React.FC<PitchContainerProps> = ({
         mb: 2,
         p: 0,
         overflow: "hidden",
-        display: "block", // ✅ Ensures component stays in the DOM
+        display: "block",
       }}
     >
-      {/* 🔹 Full-Width Video */}
+      {/* 🔹 Video Section */}
       <Box sx={{ width: "100%", padding: "0px", margin: "0px", overflow: "hidden" }}>
         {videoUrl.startsWith("blob:") ? (
           <video
@@ -91,7 +87,7 @@ const PitchContainer: React.FC<PitchContainerProps> = ({
             controls
             width="100%"
             style={{
-              borderRadius: "8px",
+              borderRadius: "4px",
               display: "block",
               objectFit: "cover",
               padding: "0px",
@@ -117,39 +113,49 @@ const PitchContainer: React.FC<PitchContainerProps> = ({
         )}
       </Box>
 
-      {/* 🔹 Pitch Title & Stats */}
-      <CardContent sx={{ paddingX: 2, paddingTop: 2, paddingBottom: 1 }}>
-        <Typography variant="h6" sx={{ fontWeight: "bold" }}>{title}</Typography>
-        <Typography variant="body2" color="textSecondary">{description}</Typography>
-
+      {/* 🔹 Pitch Details */}
+      <CardContent sx={{ paddingX: 4, paddingTop: 1, paddingBottom: 1 }}>
         {/* Stats and Orientation Switch */}
-        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mt: 1 }}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mt: .5 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
             <img src={LikeIcon} alt="Likes" width="18" height="18" />
             <Typography variant="body2" color="textSecondary">{likes}</Typography>
             <Typography variant="body2" color="textSecondary">
-              Updated: {lastModified}
+              |   Updated: {lastModified}
             </Typography>
           </Box>
-
-          {/* Orientation Switch */}
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <Typography variant="body2">Auto</Typography>
-            <Switch checked={manualOrientation === "portrait"} onChange={handleToggleOrientation} />
-            <Typography variant="body2">Portrait</Typography>
-          </Box>
+          
         </Box>
+        <Typography variant="h3" sx={{ fontWeight: "900",  mt: 1, mb: 1 }}>{title}</Typography>
+        <Typography variant="body1" color="textSecondary">{description}</Typography>
+
       </CardContent>
 
-      {/* 🔹 Analysis & Transcript Section (Scroll Target) */}
-      <Box ref={analysisRef} id="analysis-section">
+      {/* 🔹 AI Analysis Section */}
+      <Box ref={analysisRef} id="analysis-section" 
+          sx={{ mt: 2, 
+                backgroundColor: "#c2d6e1", 
+                borderRadius: "12px", // ✅ Top corners rounded
+                pt: 0.5,  
+                pr: 2, 
+                pl: 2, 
+                pb: 2 
+                }}>
         <PitchAnalysis />
       </Box>
 
-      {/* 🔹 Comments */}
-      <PitchComments pitchId={pitchId} comments={comments} />
+      {/* 🔹 Comments & Feedback Section 
+      <Box sx={{ mt: 3, 
+                backgroundColor: "#fcdad9", 
+                borderRadius: "0 0 12px 12px", // ✅ Bottom corners rounded
+                p: 2, 
+                boxShadow: "0px 2px 10px rgba(0,0,0,0.1)" }}>
+                </Box>*/}
+        <PitchComments pitchId={pitchId} comments={comments} />
+      
     </Card>
   );
 };
 
 export default PitchContainer;
+ 

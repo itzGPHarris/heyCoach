@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Box, Typography, CircularProgress } from "@mui/material";
-import { BarChart } from "@mui/icons-material";
-
 interface AIAnalysis {
   clarity: number;
   engagement: number;
@@ -28,14 +26,14 @@ const generateAIFeedback = (): AIAnalysis => {
 const PitchAIAnalysis: React.FC = () => {
   const [analysis, setAnalysis] = useState<AIAnalysis | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isExpanded, setIsExpanded] = useState(false);
+  //const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     console.log("✅ AI Analysis component mounted.");
 
     const handleScrollToAnalysis = () => {
       console.log("📜 Scroll event triggered in PitchAIAnalysis! Expanding AI Analysis...");
-      setIsExpanded(true);
+     // setIsExpanded(true);
     };
 
     window.addEventListener("scrollToAnalysis", handleScrollToAnalysis);
@@ -55,25 +53,28 @@ const PitchAIAnalysis: React.FC = () => {
 
   return (
     <Box sx={{ p: 2 }}>
-      <Typography variant="h6" sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-        <BarChart fontSize="small" /> Pitch Analysis
-      </Typography>
+     
 
       {loading ? (
         <CircularProgress />
       ) : analysis ? (
-        <Box id="analysis-section" sx={{ p: 2, display: isExpanded ? "block" : "none" }}>
+        <Box id="analysis-section" sx={{display: "block" }}>
           <Typography variant="body1"><strong>Clarity:</strong> {analysis.clarity}%</Typography>
           <Typography variant="body1"><strong>Engagement:</strong> {analysis.engagement}%</Typography>
           <Typography variant="body1"><strong>Pacing:</strong> {analysis.pacing}%</Typography>
           <Typography variant="body1"><strong>Structure:</strong> {analysis.structure}%</Typography>
 
-          <Typography variant="h6" sx={{ mt: 2 }}>Suggestions:</Typography>
-          {analysis.suggestions.map((suggestion, index) => (
-            <Typography key={index} variant="body2" sx={{ mt: 1 }}>
-              - {suggestion}
-            </Typography>
-          ))}
+          <Typography variant="h4" sx={{ mt: 2 }}>Coach suggestions:</Typography>
+          <ol>
+  {analysis?.suggestions.map((suggestion, index) => (
+    <li key={index}>
+      <Typography variant="body2" sx={{ mt: 1 }}>
+        {suggestion}
+      </Typography>
+    </li>
+  ))}
+</ol>
+
         </Box>
       ) : null}
     </Box>

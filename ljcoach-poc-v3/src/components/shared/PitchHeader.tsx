@@ -1,26 +1,20 @@
 import React from "react";
-import { Box, Typography, FormControlLabel, Switch } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 
 interface PitchHeaderProps {
   title: string;
   score: number;
   likes: number;
   lastModified: string;
-  manualOrientation: "auto" | "portrait" | "landscape"; // ✅ Required prop
+  //manualOrientation: "auto" | "portrait" | "landscape"; // ✅ Required prop
   onToggleOrientation: () => void; // ✅ Required prop
 }
 
 
-const PitchHeader: React.FC<PitchHeaderProps> = ({ title, score, likes, lastModified, manualOrientation, onToggleOrientation }) => {
+const PitchHeader: React.FC<PitchHeaderProps> = ({ score, likes, lastModified }) => {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 1, p: 1 }}>
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <Typography variant="h6" fontWeight="bold">{title}</Typography>
-        <FormControlLabel
-          control={<Switch checked={manualOrientation !== "auto"} onChange={onToggleOrientation} />}
-          label={manualOrientation === "auto" ? "Auto" : "Portrait Mode"}
-        />
-      </Box>
+      
       <Box sx={{ display: "flex", alignItems: "center", gap: 4 }}>
         <Typography variant="body2"> Score: {score} </Typography>
         <Typography variant="body2"> Boosts: {likes}</Typography>
