@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent, Typography, Box, Switch } from "@mui/material";
 import MuxPlayer from "@mux/mux-player-react";
 import PitchAnalysis from "./PitchAnalysis";
 import PitchComments from "./PitchComments";
-import LikeIcon from "/img/boosticon.svg"; 
+import LikeIcon from "/img/boosticon.svg";
 
 interface CommentData {
   id: number;
@@ -21,7 +21,7 @@ interface PitchContainerProps {
   likes: number;
   lastModified: string;
   comments: CommentData[];
-  isPortrait?: boolean; // ✅ Receives detected orientation
+  isPortrait?: boolean;
   onUpdateComments?: (newComments: CommentData[]) => void;
 }
 
@@ -33,15 +33,36 @@ const PitchContainer: React.FC<PitchContainerProps> = ({
   likes,
   lastModified,
   comments,
-  isPortrait = false, // ✅ Default to false (landscape)
+  isPortrait = false,
 }) => {
   const [manualOrientation, setManualOrientation] = useState<"auto" | "portrait" | "landscape">(isPortrait ? "portrait" : "auto");
+  const analysisRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    setManualOrientation(isPortrait ? "portrait" : "auto"); // ✅ Auto-set based on video upload
-    console.log("📩 Received `isPortrait` from NewIdeaForm:", isPortrait);
+    setManualOrientation(isPortrait ? "portrait" : "auto");
+    console.log("✅ Event listener attached for scrollToAnalysis in PitchContainer");
 
-  }, [isPortrait]);
+    const handleScrollToAnalysis = () => {
+      console.log("📜 Scroll event triggered in PitchContainer!");
+      
+      setTimeout(() => {
+        if (analysisRef.current) {
+          console.log("📜 Scrolling to AI Analysis in PitchContainer...");
+          analysisRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+        } else {
+          console.log("⚠️ analysisRef.current is null. Cannot scroll.");
+        }
+      }, 500); // Adds a delay to stabilize layout
+    };
+  
+    window.addEventListener("scrollToAnalysis", handleScrollToAnalysis);
+  
+    return () => {
+      console.log("❌ Event listener removed from PitchContainer (only on unmount)");
+      window.removeEventListener("scrollToAnalysis", handleScrollToAnalysis);
+    };
+  
+  }, []);
 
   const handleToggleOrientation = () => {
     setManualOrientation(manualOrientation === "auto" ? "portrait" : "auto");
@@ -51,9 +72,18 @@ const PitchContainer: React.FC<PitchContainerProps> = ({
   console.log("🚀 Received videoUrl:", videoUrl);
 
   return (
-    <Card sx={{ width: "100%", maxWidth: "600px", margin: "0 auto", mb: 2, p: 0, overflow: "hidden" }}>
-      
-      {/* 🔹 Full-Width Video with No Margins */}
+    <Card
+      sx={{
+        width: "100%",
+        maxWidth: "600px",
+        margin: "0 auto",
+        mb: 2,
+        p: 0,
+        overflow: "hidden",
+        display: "block", // ✅ Ensures component stays in the DOM
+      }}
+    >
+      {/* 🔹 Full-Width Video */}
       <Box sx={{ width: "100%", padding: "0px", margin: "0px", overflow: "hidden" }}>
         {videoUrl.startsWith("blob:") ? (
           <video
@@ -87,7 +117,7 @@ const PitchContainer: React.FC<PitchContainerProps> = ({
         )}
       </Box>
 
-      {/* 🔹 Pitch Title, Stats, and Orientation Switch */}
+      {/* 🔹 Pitch Title & Stats */}
       <CardContent sx={{ paddingX: 2, paddingTop: 2, paddingBottom: 1 }}>
         <Typography variant="h6" sx={{ fontWeight: "bold" }}>{title}</Typography>
         <Typography variant="body2" color="textSecondary">{description}</Typography>
@@ -111,8 +141,12 @@ const PitchContainer: React.FC<PitchContainerProps> = ({
         </Box>
       </CardContent>
 
-      {/* 🔹 Analysis & Transcript */}
-      <PitchAnalysis />
+      {/* 🔹 Analysis & Transcript Section (Scroll Target) */}
+      <Box ref={analysisRef} id="analysis-section">
+        <PitchAnalysis />
+      </Box>
+
+      {/* 🔹 Comments */}
       <PitchComments pitchId={pitchId} comments={comments} />
     </Card>
   );

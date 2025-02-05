@@ -1,8 +1,12 @@
-import React, { useState } from "react";
+// Updated on - 2025-02-04, Time: Pacific Time (PT), 14:30
+
+// Updated PitchAnalysis.tsx to Ensure Comments & Feedback Section is Always Visible
+import React, { useState, useEffect } from "react";
 import { Box, CardContent, Collapse, Typography, IconButton } from "@mui/material";
 import { ExpandMore, BarChart } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import PitchAIAnalysis from "./PitchAIAnalysis";
+import PitchComments from "./PitchComments";
 
 interface TranscriptSegment {
   timecode: string;
@@ -29,6 +33,29 @@ const InteractiveTranscript = styled(Box)(({ theme }) => ({
 
 const PitchAnalysis: React.FC = () => {
   const [expanded, setExpanded] = useState(false);
+  const [comments] = useState([
+    {
+      id: 0,
+      author: "AI Coach",
+      role: "Coach",
+      text: "Great work! Ask your friends for feedback using the link above. And remember, you can always ask me for feedback anytime!",
+    },
+  ]);
+
+  useEffect(() => {
+    console.log("✅ PitchAnalysis component mounted.");
+
+    const handleScrollToAnalysis = () => {
+      console.log("📜 Scroll event triggered in PitchAnalysis! Expanding...");
+      setExpanded(true);
+    };
+
+    window.addEventListener("scrollToAnalysis", handleScrollToAnalysis);
+    return () => {
+      console.log("❌ Removed scrollToAnalysis event listener from PitchAnalysis.");
+      window.removeEventListener("scrollToAnalysis", handleScrollToAnalysis);
+    };
+  }, []);
 
   return (
     <Box sx={{ mt: 2, p: 2, backgroundColor: "#f8f9fa", borderRadius: 2 }}>
@@ -59,6 +86,9 @@ const PitchAnalysis: React.FC = () => {
           </InteractiveTranscript>
         </CardContent>
       </Collapse>
+
+      {/* 🔹 Comments & Feedback Section (Always Visible) */}
+      <PitchComments pitchId={1} comments={comments} />
     </Box>
   );
 };

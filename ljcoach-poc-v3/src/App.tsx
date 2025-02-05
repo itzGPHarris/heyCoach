@@ -1,6 +1,8 @@
-import React, {  } from 'react';
+// Updated on - 2025-02-04, Time: [YOUR TIMEZONE]
+
+// Updated App.tsx
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-//import { Box } from '@mui/material';
 import AppShell from './components/AppShell/AppShell';
 import AICoach from './components/AICoach/AICoach';
 import CoverScreen from './components/CoverScreen';
@@ -9,10 +11,9 @@ import { styled } from '@mui/system';
 import FirstRunRoutes from './components/shared/FirstRunRoutes';
 import { FirstRunProvider } from './context/FirstRunContext';
 
-
 const DebugBar = styled('div')({
   position: 'fixed',
-  top: 55, // Prevent overlap with header
+  top: 55,
   left: 0,
   width: '100%',
   height: '10px',
@@ -23,32 +24,26 @@ const DebugBar = styled('div')({
 });
 
 const App: React.FC = () => {
-  
-
-  
   const showAICoach = useStore(state => state.showAICoach);
 
   return (
     <FirstRunProvider>
-    <Router>
-      <DebugBar onClick={() => {
-        localStorage.removeItem('hasSeenOnboarding');
-        window.location.reload();
-      }} />
-  
+      <Router>
+        <DebugBar onClick={() => {
+          localStorage.removeItem('hasSeenOnboarding');
+          window.location.reload();
+        }} />
 
-      <Routes>
-        <Route path="/" element={<CoverScreen  />} />
-        <Route path="/*" element={<FirstRunRoutes />} />
-        <Route path="/full-ui" element={<AppShell />} />
-        <Route path="/app" element={<AppShell />} /> {/* ✅ Ensure this exists */}
+        <Routes>
+          <Route path="/" element={<CoverScreen />} />
+          <Route path="/*" element={<FirstRunRoutes />} />
+          <Route path="/full-ui" element={<AppShell />} />
+          <Route path="/app" element={<AppShell />} />
+        </Routes>
 
-      </Routes>
-
-      {showAICoach && <AICoach />}
-    </Router>
-        </FirstRunProvider>
-
+        {showAICoach && <AICoach />}
+      </Router>
+    </FirstRunProvider>
   );
 };
 

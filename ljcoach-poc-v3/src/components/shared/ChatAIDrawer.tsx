@@ -1,6 +1,10 @@
-import { useState, useRef, useEffect } from "react";
-import { Box, IconButton, TextField, Typography, styled, InputAdornment } from "@mui/material";
-import { Mic, Video, Paperclip, ArrowUp } from "lucide-react";
+// Updated on - 2025-02-04, Time: Pacific Time (PT), 14:30
+
+// Updated ChatAIDrawer.tsx with Debugging for Scroll Event to AI Analysis
+import { useState, useEffect, useRef } from "react";
+import { Box, IconButton, TextField, Typography, styled, InputAdornment, Slide, Button } from "@mui/material";
+import { ArrowUp, XCircle } from "lucide-react";
+import { useLocation } from "react-router-dom";
 
 const ChatContainer = styled(Box)({
   position: "fixed",
@@ -26,21 +30,26 @@ const ChatInputContainer = styled(Box)(({ theme }) => ({
   gap: theme.spacing(1),
 }));
 
-function ChatAIFeed() {
-  const [isOpen, setIsOpen] = useState(false);
+function ChatAIDrawer({ onOpenAnalysis }: { onOpenAnalysis: () => void }) {
+  const location = useLocation();
+  const isFirstRun = location.state?.firstRun || false;
+  const [isOpen, setIsOpen] = useState(isFirstRun);
   const [message, setMessage] = useState("");
-  const [conversation, setConversation] = useState<{ question: string; response?: string }[]>([]);
+  const [conversation, setConversation] = useState<{ question: string; response?: string; cta?: boolean }[]>([]);
   const [loading, setLoading] = useState(false);
-  const [mediaMode, setMediaMode] = useState<"audio" | "video">("audio");
-  const [recording, setRecording] = useState(false); // ✅ Track recording state
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const recordTimeout = useRef<ReturnType<typeof setTimeout> | null>(null); // ✅ Fix TypeScript issue
 
   useEffect(() => {
-    if (isOpen && inputRef.current) {
-      inputRef.current.focus();
+    if (isFirstRun) {
+      setConversation([
+        {
+          question: "Welcome! I'm your AI Coach. Your first analysis is ready. You can find it and the interactive transcript in your new pitch card!",
+          response: "",
+          cta: true,
+        },
+      ]);
     }
-  }, [isOpen]);
+  }, [isFirstRun]);
 
   const handleSend = () => {
     if (message.trim()) {
@@ -49,9 +58,13 @@ function ChatAIFeed() {
       setLoading(true);
 
       setTimeout(() => {
+        setConversation((prev) => [...prev, { question: "", response: "AI Coach is processing..." }]);
+      }, 500);
+
+      setTimeout(() => {
         setConversation((prev) =>
           prev.map((entry, index) =>
-            index === prev.length - 1 ? { ...entry, response: "Here is the AI Coach response." } : entry
+            index === prev.length - 1 ? { ...entry, response: "Here's my advice!" } : entry
           )
         );
         setLoading(false);
@@ -60,120 +73,66 @@ function ChatAIFeed() {
     }
   };
 
-  /** ✅ Press & Hold Recording */
-  const handleMediaPress = () => {
-    recordTimeout.current = setTimeout(() => {
-      setRecording(true);
-      alert(`🎙️ Recording ${mediaMode} started...`);
-    }, 500); // ✅ Hold for 0.5s to start recording
-  };
-
-  const handleMediaRelease = () => {
-    if (recordTimeout.current) {
-      clearTimeout(recordTimeout.current);
-    }
-    if (recording) {
-      setRecording(false);
-      alert(`⏹️ ${mediaMode === "audio" ? "Audio" : "Video"} recording stopped.`);
-    }
-  };
-
   return (
     <ChatContainer>
-      {isOpen && (
+      <Slide direction="up" in={isOpen} mountOnEnter unmountOnExit timeout={300}>
         <Box
           sx={{
             position: "fixed",
-            bottom: 60,
+            bottom: 88,
             left: 0,
             right: 0,
             backgroundColor: "#575757",
             color: "white",
-            padding: 2,
+            padding: 3,
             borderRadius: "12px 12px 0 0",
-            boxShadow: "0px -2px 10px rgba(0, 0, 0, 0.1)",
+            boxShadow: "0px -2px 15px rgba(0, 0, 0, 0.2)",
             maxHeight: "50vh",
             overflowY: "auto",
             zIndex: 11,
           }}
         >
-          {/* Header */}
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
             <Typography variant="h6">Coach Chat</Typography>
+            <IconButton onClick={() => setIsOpen(false)}>
+              <XCircle size={20} color="white" />
+            </IconButton>
           </Box>
 
-          {/* Conversation Feed */}
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             {conversation.map((entry, index) => (
-              <Box
-                key={index}
-                sx={{
-                  p: 2,
-                  borderRadius: 12,
-                  color: "white",
-                  maxWidth: "95%",
-                  alignSelf: index % 2 === 0 ? "flex-start" : "flex-end",
-                  backgroundColor: index % 2 === 0 ? "#0090F2" : "#EDEDED",
-                }}
-              >
-                <Typography variant="body1" sx={{ color: index % 2 === 0 ? "white" : "black" }}>
-                  {entry.question}
-                </Typography>
+              <Box key={index} sx={{ p: 2, borderRadius: 12, color: "white", maxWidth: "95%", alignSelf: index % 2 === 0 ? "flex-start" : "flex-end", backgroundColor: index % 2 === 0 ? "#0090F2" : "#EDEDED" }}>
+                <Typography variant="body1" sx={{ color: index % 2 === 0 ? "white" : "black" }}>{entry.question}</Typography>
                 {entry.response && <Typography variant="body2">{entry.response}</Typography>}
+                {entry.cta && (
+                  <Button
+  variant="contained"
+  size="small"
+  sx={{ mt: 1 }}
+  onClick={() => {
+    console.log("📜 Opening AI Analysis...");
+    onOpenAnalysis();
+
+    setTimeout(() => {
+      console.log("🚀 Dispatching event globally after ensuring components are loaded...");
+      window.dispatchEvent(new CustomEvent("scrollToAnalysis"));
+    }, 1500); // Increase delay to ensure UI renders
+  }}
+>
+  Let's check it out
+</Button>
+                
+                )}
               </Box>
             ))}
           </Box>
         </Box>
-      )}
-
-      {/* Chat Input */}
+      </Slide>
       <ChatInputContainer>
-        {/* Attachment Icon */}
-        <IconButton disabled={loading} component="label">
-          <Paperclip size={20} color="#fff" />
-          <input type="file" hidden onChange={() => alert("📎 Document uploaded!")} />
-        </IconButton>
-
-        {/* Chat Input */}
-        <TextField
-          fullWidth
-          placeholder={loading ? "Waiting for response..." : "Hello!  What can I help you with?"}
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          disabled={loading}
-          inputRef={inputRef}
-          sx={{
-            borderRadius: 2,
-            backgroundColor: "#efefef",
-            transition: "width 0.3s ease-in-out",
-            width: "100%",
-          }}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                {message.trim() ? (
-                  <IconButton onClick={handleSend} color="primary" disabled={loading}>
-                    <ArrowUp size={20} />
-                  </IconButton>
-                ) : (
-                  <IconButton
-                    disabled={loading}
-                    onClick={() => setMediaMode(mediaMode === "audio" ? "video" : "audio")}
-                    onMouseDown={handleMediaPress} // ✅ Start recording on press
-                    onMouseUp={handleMediaRelease} // ✅ Stop recording on release
-                    onTouchStart={handleMediaPress} // ✅ Mobile support
-                    onTouchEnd={handleMediaRelease} // ✅ Mobile support
-                  >
-                    {mediaMode === "audio" ? <Mic size={20} /> : <Video size={20} />}
-                  </IconButton>
-                )}
-              </InputAdornment>
-            ),
-          }}
-        />
+        <TextField fullWidth placeholder={loading ? "AI Coach is thinking..." : "Hello! What can I help you with?"} value={message} onChange={(e) => setMessage(e.target.value)} disabled={loading} inputRef={inputRef} sx={{ borderRadius: 2, backgroundColor: "#efefef", transition: "width 0.3s ease-in-out", width: "100%" }} InputProps={{ endAdornment: (<InputAdornment position="end"><IconButton onClick={handleSend} color="primary" disabled={loading}><ArrowUp size={20} /></IconButton></InputAdornment>) }} />
       </ChatInputContainer>
     </ChatContainer>
   );
 }
 
-export default ChatAIFeed;
+export default ChatAIDrawer;

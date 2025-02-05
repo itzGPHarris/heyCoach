@@ -1,3 +1,6 @@
+// Updated on - 2025-02-04, Time: [YOUR TIMEZONE]
+
+// Updated AppShell.tsx
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
@@ -27,7 +30,8 @@ const DebugBar = styled('div')({
   left: 0,
   width: '100%',
   height: '10px',
-  backgroundColor: "white", opacity: 0.01,
+  backgroundColor: 'white',
+  opacity: 0.01,
   cursor: 'pointer',
   zIndex: 1000,
 });
@@ -58,6 +62,13 @@ function AppShell() {
   const showAICoach = store.showAICoach || false;
   const location = useLocation();
   const firstRunData = location.state || {};
+  const isFirstRun = location.state?.firstRun || localStorage.getItem('firstRun') === 'true';
+
+  React.useEffect(() => {
+    if (location.state?.firstRun) {
+      localStorage.setItem('firstRun', 'true');
+    }
+  }, [location.state]);
 
   const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -71,6 +82,18 @@ function AppShell() {
     handleMenuClose();
   };
 
+  const handleOpenAnalysis = () => {
+    console.log("📜 Opening AI Analysis from AppShell...");
+    // Add logic here to open AI Analysis (if needed)
+  };
+  
+  console.log("📍 AppShell.tsx - location.state:", location.state);
+  console.log("📍 AppShell.tsx - isFirstRun:", isFirstRun);
+  console.log("📍 AppShell.tsx - firstRunData:", firstRunData);
+  console.log("📍 AppShell.tsx - firstRunData.idea:", firstRunData.idea);
+  console.log("📍 AppShell.tsx - firstRunData.videoSrc:", firstRunData.videoSrc);
+  console.log("📍 AppShell.tsx - firstRunData.isPortrait:", firstRunData.isPortrait);
+    
   return (
     <ThemeProvider theme={getTheme(mode)}>
       <DebugBar onClick={() => {
@@ -82,7 +105,7 @@ function AppShell() {
       <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
         <StyledAppBar position="fixed" elevation={0}>
           <HeaderToolbar>
-            <Box sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }} >
+            <Box sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
               <img src="/img/logo.svg" alt="LongJump Logo" style={{ height: 32, marginRight: 8 }} />
             </Box>
             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
@@ -117,21 +140,19 @@ function AppShell() {
         </Menu>
 
         <MainContent>
-          {firstRunData.idea && firstRunData.videoSrc ? (
+          {isFirstRun && firstRunData.idea && firstRunData.videoSrc ? (
             <PitchCarouselNewUser
               videoUrl={firstRunData.videoSrc}
               isPortrait={firstRunData.isPortrait ?? false}
               title={firstRunData.idea}
             />
           ) : (
-            <>
-              <FeedView />
-            </>
+            <FeedView />
           )}
         </MainContent>
 
         {showAICoach && <AICoach />}
-        <ChatAIDrawer />
+        <ChatAIDrawer onOpenAnalysis={handleOpenAnalysis}  />
       </Box>
     </ThemeProvider>
   );

@@ -28,6 +28,22 @@ const generateAIFeedback = (): AIAnalysis => {
 const PitchAIAnalysis: React.FC = () => {
   const [analysis, setAnalysis] = useState<AIAnalysis | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  useEffect(() => {
+    console.log("✅ AI Analysis component mounted.");
+
+    const handleScrollToAnalysis = () => {
+      console.log("📜 Scroll event triggered in PitchAIAnalysis! Expanding AI Analysis...");
+      setIsExpanded(true);
+    };
+
+    window.addEventListener("scrollToAnalysis", handleScrollToAnalysis);
+    return () => {
+      console.log("❌ Removed scrollToAnalysis event listener from PitchAIAnalysis.");
+      window.removeEventListener("scrollToAnalysis", handleScrollToAnalysis);
+    };
+  }, []);
 
   useEffect(() => {
     setLoading(true);
@@ -46,7 +62,7 @@ const PitchAIAnalysis: React.FC = () => {
       {loading ? (
         <CircularProgress />
       ) : analysis ? (
-        <Box sx={{ mt: 2 }}>
+        <Box id="analysis-section" sx={{ p: 2, display: isExpanded ? "block" : "none" }}>
           <Typography variant="body1"><strong>Clarity:</strong> {analysis.clarity}%</Typography>
           <Typography variant="body1"><strong>Engagement:</strong> {analysis.engagement}%</Typography>
           <Typography variant="body1"><strong>Pacing:</strong> {analysis.pacing}%</Typography>

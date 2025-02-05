@@ -1,6 +1,7 @@
+// Updated FirstRunVideo.tsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, Typography, TextField } from '@mui/material';
 import { styled } from '@mui/system';
 import { useFirstRun } from '../../context/FirstRunContext';
 
@@ -15,87 +16,81 @@ const Container = styled(Box)(({ theme }) => ({
   position: 'relative'
 }));
 
-const ButtonContainer = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  gap: theme.spacing(2),
-  width: '100%',
-  justifyContent: 'space-between',
-  marginBottom: theme.spacing(2)
-}));
-
 const VideoPreview = styled('video')({
   width: '100%',
   maxWidth: 400,
+  marginTop: 16,
 });
 
 const FirstRunVideo: React.FC = () => {
-  const { idea, videoSrc, setVideoSrc, isPortrait,setIsPortrait } = useFirstRun(); // ✅ Ensure videoSrc is retrieved
+  const { idea, setIdea, videoSrc, setVideoSrc, setIsPortrait } = useFirstRun();
   const navigate = useNavigate();
-  const [videoFile, setVideoFile] = useState<string | null>(videoSrc); // ✅ Initialize with existing videoSrc
+  const [title, setTitle] = useState(idea || '');
 
   const handleUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
-      const fileUrl = URL.createObjectURL(event.target.files[0]);
-  
-      const video = document.createElement("video");
+      const file = event.target.files[0];
+      const fileUrl = URL.createObjectURL(file);
+      setVideoSrc(fileUrl);
+      localStorage.setItem('uploadedVideo', fileUrl);
+
+      const video = document.createElement('video');
       video.src = fileUrl;
       video.onloadedmetadata = () => {
-        const detectedOrientation = video.videoHeight > video.videoWidth;
-        
-        setVideoFile(fileUrl); // ✅ Update local state for preview
-        setVideoSrc(fileUrl);  // ✅ Store in FirstRunContext
-        setIsPortrait(detectedOrientation); // ✅ Store orientation in FirstRunContext
-        localStorage.setItem('uploadedVideo', fileUrl);
-  
-        console.log("📸 Detected Video Orientation:", {
-          width: video.videoWidth,
-          height: video.videoHeight,
-          isPortrait: detectedOrientation ? "Portrait" : "Landscape"
-        });
-      };
-  
-      video.onerror = () => {
-        console.error("❌ Error loading video metadata.");
+        setIsPortrait(video.videoHeight > video.videoWidth);
       };
     }
   };
+
+  const handleContinue = () => {
+    setIdea(title);
+    localStorage.setItem("idea", title);
+    localStorage.setItem("uploadedVideo", videoSrc || "");
+    //localStorage.setItem("isPortrait", isPortrait.toString());
   
-  
+    navigate('/first-run/interstitial');
+  };
 
   return (
     <Container>
-      <ButtonContainer>
-        <Button variant="outlined" onClick={() => navigate('/dashboard')}>Skip</Button>
-        <Button 
-  variant="contained" 
-  color="primary" 
-  sx={{ mt: 2 }} 
-  onClick={() => navigate('/feedback', { state: { idea, videoSrc, isPortrait } })}
-  disabled={!videoSrc} // Prevent navigation if no video uploaded
->
-  Next: Get AI Feedback
-</Button>
+      <Typography variant="h4" gutterBottom>
+        Name Your Pitch & Upload Video
+      </Typography>
+      
+      <TextField
+        label="Pitch Title"
+        fullWidth
+        variant="outlined"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        sx={{ mb: 2 }}
+      />
 
-      </ButtonContainer>
-      
-      <Typography variant="h5" gutterBottom>
-        Your Idea: <strong>{idea || 'No idea entered yet'}</strong>
-      </Typography>
-      <Typography variant="body1" gutterBottom>
-        Upload or record a quick intro for your idea. It doesn’t have to be perfect!
-      </Typography>
-      
       <Button variant="contained" component="label">
         Upload Video
         <input type="file" accept="video/*" hidden onChange={handleUpload} />
       </Button>
-      
-      {videoFile && (
+
+      {videoSrc ? (
         <VideoPreview controls>
-          <source src={videoFile} type="video/mp4" />
+          <source src={videoSrc} type="video/mp4" />
           Your browser does not support the video tag.
         </VideoPreview>
+      ) : (
+        <Typography variant="body1" sx={{ mt: 2, color: "gray" }}>
+          No video uploaded. Please upload a video to continue.
+        </Typography>
       )}
+
+      <Button
+        variant="contained"
+        color="primary"
+        sx={{ mt: 2 }}
+        disabled={!title || !videoSrc}
+        onClick={handleContinue}
+      >
+        Continue
+      </Button>
     </Container>
   );
 };
