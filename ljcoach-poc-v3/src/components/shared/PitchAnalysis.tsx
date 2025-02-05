@@ -53,7 +53,7 @@ const InteractiveTranscript = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(2),
 }));
 
-const PitchAnalysis: React.FC = () => {
+const PitchAnalysis: React.FC<{ isFirstRun?: boolean }> = ({ isFirstRun = false }) => {
   const [expanded, setExpanded] = useState(false);
   const [comments] = useState([
     {
@@ -66,6 +66,7 @@ const PitchAnalysis: React.FC = () => {
 
   useEffect(() => {
     console.log("✅ PitchAnalysis component mounted.");
+    console.trace(); // ✅ Shows stack trace of where this is called
 
     const handleScrollToAnalysis = () => {
       console.log("📜 Scroll event triggered in PitchAnalysis! Expanding...");
@@ -119,8 +120,8 @@ const PitchAnalysis: React.FC = () => {
           </InteractiveTranscript>
         </CardContent>
       </Collapse>
+      {!isFirstRun && <PitchComments pitchId={1} comments={comments} />}
 
-      <PitchComments pitchId={1} comments={comments} />
     </Box>
   );
 };

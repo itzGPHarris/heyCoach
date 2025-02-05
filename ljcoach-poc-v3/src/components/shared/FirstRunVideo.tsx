@@ -101,26 +101,7 @@ const FirstRunVideo: React.FC = () => {
           No video uploaded. Please upload a video to continue.
         </Typography>
       )}
-
-      <Button
-        variant="contained"
-        color={hasUploaded ? "success" : "primary"}
-        component="label"
-        sx={{
-          width: '100%',
-          maxWidth: 600,
-          padding: (theme) => theme.spacing(1.5, 3),
-          marginBottom: (theme) => theme.spacing(1),
-          borderRadius: 50,
-          fontWeight: "bold", // ✅ Make text bold
-          textTransform: "none", // ✅ Prevent all caps
-        }}
-      >
-        {hasUploaded ? "Replace Video" : "Upload Your First Video"}
-        <input type="file" accept="video/*" hidden onChange={handleUpload} />
-      </Button>
-
-      <Button
+<Button
         variant="contained"
         color="primary"
         sx={{ 
@@ -139,6 +120,25 @@ const FirstRunVideo: React.FC = () => {
       >
         Continue
       </Button>
+      <Button
+        variant="contained"
+        color={hasUploaded ? "success" : "primary"}
+        component="label"
+        sx={{
+          width: '100%',
+          maxWidth: 600,
+          padding: (theme) => theme.spacing(1.5, 3),
+          marginBottom: (theme) => theme.spacing(1),
+          borderRadius: 50,
+          fontWeight: "bold", // ✅ Make text bold
+          textTransform: "none", // ✅ Prevent all caps
+        }}
+      >
+        {hasUploaded ? "Replace Video" : "Upload Your First Video"}
+        <input type="file" accept="video/*" hidden onChange={handleUpload} />
+      </Button>
+
+      
     </Container>
   );
 };

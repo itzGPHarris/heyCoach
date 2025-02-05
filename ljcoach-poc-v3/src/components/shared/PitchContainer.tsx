@@ -150,8 +150,8 @@ const PitchContainer: React.FC<PitchContainerProps> = ({
                 borderRadius: "0 0 12px 12px", // ✅ Bottom corners rounded
                 p: 2, 
                 boxShadow: "0px 2px 10px rgba(0,0,0,0.1)" }}>
-                </Box>*/}
-        <PitchComments pitchId={pitchId} comments={comments} />
+                </Box>
+        <PitchComments pitchId={pitchId} comments={comments} />*/}
       
     </Card>
   );

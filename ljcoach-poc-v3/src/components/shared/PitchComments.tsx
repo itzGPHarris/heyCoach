@@ -14,6 +14,8 @@ interface PitchCommentsProps {
   pitchId: number;
   comments: CommentData[];
   onUpdateComments?: (newComments: CommentData[]) => void;
+  //comments: { id: number; author: string; role: string; text: string }[];
+
 }
 
 const SmallBadge = styled(Badge)({
@@ -30,6 +32,13 @@ const SmallBadge = styled(Badge)({
 });
 
 const PitchComments: React.FC<PitchCommentsProps> = ({ pitchId, comments, onUpdateComments }) => {
+
+  useEffect(() => {
+    console.log(`📢 PitchComments Rendered - pitchId: ${pitchId}`);
+    console.trace(); // ✅ Shows stack trace of where this is called
+
+  }, []);
+  
   const [commentsExpanded, setCommentsExpanded] = useState(false);
   const [newCommentsCount, setNewCommentsCount] = useState(comments.length);
   const [localComments, setLocalComments] = useState(comments);
