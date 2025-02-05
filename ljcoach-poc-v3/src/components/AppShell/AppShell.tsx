@@ -26,12 +26,12 @@ import PitchCarouselNewUser from '../shared/PitchCarouselNewUser';
 
 const DebugBar = styled('div')({
   position: 'fixed',
-  top: 55,
+  top: 0,
   left: 0,
   width: '100%',
-  height: '10px',
+  height: '1px',
   backgroundColor: 'white',
-  opacity: 0.01,
+  opacity: 0,
   cursor: 'pointer',
   zIndex: 1000,
 });
@@ -51,7 +51,7 @@ const MainContent = styled(Box)(({ theme }) => ({
   overflow: 'auto',
   backgroundColor: theme.palette.background.default,
   position: 'relative',
-  marginTop: '64px',
+  marginTop: '58px',
 }));
 
 function AppShell() {

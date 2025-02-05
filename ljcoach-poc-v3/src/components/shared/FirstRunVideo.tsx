@@ -1,4 +1,3 @@
-// Updated FirstRunVideo.tsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Button, Typography, TextField } from '@mui/material';
@@ -11,16 +10,28 @@ const Container = styled(Box)(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'center',
   height: '100vh',
-  padding: theme.spacing(3),
+  padding: theme.spacing(6),
   textAlign: 'center',
   position: 'relative'
 }));
 
-const VideoPreview = styled('video')({
+const VideoPreview = styled('video')(({ theme }) => ({
   width: '100%',
-  maxWidth: 400,
-  marginTop: 16,
-});
+  maxWidth: 250, // Reduced size from 400 to 300
+  height: 'auto', // Maintains aspect ratio
+  marginTop: theme.spacing(2),
+  marginBottom: theme.spacing(2),
+  borderRadius: theme.shape.borderRadius, // Smooth edges
+}));
+
+{/*const StyledButton = styled(Button)(({ theme }) => ({
+  width: '100%',
+  maxWidth: 600,
+  padding: theme.spacing(1.5, 3),
+  marginBottom: theme.spacing(2),
+  borderRadius: 50,
+  pt: 2, mt: 2,
+}));*/}
 
 const FirstRunVideo: React.FC = () => {
   const { idea, setIdea, videoSrc, setVideoSrc, setIsPortrait } = useFirstRun();
@@ -46,14 +57,13 @@ const FirstRunVideo: React.FC = () => {
     setIdea(title);
     localStorage.setItem("idea", title);
     localStorage.setItem("uploadedVideo", videoSrc || "");
-    //localStorage.setItem("isPortrait", isPortrait.toString());
   
     navigate('/first-run/interstitial');
   };
 
   return (
     <Container>
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h4" gutterBottom sx={{ mb: 4, px: 2, fontWeight: 900 }}>
         Name Your Pitch & Upload Video
       </Typography>
       
@@ -66,10 +76,7 @@ const FirstRunVideo: React.FC = () => {
         sx={{ mb: 2 }}
       />
 
-      <Button variant="contained" component="label">
-        Upload Video
-        <input type="file" accept="video/*" hidden onChange={handleUpload} />
-      </Button>
+      
 
       {videoSrc ? (
         <VideoPreview controls>
@@ -81,13 +88,36 @@ const FirstRunVideo: React.FC = () => {
           No video uploaded. Please upload a video to continue.
         </Typography>
       )}
-
+<Button
+  variant="contained"
+  color="primary"
+  component="label"
+  sx={{
+    width: '100%',
+    maxWidth: 600,
+    padding: (theme) => theme.spacing(1.5, 3),
+    marginBottom: (theme) => theme.spacing(1),
+    borderRadius: 50,
+  }}
+>
+  Upload your first video
+  <input type="file" accept="video/*" hidden onChange={handleUpload} />
+</Button>
       <Button
         variant="contained"
         color="primary"
-        sx={{ mt: 2 }}
+        sx={{ mt: 2 , pt: 1,
+          width: '100%',
+          maxWidth: 600,
+          padding: (theme) => theme.spacing(1.5, 3),
+          marginBottom: (theme) => theme.spacing(2),
+          borderRadius: 50
+
+        }}
         disabled={!title || !videoSrc}
-        onClick={handleContinue}
+        onClick={handleContinue
+          
+        }
       >
         Continue
       </Button>

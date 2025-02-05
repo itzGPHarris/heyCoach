@@ -1,5 +1,4 @@
 // Updated on - 2025-02-04, Time: Pacific Time (PT), 14:30
-
 // Updated ChatAIDrawer.tsx with Debugging for Scroll Event to AI Analysis
 import { useState, useEffect, useRef } from "react";
 import { Box, IconButton, TextField, Typography, styled, InputAdornment, Slide, Button } from "@mui/material";
@@ -117,6 +116,7 @@ function ChatAIDrawer({ onOpenAnalysis }: { onOpenAnalysis: () => void }) {
       console.log("🚀 Dispatching event globally after ensuring components are loaded...");
       window.dispatchEvent(new CustomEvent("scrollToAnalysis"));
     }, 1500); // Increase delay to ensure UI renders
+    setIsOpen(false)
   }}
 >
   Let's check it out
@@ -132,6 +132,8 @@ function ChatAIDrawer({ onOpenAnalysis }: { onOpenAnalysis: () => void }) {
         <TextField fullWidth placeholder={loading ? "AI Coach is thinking..." : "Hello! What can I help you with?"} value={message} onChange={(e) => setMessage(e.target.value)} disabled={loading} inputRef={inputRef} sx={{ borderRadius: 2, backgroundColor: "#efefef", transition: "width 0.3s ease-in-out", width: "100%" }} InputProps={{ endAdornment: (<InputAdornment position="end"><IconButton onClick={handleSend} color="primary" disabled={loading}><ArrowUp size={20} /></IconButton></InputAdornment>) }} />
       </ChatInputContainer>
     </ChatContainer>
+    
+    
   );
 }
 
