@@ -70,10 +70,10 @@ const PitchContainer: React.FC<PitchContainerProps> = ({
     <Card
       sx={{
         width: "100%",
-        maxWidth: "600px",
+        maxWidth: "100%",
         margin: "0 auto",
         mb: 2,
-        p: 0,
+        p: 2,
         overflow: "hidden",
         display: "block",
       }}

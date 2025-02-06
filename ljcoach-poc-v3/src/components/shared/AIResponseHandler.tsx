@@ -4,6 +4,7 @@
 import React from "react";
 import Competition from "../shared/Competition";
 import PitchContainer from "../shared/PitchContainer";
+//import { Box } from "@mui/material";
 //import NewIdeaForm from "../shared/NewIdeaForm";
 
 interface Message {
@@ -19,7 +20,7 @@ export const getAIResponse = (
   setIsNewIdeaOpen: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   if (input.toLowerCase().includes("compete")) {
-    return { component: <Competition /> };
+    return { component: <Competition />};
   } else if (input.toLowerCase().includes("last pitch")) {
     return {
       component: (
