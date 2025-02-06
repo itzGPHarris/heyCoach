@@ -1,9 +1,9 @@
 // Updated on - 2025-02-05, Time: Pacific Time (PT), 12:45
 
 // Updated CoverScreen.tsx - Ensures Intent Selection is Centered with the Rest of the Page
-import React, { useState } from "react";
+import React, {  } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Button, Typography, Chip } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import { styled } from "@mui/system";
 import { useFirstRun } from "../context/FirstRunContext";
 
@@ -49,18 +49,12 @@ const IntentContainer = styled(Box)(({ theme }) => ({
 const CoverScreen: React.FC = () => {
   const navigate = useNavigate();
   const { setIdea, setVideoSrc } = useFirstRun();
-  const [selectedIntents, setSelectedIntents] = useState<string[]>(
-    JSON.parse(localStorage.getItem("userIntent") || "[]")
-  );
+  
 
-  const handleToggleIntent = (intent: string) => {
-    setSelectedIntents((prev) =>
-      prev.includes(intent) ? prev.filter((i) => i !== intent) : prev.length < 3 ? [...prev, intent] : prev
-    );
-  };
+  
 
   const handleStart = () => {
-    localStorage.setItem("userIntent", JSON.stringify(selectedIntents));
+    //localStorage.setItem("userIntent", JSON.stringify(selectedIntents));
     setIdea("My First Pitch");
     setVideoSrc(null);
     navigate("/first-run/video");
@@ -74,14 +68,14 @@ const CoverScreen: React.FC = () => {
         Welcome to LongJump
       </Typography>
 
-      <Typography variant="body1" sx={{ mb: 3, px: 2, fontSize: "1.17rem" }}> 
+       {/*<Typography variant="body1" sx={{ mb: 3, px: 2, fontSize: "1.17rem" }}> 
         Kickstart your pitch with a quick intro video. Pick up to 3 focus areas to shape your journey—or skip and jump right in!
       </Typography>
 
-      {/* ✅ Centered Inline Intent Selection */}
+      ✅ Centered Inline Intent Selection */}
       <IntentContainer>
        
-        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, justifyContent: "center" }}> {/* ✅ Center intent chips */}
+       {/* <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, justifyContent: "center" }}> 
           {["Refine a Business Pitch", "Prepare for a Competition", "Improve a Boardroom Presentation",
             "Fundraising & Investor Pitches", "Public Speaking & Communication", "Brainstorm & Experiment"].map(
             (intent) => (
@@ -94,7 +88,7 @@ const CoverScreen: React.FC = () => {
               />
             )
           )}
-        </Box>
+        </Box>*/}
       </IntentContainer>
 
       <StyledButton variant="contained" color="primary" onClick={handleStart}>

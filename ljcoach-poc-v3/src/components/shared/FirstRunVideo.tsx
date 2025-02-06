@@ -1,7 +1,7 @@
 // Updated on - 2025-02-05, Time: Pacific Time (PT), 12:50
 
 // Updated FirstRunVideo.tsx - Uses User Intent to Set Default Pitch Title While Keeping UI Styling
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Button, Typography, TextField } from "@mui/material";
 import { styled } from "@mui/system";
@@ -32,15 +32,9 @@ const FirstRunVideo: React.FC = () => {
   const navigate = useNavigate();
   const [title, setTitle] = useState(idea || "");
   const [hasUploaded, setHasUploaded] = useState(!!videoSrc);
-  const [defaultTitle, setDefaultTitle] = useState("My First Pitch");
+  //const [defaultTitle, setDefaultTitle] = useState("My First Pitch");
 
-  useEffect(() => {
-    const userIntent = JSON.parse(localStorage.getItem("userIntent") || "[]");
-    if (userIntent.length > 0) {
-      setDefaultTitle(`My First ${userIntent[0]}`);
-      setTitle(`My First ${userIntent[0]}`);
-    }
-  }, []);
+  
 
   const handleUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -68,7 +62,7 @@ const FirstRunVideo: React.FC = () => {
   return (
     <Container>
       <Typography variant="h4" gutterBottom sx={{ mb: 4, px: 2, fontWeight: 900 }}>
-        Name Your {defaultTitle} & Upload Video
+        Name your pitch and upload Video
       </Typography>
       
       <TextField
