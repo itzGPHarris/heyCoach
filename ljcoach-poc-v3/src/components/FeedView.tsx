@@ -1,56 +1,47 @@
-// Updated on - 2025-02-04, Time: Pacific Time (PT), 14:30
+import React, { useState, useEffect, useRef } from "react";
+import { Box, Typography } from "@mui/material";
+import MessageBubble from "./shared/MessageBubble";
+import { getAIResponse } from "./shared/AIResponseHandler";
+import ChatInput from "./shared/ChatInput";
 
-// Updated FeedView.tsx with Debugging for Scroll Event
-import { Box } from "@mui/material";
-import PitchFeed from "./shared/PitchFeed";
-import Competition from "./shared/Competition";
-import { useEffect, useRef } from "react";
 
-const FeedView = ({ scrollToAnalysis }: { scrollToAnalysis?: boolean }) => {
-  const analysisRef = useRef<HTMLDivElement | null>(null);
+interface Message {
+  id: number;
+  sender: "user" | "coach";
+  text?: string;
+  component?: JSX.Element;
+}
+
+const FeedView: React.FC = () => {
+  const [messages, setMessages] = useState<Message[]>([{ id: 1, sender: "coach", text: "Welcome! Ready to refine your pitch?" }]);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
-    console.log("✅ Event listener attached for scrollToAnalysis in [Feedview]");
-  const handleScrollToAnalysis = () => {
-    console.log("📜 Scroll event triggered in [Feedview]!");
+  const handleSendMessage = (input: string) => {
+    const userMessage: Message = { id: messages.length + 1, sender: "user", text: input };
+    setMessages([...messages, userMessage]);
+
+    setTimeout(() => {
+      const aiResponse = getAIResponse(input, setMessages); // ✅ Pass setMessages
+      setMessages((prev) => [...prev, { id: prev.length + 2, sender: "coach", ...aiResponse }]);
+        }, 1000);
   };
 
-  window.addEventListener("scrollToAnalysis", handleScrollToAnalysis);
-  return () => {
-    console.log("❌ Event listener removed from [feedview]");
-    window.removeEventListener("scrollToAnalysis", handleScrollToAnalysis);
-  };
-
-
-    const handleScrollTrigger = () => {
-      console.log("📜 Scroll event triggered in FeedView!");
-      if (analysisRef.current) {
-        console.log("📜 Scrolling to AI Analysis in FeedView...");
-        analysisRef.current.scrollIntoView({ behavior: "smooth" });
-      } else {
-        console.log("⚠️ analysisRef.current is null in FeedView. Cannot scroll.");
-      }
-    };
   
-    window.addEventListener("scrollToAnalysis", handleScrollTrigger);
-    return () => window.removeEventListener("scrollToAnalysis", handleScrollTrigger);
-    }, []);
 
-  useEffect(() => {
-    console.log("📜 Scroll Trigger Received:", scrollToAnalysis);
-    if (scrollToAnalysis && analysisRef.current) {
-      console.log("📜 Scrolling via prop update...");
-      analysisRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [scrollToAnalysis]);
-console.log("📜 feedview:");
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: "100vw", pl: 3, pr: 3, pb: 5 }}>
-      <Competition />
-      <div ref={analysisRef}>
-        <PitchFeed />
-      </div>
+    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100vw", maxWidth: "100%", p: 3, boxSizing: "border-box" }}>
+      <Box sx={{ width: "100%", maxWidth: 800, display: "flex", flexDirection: "column", gap: 2, overflowY: "auto", flexGrow: 1, minHeight: "0px", paddingBottom: "120px" }}>
+        <Typography variant="h4" sx={{ mb: 2, position: "sticky", top: 0, backgroundColor: "white", zIndex: 10, padding: 2 }}>🚀 Your Pitch Feed</Typography>
+        {messages.map((msg) => (
+          <MessageBubble key={msg.id} sender={msg.sender} text={msg.text} component={msg.component} />
+        ))}
+        <div ref={messagesEndRef} />
+      </Box>
+      <ChatInput onSendMessage={handleSendMessage} />
     </Box>
   );
 };

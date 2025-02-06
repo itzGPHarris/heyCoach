@@ -1,6 +1,9 @@
+// Updated on - 2025-02-05, Time: Pacific Time (PT), 14:40
+
+// Fixed NewIdeaForm.tsx - Ensures Dialog Closes Properly on Submission or Cancel
 import { useState, useEffect } from "react";
 import { Dialog, DialogActions, DialogContent, Button, Typography, TextField } from "@mui/material";
-import VideoUploader from "./VideoUploader"; // ✅ Ensure VideoUploader is included
+import VideoUploader from "./VideoUploader";
 
 interface NewIdeaFormProps {
   open: boolean;
@@ -21,26 +24,30 @@ const NewIdeaForm: React.FC<NewIdeaFormProps> = ({ open, onClose, onSubmit, init
 
   const handleVideoUpload = (url: string) => {
     setVideoUrl(url);
-
     const video = document.createElement("video");
     video.src = url;
     video.onloadedmetadata = () => {
       const detectedOrientation = video.videoHeight > video.videoWidth;
       setIsPortrait(detectedOrientation);
-
       console.log("📸 Detected Video Orientation:", detectedOrientation ? "Portrait" : "Landscape");
     };
   };
 
   const handleSubmit = () => {
-    if (!title.trim()) return;
+    console.log("🛑🛑🛑 Calling onClose to close the dialog");
+
+    if (!title.trim() || !description.trim()) {
+      console.log("❌ Submission blocked: Missing required fields");
+      return;
+    }
     console.log("🚀 Submitting New Idea:", { title, description, videoUrl, isPortrait });
     onSubmit({ title, description, videoUrl: videoUrl ?? "", isPortrait });
-    onClose();
-  };
+    console.log("🛑 Calling onClose to close the dialog");
+    onClose(); // ✅ Try closing immediately
+    };
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogContent>
         <Typography variant="h6">Create a New Pitch Idea</Typography>
         <TextField label="Idea Title" fullWidth variant="outlined" sx={{ mt: 2 }} value={title} onChange={(e) => setTitle(e.target.value)} />
@@ -60,7 +67,7 @@ const NewIdeaForm: React.FC<NewIdeaFormProps> = ({ open, onClose, onSubmit, init
 
       <DialogActions>
         <Button onClick={onClose} color="secondary">Cancel</Button>
-        <Button onClick={handleSubmit} variant="contained" color="primary" disabled={!title.trim()}>
+        <Button onClick={handleSubmit} variant="contained" color="primary" disabled={!title.trim() || !description.trim()}>
           Add Idea
         </Button>
       </DialogActions>

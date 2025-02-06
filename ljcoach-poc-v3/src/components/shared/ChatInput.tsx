@@ -1,53 +1,34 @@
-import { Box, IconButton, InputBase, Paper } from '@mui/material';
-import { Mic, ArrowUpward } from '@mui/icons-material';
-import { useState } from 'react';
+import React, { useState } from "react";
+import { Box, TextField, Button } from "@mui/material";
 
 interface ChatInputProps {
-  onSubmit?: (text: string) => void;
-  placeholder?: string;
+  onSendMessage: (message: string) => void;
 }
 
-function ChatInput({ onSubmit, placeholder = "Ask Coach a question" }: ChatInputProps) {
-  const [input, setInput] = useState('');
+const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
+  const [input, setInput] = useState("");
 
-  const handleSubmit = () => {
-    if (input.trim() && onSubmit) {
-      onSubmit(input);
-      setInput('');
-    }
+  const handleSend = () => {
+    if (!input.trim()) return;
+    onSendMessage(input);
+    setInput("");
   };
 
   return (
-    <Box sx={{ p: 2, bgcolor: 'background.default' }}>
-      <Paper
-        sx={{
-          p: '2px 4px',
-          display: 'flex',
-          alignItems: 'center',
-          maxWidth: 600,
-          mx: 'auto'
-        }}
-      >
-        <IconButton sx={{ p: '10px' }}>
-          <Mic />
-        </IconButton>
-        <InputBase
-          sx={{ ml: 1, flex: 1 }}
-          placeholder={placeholder}
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyPress={(e) => {
-            if (e.key === 'Enter') {
-              handleSubmit();
-            }
-          }}
-        />
-        <IconButton color="primary" onClick={handleSubmit}>
-          <ArrowUpward />
-        </IconButton>
-      </Paper>
+    <Box sx={{ backgroundColor: "#333", padding: 3, width: "95vw", maxWidth: "600px", display: "flex", gap: 1, position: "fixed", bottom: 20, left: "50%", transform: "translateX(-50%)", borderRadius: "12px" }}>
+      <TextField
+        fullWidth
+        variant="outlined"
+        placeholder="Ask AI Coach something..."
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        sx={{ backgroundColor: "#fff", borderRadius: "8px" }}
+      />
+      <Button variant="contained" onClick={handleSend}>
+        Send
+      </Button>
     </Box>
   );
-}
+};
 
 export default ChatInput;

@@ -1,6 +1,3 @@
-// Updated on - 2025-02-05, Time: Pacific Time (PT), 12:50
-
-// Restored Correct App Header Implementation and Ensured CoachCardBanner Integration
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { ThemeProvider, CssBaseline, Box, AppBar, Toolbar, IconButton, Avatar, Badge, Menu, MenuItem } from "@mui/material";
@@ -10,8 +7,6 @@ import useStore from "../../store";
 import FeedView from "../FeedView";
 import DashboardView from "../DashboardView";
 import ProfileView from "../ProfileView";
-import AICoach from "../AICoach";
-import ChatAIDrawer from "../shared/ChatAIDrawer";
 import PitchCarouselNewUser from "../shared/PitchCarouselNewUser";
 import CoachCardBanner from "../shared/CoachCardBanner";
 
@@ -32,7 +27,6 @@ function AppShell() {
 
   const notifications = store.notifications || [];
   const activeTab = store.activeTab || 'feed';
-  const showAICoach = store.showAICoach || false;
 
   const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -83,7 +77,7 @@ function AppShell() {
           <MenuItem onClick={handleMenuClose}>Sign Out</MenuItem>
         </Menu>
 
-        <Box sx={{ flexGrow: 1, overflow: "auto", backgroundColor: "background.default", position: "relative", marginTop: "64px" }}>
+        <Box sx={{ flexGrow: 1, overflow: "auto", backgroundColor: "background.default", position: "relative", marginTop: "4px" }}>
           {isFirstRun ? (
             <>
               <PitchCarouselNewUser 
@@ -99,9 +93,8 @@ function AppShell() {
           )}
         </Box>
 
-        {showAICoach && <AICoach />}
-        <ChatAIDrawer onOpenAnalysis={() => console.log("📜 Opening AI Analysis from AppShell...")} />
-      </Box>
+        {/* ✅ Ensure AI Chat is integrated into the main view */}
+        </Box>
     </ThemeProvider>
   );
 }
