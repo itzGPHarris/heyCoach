@@ -1,8 +1,14 @@
+// Updated on - 2025-02-05, Time: Pacific Time (PT), 14:45
+
+// Fixed FeedView.tsx - Ensures NewIdeaForm Modal Opens and Closes Properly
 import React, { useState, useEffect, useRef } from "react";
 import { Box, Typography } from "@mui/material";
-import MessageBubble from "./shared/MessageBubble";
-import { getAIResponse } from "./shared/AIResponseHandler";
+import NewIdeaForm from "./shared/NewIdeaForm";
+import PitchContainer from "./shared/PitchContainer";
 import ChatInput from "./shared/ChatInput";
+import MessageBubble from "./shared/MessageBubble";
+import getAIResponse from "./shared/AIResponseHandler"; // ✅ Fix import
+
 
 
 interface Message {
@@ -13,7 +19,10 @@ interface Message {
 }
 
 const FeedView: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([{ id: 1, sender: "coach", text: "Welcome! Ready to refine your pitch?" }]);
+  const [messages, setMessages] = useState<Message[]>([
+    { id: 1, sender: "coach", text: "Welcome! Ready to refine your pitch?" },
+  ]);
+  const [isNewIdeaOpen, setIsNewIdeaOpen] = useState(false); // ✅ Fix: Control modal state
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -25,12 +34,10 @@ const FeedView: React.FC = () => {
     setMessages([...messages, userMessage]);
 
     setTimeout(() => {
-      const aiResponse = getAIResponse(input, setMessages); // ✅ Pass setMessages
+      const aiResponse = getAIResponse(input, setMessages, setIsNewIdeaOpen); // ✅ Fix: Pass state control
       setMessages((prev) => [...prev, { id: prev.length + 2, sender: "coach", ...aiResponse }]);
-        }, 1000);
+    }, 1000);
   };
-
-  
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100vw", maxWidth: "100%", p: 3, boxSizing: "border-box" }}>
@@ -42,6 +49,37 @@ const FeedView: React.FC = () => {
         <div ref={messagesEndRef} />
       </Box>
       <ChatInput onSendMessage={handleSendMessage} />
+
+      {/* ✅ Fix: Render NewIdeaForm properly in FeedView.tsx */}
+      {isNewIdeaOpen && (
+        <NewIdeaForm
+          open={isNewIdeaOpen}
+          onClose={() => setIsNewIdeaOpen(false)} // ✅ Fix: Close modal properly
+          onSubmit={(data) => {
+            setIsNewIdeaOpen(false);
+            setMessages((prev) => [
+              ...prev,
+              {
+                id: prev.length + 1,
+                sender: "coach",
+                component: (
+                  <PitchContainer
+                    pitchId={prev.length + 1}
+                    title={data.title}
+                    description={data.description}
+                    videoUrl={data.videoUrl || ""}
+                    score={0}
+                    likes={0}
+                    lastModified="Just now"
+                    comments={[]}
+                    isPortrait={data.isPortrait}
+                  />
+                ),
+              },
+            ]);
+          }}
+        />
+      )}
     </Box>
   );
 };
