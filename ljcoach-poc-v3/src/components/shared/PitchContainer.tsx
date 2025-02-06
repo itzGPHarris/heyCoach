@@ -5,7 +5,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent, Typography, Box } from "@mui/material";
 import MuxPlayer from "@mux/mux-player-react";
 import PitchAnalysis from "./PitchAnalysis";
-import PitchComments from "./PitchComments";
+//import PitchComments from "./PitchComments";
 import LikeIcon from "/img/boosticon.svg";
 
 interface CommentData {
@@ -29,13 +29,12 @@ interface PitchContainerProps {
 }
 
 const PitchContainer: React.FC<PitchContainerProps> = ({
-  pitchId,
+
   title,
   description,
   videoUrl,
   likes,
   lastModified,
-  comments,
   isPortrait = false,
 }) => {
   const [manualOrientation, setManualOrientation] = useState<"auto" | "portrait" | "landscape">(isPortrait ? "portrait" : "auto");
