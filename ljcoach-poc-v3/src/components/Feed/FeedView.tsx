@@ -20,8 +20,6 @@ interface FeedItem {
 const FeedView: React.FC = () => {
   const [feedItems, setFeedItems] = useState<FeedItem[]>([]);
   
-   // ✅ Fixed duplicate declaration
-
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
 
   useEffect(() => {
