@@ -1,14 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Box } from "@mui/material";
 import MessageBubble from "./MessageBubble";
-//import { aiService, aiNavigationService } from "../../api";
+import { aiService } from "../../api"; // ✅ Ensure correct AI service import
+
+interface Message {
+  id: number;
+  sender: "user" | "coach";
+  text?: string;
+  component?: JSX.Element;
+}
+
 
 interface ChatAIFeedProps {
-  messages: { id: number; sender: "user" | "coach"; text?: string; component?: JSX.Element }[];
-  setMessages: React.Dispatch<React.SetStateAction<any[]>>;
+  messages: Message[];
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>; // ✅ Explicitly typed
 }
 
 const ChatAIFeed: React.FC<ChatAIFeedProps> = ({ messages, setMessages }) => {
+  console.log(messages);
   useEffect(() => {
     const lastMessage = messages[messages.length - 1];
 

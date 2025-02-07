@@ -4,7 +4,7 @@ import { ArrowBackIos, ArrowForwardIos, Star, StarBorder, AddCircleOutline, Remo
 import { styled } from "@mui/material/styles";
 import PitchContainer from "./PitchContainer";
 import { useLocation } from 'react-router-dom';
-import PitchCarouselNewUser from "./PitchCarouselNewUser";
+import PitchCarouselNewUser from "../components/shared/PitchCarouselNewUser";
 
 interface CommentData {
   id: number;
