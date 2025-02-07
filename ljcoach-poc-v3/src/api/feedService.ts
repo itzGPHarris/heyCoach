@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:3001"; // Mock API running with json-server
+const API_BASE_URL = "http://localhost:4000/"; // Mock API running with json-server
 
 interface FeedItem {
   id: string;
@@ -35,7 +35,7 @@ export const getFeedItems = async (): Promise<FeedItem[]> => {
   }
 };
 
-// ✅ Fetch AI Analysis (Mock) (Removed Unused videoUrl Parameter)
+// ✅ Fetch AI Analysis (Mock)
 export const fetchAIAnalysis = async (videoUrl: string): Promise<{ summary: string; feedback: string; question: string; }> => {
   try {
     const response = await axios.post(`${API_BASE_URL}/analyze`, { videoUrl });
@@ -49,7 +49,7 @@ export const fetchAIAnalysis = async (videoUrl: string): Promise<{ summary: stri
     };
   }
 };
-  
+
 // ✅ Update AI Analysis in Mock Feed
 export const updateFeedItem = async (id: string, aiResponse: { summary: string; feedback: string; question: string; }): Promise<FeedItem> => {
   try {
