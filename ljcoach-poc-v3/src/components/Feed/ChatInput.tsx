@@ -26,11 +26,11 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
       <TextField
         fullWidth
         variant="outlined"
-        placeholder="Ask AI Coach something..."
+        placeholder="Hello..."
         value={input}
         onChange={(e) => setInput(e.target.value)}
         onKeyPress={handleKeyPress}
-        sx={{ backgroundColor: "#fff", borderRadius: "8px" }}
+        sx={{ backgroundColor: "#000", borderRadius: "8px" }}
       />
       <Button variant="contained" onClick={handleSend}>
         Send

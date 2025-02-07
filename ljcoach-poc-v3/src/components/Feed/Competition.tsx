@@ -3,7 +3,7 @@ import { Box, Card, CardContent, Typography, IconButton, Button, Collapse } from
 import { Close, EmojiEvents } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import MuxPlayer from "@mux/mux-player-react";
-import Leaderboard from "./Leaderboard"; // ✅ Import the updated leaderboard component
+//import Leaderboard from "./Leaderboard"; // ✅ Import the updated leaderboard component
 
 const CompetitionCard = styled(Card)(({ theme }) => ({
   borderRadius:  12,
@@ -36,7 +36,7 @@ const Competition: React.FC = () => {
   };
 
   // 🔹 Updated Mock Leaderboard Data
-  const mockLeaders = [
+  {/*const mockLeaders = [
     {
       rank: 1,
       name: "Sarah Johnson",
@@ -65,7 +65,7 @@ const Competition: React.FC = () => {
       submissionLink: "https://example.com/submissions/alex-green"
     }
   ];
-
+*/}
   return (
     <>
       {/* 🔹 Compact Banner View */}
@@ -112,7 +112,6 @@ const Competition: React.FC = () => {
             </Box>
 
             {/* 🔹 Leaderboard Component (Now Under Hero Video) */}
-            <Leaderboard leaders={mockLeaders} />
 
             {/* 🔹 Submit Button (Always Visible) */}
             <Button variant="contained" fullWidth sx={{ mt: 2 }}>

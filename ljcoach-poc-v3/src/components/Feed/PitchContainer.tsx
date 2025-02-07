@@ -4,7 +4,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Card, CardContent, Typography, Box } from "@mui/material";
 import MuxPlayer from "@mux/mux-player-react";
-import PitchAnalysis from "./PitchAnalysis";
+//import PitchAnalysis from "./PitchAnalysis";
 //import PitchComments from "./PitchComments";
 import LikeIcon from "/img/boosticon.svg";
 
@@ -140,7 +140,7 @@ const PitchContainer: React.FC<PitchContainerProps> = ({
                 pl: 2, 
                 pb: 2 
                 }}>
-        <PitchAnalysis />
+       {/*} <PitchAnalysis />*/}
       </Box>
 
       {/* 🔹 Comments & Feedback Section 

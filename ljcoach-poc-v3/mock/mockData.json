@@ -1,0 +1,22 @@
+{
+    "feed": [
+      {
+        "id": "1",
+        "url": "/videos/sample1.mp4",
+        "aiResponse": {
+          "summary": "Your pitch has a strong introduction!",
+          "feedback": "Consider making eye contact with the camera more.",
+          "question": "Would you like tips on structuring your pitch?"
+        }
+      },
+      {
+        "id": "2",
+        "url": "/videos/sample2.mp4",
+        "aiResponse": null
+      }
+    ],
+    "analyze": {
+      "insights": "Your delivery was clear, but try to slow down for better pacing."
+    }
+  }
+  

@@ -2,8 +2,8 @@
 
 // Updated AIResponseHandler.tsx - Fixes Jump-to-Message Targeting for Pitch Cards
 import React from "react";
-import Competition from "../shared/Competition";
-import PitchContainer from "../shared/PitchContainer";
+import Competition from "../Feed/Competition";
+import PitchContainer from "../Feed/PitchContainer";
 
 interface Message {
   id: number;
@@ -19,24 +19,16 @@ export const getAIResponse = (
   jumpToMessage: (query: string) => string | null 
 ) => {
   if (input.toLowerCase().includes("compete")) {
+    setMessages((prev) => [
+      ...prev,
+      { id: prev.length + 1, sender: "coach", text: "You can compete in our latest challenge!" },
+    ]);
     return { component: <Competition /> };
   } else if (input.toLowerCase().includes("last pitch")) {
-    return {
-      component: (
-        <PitchContainer
-          pitchId={1}
-          title="Sustainable Solutions for a Better Tomorrow"
-          description="A pitch focusing on eco-friendly innovations to drive a greener future."
-          videoUrl="sample_video_url"
-          score={85}
-          likes={120}
-          lastModified="Feb 4, 2025"
-          comments={[]}
-          isPortrait={false}
-        />
-      ),
-    };
-  } else if (input.toLowerCase().includes("favorite pitch")) {
+    setMessages((prev) => [
+      ...prev,
+      { id: prev.length + 1, sender: "coach", text: "Here’s your last recorded pitch." },
+    ]);
     return {
       component: (
         <PitchContainer

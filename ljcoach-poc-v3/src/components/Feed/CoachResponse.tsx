@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
-import { aiAnalysisService } from "../api";
+import { analyzePitch } from "../../api/aiAnalysisService"; // ✅ Corrected import
 
 interface CoachResponseProps {
   message: string;
@@ -8,12 +8,23 @@ interface CoachResponseProps {
   pitchText?: string;
 }
 
+// Define expected API response type
+interface AIAnalysisResponse {
+  insights: string;
+}
+
 const CoachResponse: React.FC<CoachResponseProps> = ({ message, actionLabel, pitchText }) => {
   const [analysis, setAnalysis] = useState<string | null>(null);
 
-  const handleAnalyzePitch = () => {
+  const handleAnalyzePitch = async () => {
     if (pitchText) {
-      aiAnalysisService.analyzePitch(pitchText).then((data) => setAnalysis(data.insights));
+      try {
+        const data: AIAnalysisResponse = await analyzePitch(pitchText); // ✅ Added explicit type
+        setAnalysis(data.insights);
+      } catch (error) {
+        console.error("AI analysis failed:", error);
+        setAnalysis("Error fetching analysis.");
+      }
     }
   };
 
