@@ -5,11 +5,11 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import AppShell from './components/AppShell/AppShell';
 import AICoach from './components/AICoach/AICoach';
-import CoverScreen from './components/CoverScreen';
+import CoverScreen from './components/shared/CoverScreen';
 import useStore from './store';
 import { styled } from '@mui/system';
 import FirstRunRoutes from './components/shared/FirstRunRoutes';
-import { FirstRunProvider } from './context/FirstRunContext';
+import { FirstRunProvider } from './contexts/context/FirstRunContext';
 
 const DebugBar = styled('div')({
   position: 'fixed',
