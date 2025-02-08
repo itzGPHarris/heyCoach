@@ -5,7 +5,7 @@ import React, {  } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Button, Typography } from "@mui/material";
 import { styled } from "@mui/system";
-import { useFirstRun } from "../context/FirstRunContext";
+import { useFirstRun } from "../contexts/context/FirstRunContext";
 
 const Container = styled(Box)(({ theme }) => ({
   display: "flex",

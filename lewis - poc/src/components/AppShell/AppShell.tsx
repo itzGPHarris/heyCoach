@@ -4,9 +4,9 @@ import { ThemeProvider, CssBaseline, Box, AppBar, Toolbar, IconButton, Avatar, B
 import { User, Bell, Moon, Sun } from "lucide-react";
 import { getTheme } from "../../styles/theme";
 import useStore from "../../store";
-import FeedView from "../FeedView";
-import DashboardView from "../DashboardView";
-import ProfileView from "../ProfileView";
+import FeedView from "../../views/FeedView";
+import DashboardView from "../../views/DashboardView";
+import ProfileView from "../../views/ProfileView";
 import PitchCarouselNewUser from "../shared/PitchCarouselNewUser";
 import CoachCardBanner from "../shared/CoachCardBanner";
 

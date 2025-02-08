@@ -1,64 +1,72 @@
-// Updated on - 2025-02-05, Time: Pacific Time (PT), 15:40
-
-// Updated FeedView.tsx - Fixed Closing Tag Issue and Restored Background/Welcome Elements
+// Updated FeedView.tsx - Integrates useVideoUpload Hook & VideoMessage Component
 import React, { useState, useEffect, useRef } from "react";
-import { Box, Typography } from "@mui/material";
-import MessageBubble from "./shared/MessageBubble";
-import getAIResponse from "./shared/AIResponseHandler";
-import ChatInput from "./shared/ChatInput";
-import NewIdeaForm from "./shared/NewIdeaForm";
-import PitchContainer from "./shared/PitchContainer";
+import { Box, Typography, Button, Dialog, DialogTitle, DialogContent } from "@mui/material";
+import MessageBubble from "../components/shared/MessageBubble";
+import getAIResponse from "../components/shared/AIResponseHandler";
+import ChatInput from "../components/shared/ChatInput";
+import NewIdeaForm from "../components/shared/NewIdeaForm";
+import VideoMessage from "../components/shared/VideoMessage";
+//import { useVideoUpload } from "./../hooks/useVideoUpload";
+//import { Message } from "./../types/types";
+
 
 interface Message {
   id: number;
   sender: "user" | "coach";
   text?: string;
   component?: JSX.Element;
+  expandedComponent?: JSX.Element | null;
   timestamp?: string;
 }
 
-const graphicUrl = "/img/ljbg.png"; // ✅ Reference the public URL
-const jumperUrl = "/img/jumper.svg"; // ✅ Reference the public URL
-
-const FeedView: React.FC = () => {
+  const FeedView: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isNewIdeaOpen, setIsNewIdeaOpen] = useState(false);
+  const [dialogContent, setDialogContent] = useState<JSX.Element | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+ // const { handleVideoUpload } = useVideoUpload();
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  {/*const jumpToMessage = (query: string) => {
+  const jumpToMessage = (query: string): string | null => {
     const targetMessage = messages.find((msg) => msg.text?.toLowerCase().includes(query.toLowerCase()));
     if (targetMessage) {
       const element = document.getElementById(`message-${targetMessage.id}`);
       if (element) {
-        element.scrollIntoView({ behavior: "smooth" });
+        element.scrollIntoView({ behavior: "smooth", block: "center" });
       }
+      return `message-${targetMessage.id}`;
     }
-  };*/}
-
-  const jumpToMessage = (query: string): string | null => {
-    const targetMessage = messages.find(
-      (msg) =>
-        (msg.component && msg.component.props?.title?.toLowerCase().includes(query.toLowerCase())) || // ✅ Match pitch title in component
-        (msg.text?.toLowerCase().includes(query.toLowerCase()) && msg.component) // ✅ Ensure it has a component attached
-    );
-  
-    return targetMessage ? `message-${targetMessage.id}` : null;
+    return null;
   };
 
   const handleSendMessage = (input: string) => {
     const timestamp = new Date().toLocaleTimeString();
     const userMessage: Message = { id: messages.length + 1, sender: "user", text: input, timestamp };
-    setMessages([...messages, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
 
     setTimeout(() => {
-      const aiResponse = getAIResponse(input, setMessages, setIsNewIdeaOpen, jumpToMessage); // ✅ Fix: Pass all required arguments
+      const aiResponse = getAIResponse(input, setMessages, setIsNewIdeaOpen, jumpToMessage);
       setMessages((prev) => [...prev, { id: prev.length + 2, sender: "coach", ...aiResponse, timestamp }]);
     }, 1000);
   };
+
+  const handleSendVideo = (fileUrl: string, isPortrait: boolean) => {
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: prev.length + 1,
+        sender: "user",
+        component: <VideoMessage fileUrl={fileUrl} timestamp={new Date().toLocaleTimeString()} isPortrait={isPortrait} />,
+        timestamp: new Date().toLocaleTimeString(),
+      },
+    ]);
+  };
+  
+  
+  
 
   return (
     <Box
@@ -72,33 +80,21 @@ const FeedView: React.FC = () => {
         boxSizing: "border-box",
         height: "100vh",
         position: "relative",
-        backgroundImage: `url(${graphicUrl})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat"
+        overflowY: "auto"
       }}>
-      {messages.length === 0 ? (
-        <Box sx={{ textAlign: "center", mt: 10 }}>
-          <Typography variant="h4" sx={{ fontWeight: "bold", mb: 2 }}>
-            Welcome! Ask AI Coach to get started.
-          </Typography>
-          <Box component="img" src={jumperUrl} alt="Welcome Graphic" sx={{ width: "100%", maxWidth: "400px", mx: "auto", mt: 4 }} />
-          <Typography variant="body1" sx={{ mb: 4 }}>
-            Try asking: "Help me with my first pitch..."
-          </Typography>
-        </Box>
-      ) : (
-        <Box sx={{ width: "100%", maxWidth: 800, display: "flex", flexDirection: "column", gap: 2, overflowY: "auto", flexGrow: 1, minHeight: "0px", paddingBottom: "120px" }}>
-          {messages.map((msg) => (
-            <Box key={msg.id} id={`message-${msg.id}`}>
-              <Typography variant="caption" sx={{ textAlign: "center", display: "block", mb: 1, color: "gray" }}>{msg.timestamp}</Typography>
-              <MessageBubble sender={msg.sender} text={msg.text} component={msg.component} />
-            </Box>
-          ))}
-          <div ref={messagesEndRef} />
-        </Box>
-      )}
-      <ChatInput onSendMessage={handleSendMessage} />
+      <Box sx={{ width: "100%", maxWidth: 800, display: "flex", flexDirection: "column", gap: 2, flexGrow: 1, minHeight: "0px", paddingBottom: "120px" }}>
+        {messages.map((msg) => (
+          <Box key={msg.id} id={`message-${msg.id}`} sx={{ width: "100%" }}>
+            <Typography variant="caption" sx={{ textAlign: "center", display: "block", mb: 1, color: "gray" }}>{msg.timestamp}</Typography>
+            <MessageBubble sender={msg.sender} text={msg.text} component={msg.component} />
+            {msg.expandedComponent && (
+              <Button onClick={() => setDialogContent(msg.expandedComponent || null)}>View More</Button>
+            )}
+          </Box>
+        ))}
+        <div ref={messagesEndRef} />
+      </Box>
+      <ChatInput onSendMessage={handleSendMessage} onSendVideo={handleSendVideo} />
 
       {isNewIdeaOpen && (
         <NewIdeaForm
@@ -106,31 +102,22 @@ const FeedView: React.FC = () => {
           onClose={() => setIsNewIdeaOpen(false)}
           onSubmit={(data) => {
             setIsNewIdeaOpen(false);
-            setMessages((prev) => [
-              ...prev,
-              {
-                id: prev.length + 1,
-                sender: "coach",
-                component: (
-                  <PitchContainer
-                    pitchId={prev.length + 1}
-                    title={data.title}
-                    description={data.description}
-                    videoUrl={data.videoUrl || ""}
-                    score={0}
-                    likes={0}
-                    lastModified="Just now"
-                    comments={[]}
-                    isPortrait={data.isPortrait}
-                  />
-                ),
-              },
-            ]);
+            setMessages((prev) => [...prev, {
+              id: prev.length + 1,
+              sender: "coach",
+              component: <MessageBubble sender="coach" text={`New idea created: ${data.title}`} />,
+            }]);
           }}
         />
       )}
+
+      <Dialog open={!!dialogContent} onClose={() => setDialogContent(null)}>
+        <DialogTitle>Detailed View</DialogTitle>
+        <DialogContent>{dialogContent}</DialogContent>
+      </Dialog>
     </Box>
   );
 };
 
 export default FeedView;
+// Compare this snippet from lewis%20-%20poc/src/views/FeedView.tsx:

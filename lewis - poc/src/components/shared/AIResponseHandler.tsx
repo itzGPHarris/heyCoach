@@ -1,5 +1,3 @@
-// Updated on - 2025-02-05, Time: Pacific Time (PT), 16:15
-
 // Updated AIResponseHandler.tsx - Fixes Jump-to-Message Targeting for Pitch Cards
 import React from "react";
 import Competition from "../shared/Competition";
@@ -14,14 +12,16 @@ interface Message {
 
 export const getAIResponse = (
   input: string,
-  setMessages: React.Dispatch<React.SetStateAction<Message[]>>,
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>, // Now properly used
   setIsNewIdeaOpen: React.Dispatch<React.SetStateAction<boolean>>,
   jumpToMessage: (query: string) => string | null 
 ) => {
+  let response;
+
   if (input.toLowerCase().includes("compete")) {
-    return { component: <Competition /> };
+    response = { component: <Competition /> };
   } else if (input.toLowerCase().includes("last pitch")) {
-    return {
+    response = {
       component: (
         <PitchContainer
           pitchId={1}
@@ -37,7 +37,7 @@ export const getAIResponse = (
       ),
     };
   } else if (input.toLowerCase().includes("favorite pitch")) {
-    return {
+    response = {
       component: (
         <PitchContainer
           pitchId={2}
@@ -54,17 +54,17 @@ export const getAIResponse = (
     };
   } else if (input.toLowerCase().includes("new pitch")) {
     setIsNewIdeaOpen(true);
-    return { text: "📝 Opening New Idea Form..." };
+    response = { text: "📝 Opening New Idea Form..." };
   } else if (input.toLowerCase().includes("view competitions")) {
-    return { text: "Here are new competitions you can enter:\n1️⃣ Startup Pitch Challenge\n2️⃣ Global Founder’s Summit" };
+    response = { text: "Here are new competitions you can enter:\n1️⃣ Startup Pitch Challenge\n2️⃣ Global Founder’s Summit" };
   } else if (input.toLowerCase().includes("my competition entries")) {
-    return { text: "Here are the competitions you've entered:\n🏆 Pitch Masters 2025\n🚀 Future Founders Challenge" };
+    response = { text: "Here are the competitions you've entered:\n🏆 Pitch Masters 2025\n🚀 Future Founders Challenge" };
   } else if (input.toLowerCase().includes("find my")) {
     const query = input.replace("find my", "").trim().toLowerCase(); 
     const targetId = jumpToMessage(query);
   
     if (targetId) {
-      return {
+      response = {
         component: (
           <span>
             🔎 I found your '{query}'.{" "}
@@ -92,11 +92,17 @@ export const getAIResponse = (
           </span>
         ),
       };
+    } else {
+      response = { text: `❌ Sorry, I couldn't find '${query}' in the feed.` };
     }
-    return { text: `❌ Sorry, I couldn't find '${query}' in the feed.` };
+  } else {
+    response = { text: "I'm not sure how to help with that." };
   }
-  
-  return { text: "I'm not sure how to help with that." };
+
+  // Ensure setMessages is used to update the state
+  setMessages((prev) => [...prev, { id: prev.length + 1, sender: "coach", ...response }]);
+
+  return response;
 };
 
 export default getAIResponse;

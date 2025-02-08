@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Button, Paper, Link } from '@mui/material';
 import { styled } from '@mui/system';
-import { useFirstRun } from '../../context/FirstRunContext';
+import { useFirstRun } from "../../contexts/context/FirstRunContext";
 import { useNavigate } from 'react-router-dom';
 
 const Container = styled(Box)(({ theme }) => ({
