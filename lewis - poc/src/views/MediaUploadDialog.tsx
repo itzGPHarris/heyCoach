@@ -1,43 +1,47 @@
-// MediaUploadDialog.tsx - Positioned Above ChatInput & Transparent Background
+// MediaUploadDialog.tsx - Positions Content Correctly Inside Dialog
 import React from "react";
 import { Dialog, DialogContent, Box, Typography } from "@mui/material";
+import { useVideoUpload } from "./../hooks/useVideoUpload";
 
 interface MediaUploadDialogProps {
   open: boolean;
   onClose: () => void;
+  onSendVideo: (fileUrl: string, isPortrait: boolean) => void;
+  dialogStyles?: object; // Allows FeedView to control positioning
 }
 
-const MediaUploadDialog: React.FC<MediaUploadDialogProps> = ({ open, onClose }) => {
+const MediaUploadDialog: React.FC<MediaUploadDialogProps> = ({ open, onClose, onSendVideo, dialogStyles }) => {
+  const { handleVideoUpload } = useVideoUpload();
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+      handleVideoUpload(file, (fileUrl, isPortrait) => {
+        onSendVideo(fileUrl, isPortrait);
+        onClose(); // Close dialog after selection
+      });
+    }
+  };
+
   return (
-    <Dialog 
-      open={open} 
-      onClose={onClose} 
-      sx={{
-        position: "fixed",
-        bottom: 80, // Positioned above ChatInput
-        left: 20, // Aligns to bottom left
-        bgcolor: "transparent",
-        boxShadow: "none"
-      }}
+    <Dialog
+      open={open}
+      onClose={onClose}
+      sx={{ ...dialogStyles, "& .MuiDialog-paper": {borderRadius: 30, position: "absolute", bottom: 1, left: 0, bgcolor: "white", boxShadow: "none" } }}
     >
-      <DialogContent sx={{ bgcolor: "transparent", p: 0 }}> {/* Transparent Background */}
-        <Box display="flex" flexDirection="column" gap={2}>
-          <Box 
-            sx={{ p: 2, bgcolor: "primary.light", borderRadius: 2, cursor: "pointer", textAlign: "center" }}
-            onClick={() => console.log("Video Upload Clicked")}
-          >
-            <Typography variant="h6">📹 Video (Active)</Typography>
-          </Box>
-          <Box 
-            sx={{ p: 2, bgcolor: "grey.300", borderRadius: 2, textAlign: "center" }}
-          >
-            <Typography variant="h6">🖼️ Images (Coming Soon)</Typography>
-          </Box>
-          <Box 
-            sx={{ p: 2, bgcolor: "grey.300", borderRadius: 2, textAlign: "center" }}
-          >
-            <Typography variant="h6">📄 Documents (Coming Soon)</Typography>
-          </Box>
+      <DialogContent sx={{  display: "flex", flexDirection: "column", gap: 0, p: 0, bgcolor: "white" }}> {/* Transparent Background & Proper Layout */}
+        <Box
+          sx={{ p: 2, bgcolor: "primary.light", borderRadius: 2, cursor: "pointer", textAlign: "left" }}
+          component="label"
+        >
+          <input type="file" accept="video/*" hidden onChange={handleFileUpload} />
+          <Typography variant="h6">Video (Active)</Typography>
+        </Box>
+        <Box sx={{ p: 2, bgcolor: "grey.300", borderRadius: 2, textAlign: "left" }}>
+          <Typography variant="h6">Images (Coming Soon)</Typography>
+        </Box>
+        <Box sx={{ p: 2, bgcolor: "grey.300", borderRadius: 2, textAlign: "left" }}>
+          <Typography variant="h6">Documents (Coming Soon)</Typography>
         </Box>
       </DialogContent>
     </Dialog>

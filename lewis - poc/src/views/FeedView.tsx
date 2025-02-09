@@ -1,13 +1,12 @@
+// Updated FeedView.tsx - Fixes ChatInput Type Mismatch
 import React, { useState, useEffect, useRef } from "react";
-import { Box, IconButton } from "@mui/material";
-import { Add } from "@mui/icons-material";
+import { Box } from "@mui/material";
 import ChatInput from "../components/shared/ChatInput";
 import MessageList from "./MessageList";
 import MediaUploadDialog from "./MediaUploadDialog";
 import { handleAIResponse } from "../components/shared/AIResponseHandler";
 import { Message } from "../types/types";
 import VideoMessage from "../components/shared/VideoMessage";
-
 
 const FeedView: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -25,6 +24,7 @@ const FeedView: React.FC = () => {
     setMessages((prev) => [...prev, { id: prev.length + 1, sender: "user", text: input, timestamp }]);
     handleAIResponse(input, setMessages);
   };
+
   const handleSendVideo = (fileUrl: string, isPortrait: boolean) => {
     setMessages((prev) => [
       ...prev,
@@ -38,14 +38,36 @@ const FeedView: React.FC = () => {
   };
   
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100vw", maxWidth: "100%", p: 3, boxSizing: "border-box", height: "100vh", position: "relative", overflowY: "auto" }}>
+    <Box sx={{ 
+      display: "flex", 
+      flexDirection: "column", 
+      alignItems: "center", 
+      width: "100vw", 
+      maxWidth: "100%", 
+      p: 2, 
+      mt:6,
+      boxSizing: "border-box", 
+      height: "100vh",  
+      position: "relative", 
+      overflowY: "auto" 
+    }}>
       <MessageList messages={messages} />
-      <IconButton onClick={() => setMediaDialogOpen(true)} color="primary" sx={{ position: "fixed", bottom: 80, right: 20 }}>
-        <Add fontSize="large" />
-      </IconButton>
-      <MediaUploadDialog open={mediaDialogOpen} onClose={() => setMediaDialogOpen(false)} />
-      <ChatInput onSendMessage={handleSendMessage} onSendVideo={handleSendVideo} />
-      </Box>
+      <MediaUploadDialog
+        open={mediaDialogOpen}
+        onClose={() => setMediaDialogOpen(false)}
+        onSendVideo={handleSendVideo}
+        dialogStyles={{
+          position: "fixed",
+          bottom: 70, // Positioned above ChatInput
+          left: 20, // Aligns to bottom left
+          bgcolor: "transparent",
+          boxShadow: "none",
+        }}
+      />  
+
+      <ChatInput onSendMessage={handleSendMessage} onOpenMediaDialog={() => setMediaDialogOpen(true)} />
+        </Box>
+
   );
 };
 
