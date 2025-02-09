@@ -1,10 +1,10 @@
-// Updated FeedView.tsx - Fixes ChatInput Type Mismatch
+// Updated FeedView.tsx - Ensures AI Coach Responds to Video Uploads
 import React, { useState, useEffect, useRef } from "react";
 import { Box } from "@mui/material";
 import ChatInput from "../components/shared/ChatInput";
 import MessageList from "./MessageList";
 import MediaUploadDialog from "./MediaUploadDialog";
-import { handleAIResponse } from "../components/shared/AIResponseHandler";
+import getAIResponse from "../components/shared/getAIResponse";
 import { Message } from "../types/types";
 import VideoMessage from "../components/shared/VideoMessage";
 
@@ -22,7 +22,7 @@ const FeedView: React.FC = () => {
   const handleSendMessage = (input: string) => {
     const timestamp = new Date().toLocaleTimeString();
     setMessages((prev) => [...prev, { id: prev.length + 1, sender: "user", text: input, timestamp }]);
-    handleAIResponse(input, setMessages);
+    getAIResponse(input, setMessages); // Ensures AI Coach responds to text inputs
   };
 
   const handleSendVideo = (fileUrl: string, isPortrait: boolean) => {
@@ -35,22 +35,11 @@ const FeedView: React.FC = () => {
         timestamp: new Date().toLocaleTimeString(),
       },
     ]);
+    getAIResponse("video uploaded", setMessages); // Ensures AI Coach responds after video upload
   };
   
   return (
-    <Box sx={{ 
-      display: "flex", 
-      flexDirection: "column", 
-      alignItems: "center", 
-      width: "100vw", 
-      maxWidth: "100%", 
-      p: 2, 
-      mt:6,
-      boxSizing: "border-box", 
-      height: "100vh",  
-      position: "relative", 
-      overflowY: "auto" 
-    }}>
+    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100vw", maxWidth: "100%", p: 3, boxSizing: "border-box", height: "100vh", position: "relative", overflowY: "auto" }}>
       <MessageList messages={messages} />
       <MediaUploadDialog
         open={mediaDialogOpen}
@@ -63,11 +52,9 @@ const FeedView: React.FC = () => {
           bgcolor: "transparent",
           boxShadow: "none",
         }}
-      />  
-
+      />
       <ChatInput onSendMessage={handleSendMessage} onOpenMediaDialog={() => setMediaDialogOpen(true)} />
-        </Box>
-
+    </Box>
   );
 };
 

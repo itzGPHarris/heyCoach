@@ -12,7 +12,7 @@ interface MessageProps {
 
 const MessageBubble: React.FC<MessageProps> = ({ sender, text, component }) => {
   // ✅ Only wrap user/coach messages in Paper but keep other components unboxed
-  const isStandardMessage = !!text;
+ const isStandardMessage = !!text || !!component; // 🔹 Ensure both text and components are considered valid messages
 
   return isStandardMessage ? (
     <Paper
