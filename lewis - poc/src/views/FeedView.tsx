@@ -1,59 +1,66 @@
-// Updated FeedView.tsx - Ensures AI Coach Responds to Video Uploads
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { Box } from "@mui/material";
-import ChatInput from "../components/shared/ChatInput";
 import MessageList from "./MessageList";
-import MediaUploadDialog from "./MediaUploadDialog";
-import getAIResponse from "../components/shared/getAIResponse";
 import { Message } from "../types/types";
-import VideoMessage from "../components/shared/VideoMessage";
+import getAIResponse from "../components/shared/getAIResponse";
 
-const FeedView: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [mediaDialogOpen, setMediaDialogOpen] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+interface FeedViewProps {
+  messages: Message[];
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+}
 
+const FeedView: React.FC<FeedViewProps> = ({ messages, setMessages }) => {
+  const feedRef = useRef<HTMLDivElement | null>(null);
+
+  /** Auto-scroll to bottom when new messages arrive */
   useEffect(() => {
-    if (messages.length > 0) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const feed = feedRef.current;
+    if (feed) {
+      feed.scrollTo({ top: feed.scrollHeight, behavior: "smooth" });
     }
-  }, [messages.length]);
+  }, [messages]);
 
-  const handleSendMessage = (input: string) => {
+  /** ✅ Handle Quick-Reply Button Clicks */
+  const handleQuickReply = async (reply: string) => {
     const timestamp = new Date().toLocaleTimeString();
-    setMessages((prev) => [...prev, { id: prev.length + 1, sender: "user", text: input, timestamp }]);
-    getAIResponse(input, setMessages); // Ensures AI Coach responds to text inputs
+
+    // ✅ Add user’s selection to the feed
+    setMessages((prev) => [...prev, {
+      id: Date.now(),
+      sender: "user",
+      text: reply,
+      timestamp,
+    }]);
+
+    // ✅ Process AI response based on reply
+    setTimeout(async () => {
+      const response: string = await getAIResponse(reply);
+      setMessages((prev) => [...prev, {
+        id: Date.now() + 1,
+        sender: "coach",
+        text: response,
+        timestamp: new Date().toLocaleTimeString(),
+      }]);
+    }, 1500);
   };
 
-  const handleSendVideo = (fileUrl: string, isPortrait: boolean) => {
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: prev.length + 1,
-        sender: "user",
-        component: <VideoMessage fileUrl={fileUrl} timestamp={new Date().toLocaleTimeString()} isPortrait={isPortrait} />,
-        timestamp: new Date().toLocaleTimeString(),
-      },
-    ]);
-    getAIResponse("video uploaded", setMessages); // Ensures AI Coach responds after video upload
-  };
-  
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100vw", maxWidth: "100%", p: 3, boxSizing: "border-box", height: "100vh", position: "relative", overflowY: "auto" }}>
-      <MessageList messages={messages} />
-      <MediaUploadDialog
-        open={mediaDialogOpen}
-        onClose={() => setMediaDialogOpen(false)}
-        onSendVideo={handleSendVideo}
-        dialogStyles={{
-          position: "fixed",
-          bottom: 70, // Positioned above ChatInput
-          left: 20, // Aligns to bottom left
-          bgcolor: "transparent",
-          boxShadow: "none",
-        }}
-      />
-      <ChatInput onSendMessage={handleSendMessage} onOpenMediaDialog={() => setMediaDialogOpen(true)} />
+    <Box
+      ref={feedRef}
+      sx={{
+        flexGrow: 1,
+        overflowY: "auto",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        width: "100%",
+        maxWidth: 800,
+        height: "calc(100vh - 56px - 72px)",
+        paddingBottom: "16px",
+      }}
+    >
+      {/* ✅ Pass onQuickReply to MessageList */}
+      <MessageList messages={messages} onQuickReply={handleQuickReply} />
     </Box>
   );
 };

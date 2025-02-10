@@ -7,7 +7,7 @@ interface MediaUploadDialogProps {
   open: boolean;
   onClose: () => void;
   onSendVideo: (fileUrl: string, isPortrait: boolean) => void;
-  dialogStyles?: object; // Allows FeedView to control positioning
+  dialogStyles?: object;
 }
 
 const MediaUploadDialog: React.FC<MediaUploadDialogProps> = ({ open, onClose, onSendVideo, dialogStyles }) => {
@@ -16,24 +16,24 @@ const MediaUploadDialog: React.FC<MediaUploadDialogProps> = ({ open, onClose, on
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
-      handleVideoUpload(file, (fileUrl, isPortrait) => {
-        onSendVideo(fileUrl, isPortrait);
-        onClose(); // Close dialog after selection
+      
+      handleVideoUpload(file, (fileUrl: string, isPortrait: boolean) => {
+        console.log("Video uploaded:", fileUrl, "Portrait:", isPortrait); // ✅ Debugging log
+        onSendVideo(fileUrl, isPortrait); // ✅ Sends video to FeedView.tsx
+        onClose(); // ✅ Closes dialog after upload
       });
     }
   };
+  
 
   return (
     <Dialog
       open={open}
       onClose={onClose}
-      sx={{ ...dialogStyles, "& .MuiDialog-paper": {borderRadius: 30, position: "absolute", bottom: 1, left: 0, bgcolor: "white", boxShadow: "none" } }}
+      sx={{ ...dialogStyles, "& .MuiDialog-paper": { borderRadius: 30, position: "absolute", bottom: 1, left: 0, bgcolor: "white", boxShadow: "none" } }}
     >
-      <DialogContent sx={{  display: "flex", flexDirection: "column", gap: 0, p: 0, bgcolor: "white" }}> {/* Transparent Background & Proper Layout */}
-        <Box
-          sx={{ p: 2, bgcolor: "primary.light", borderRadius: 2, cursor: "pointer", textAlign: "left" }}
-          component="label"
-        >
+      <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 0, p: 0, bgcolor: "white" }}>
+        <Box sx={{ p: 2, bgcolor: "primary.light", borderRadius: 2, cursor: "pointer", textAlign: "left" }} component="label">
           <input type="file" accept="video/*" hidden onChange={handleFileUpload} />
           <Typography variant="h6">Video (Active)</Typography>
         </Box>

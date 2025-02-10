@@ -1,29 +1,25 @@
-import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
-import { ThemeProvider, CssBaseline, Box, AppBar, Toolbar, IconButton, Avatar, Badge, Menu, MenuItem } from "@mui/material";
-import { User, Bell, Moon, Sun } from "lucide-react";
+import React, { useState } from "react";
+import { ThemeProvider, CssBaseline, Box } from "@mui/material";
 import { getTheme } from "../../styles/theme";
 import useStore from "../../store";
 import FeedView from "../../views/FeedView";
 import DashboardView from "../../views/DashboardView";
 import ProfileView from "../../views/ProfileView";
-import PitchCarouselNewUser from "../shared/PitchCarouselNewUser";
-import CoachCardBanner from "../shared/CoachCardBanner";
+import ChatInput from "../../components/shared/ChatInput";
+import getAIResponse from "../../components/shared/getAIResponse"; 
+import { Message } from "../../types/types";
+import VideoUploadHandler from "../../components/handlers/VideoUploadHandler"; // ✅ Import new handler
+import AppHeader from "../../components/shared/AppHeader"; // ✅ Import header component
+import MediaUploadDialog from "../../views/MediaUploadDialog"; // ✅ Import media dialog
 
 function AppShell() {
   const [mode, setMode] = useState<'light' | 'dark'>('light');
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const store = useStore();
-  const location = useLocation();
-  const isFirstRun = location.state?.firstRun || localStorage.getItem("firstRun") === "true";
-  const [progress, setProgress] = useState<"first_run_complete" | "refined" | "branched" | null>(null);
 
-  useEffect(() => {
-    const storedProgress = localStorage.getItem("userProgress") as "first_run_complete" | "refined" | "branched" | null;
-    if (storedProgress) {
-      setProgress(storedProgress);
-    }
-  }, []);
+  // ✅ Manage messages state in AppShell
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [mediaDialogOpen, setMediaDialogOpen] = useState(false);
 
   const notifications = store.notifications || [];
   const activeTab = store.activeTab || 'feed';
@@ -36,65 +32,73 @@ function AppShell() {
     setAnchorEl(null);
   };
 
+  /** ✅ Handles user text messages */
+  const handleSendMessage = async (input: string) => {
+    const timestamp = new Date().toLocaleTimeString();
+    const newUserMessage: Message = {
+      id: Date.now(),
+      sender: "user",
+      text: input,
+      timestamp,
+    };
+
+    setMessages((prev) => [...prev, newUserMessage]);
+
+    try {
+      const response: string = await getAIResponse(input);
+      const aiMessage: Message = {
+        id: Date.now() + 1,
+        sender: "coach",
+        text: response,
+        parentId: newUserMessage.id,
+        timestamp: new Date().toLocaleTimeString(),
+      };
+
+      setMessages((prev) => [...prev, aiMessage]);
+    } catch (error) {
+      console.error("Error fetching AI response:", error);
+    }
+  };
+
+  /** ✅ Handles video uploads using VideoUploadHandler */
+  const handleSendVideo = (fileUrl: string, isPortrait: boolean) => {
+    VideoUploadHandler({ fileUrl, isPortrait, setMessages }); // ✅ Calls refactored handler
+  };
+
   return (
     <ThemeProvider theme={getTheme(mode)}>
       <CssBaseline />
       <Box sx={{ height: "100vh", display: "flex", flexDirection: "column" }}>
-        {/* ✅ Restored App Header */}
-        <AppBar position="fixed" elevation={0} sx={{ backgroundColor: "white", borderBottom: "1px solid #ddd" }}>
-          <Toolbar>
-            <Box sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-              <img src="/img/logo.svg" alt="LongJump Logo" style={{ height: 32, marginRight: 8 }} />
-            </Box>
-            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-              <IconButton onClick={() => setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'))}>
-                {mode === 'light' ? <Moon size={20} /> : <Sun size={20} />}
-              </IconButton>
-              <IconButton>
-                <Badge badgeContent={notifications.filter((n) => !n.read).length || 0} color="error">
-                  <Bell size={20} />
-                </Badge>
-              </IconButton>
-              <IconButton onClick={handleProfileClick}>
-                <Avatar src=''>
-                  <User size={20} />
-                </Avatar>
-              </IconButton>
-            </Box>
-          </Toolbar>
-        </AppBar>
+        
+        {/* ✅ Use AppHeader Component */}
+        <AppHeader 
+          mode={mode} 
+          setMode={setMode} 
+          notifications={notifications} 
+          anchorEl={anchorEl} 
+          handleProfileClick={handleProfileClick} 
+          handleMenuClose={handleMenuClose} 
+        />
 
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleMenuClose}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        >
-          <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-          <MenuItem onClick={handleMenuClose}>My Pitches</MenuItem>
-          <MenuItem onClick={handleMenuClose}>Account Settings</MenuItem>
-          <MenuItem onClick={handleMenuClose}>Sign Out</MenuItem>
-        </Menu>
+<Box sx={{ flexGrow: 1, overflow: "hidden", backgroundColor: "background.default", position: "relative", display: "flex", flexDirection: "column", marginTop: "56px", paddingBottom: "70px" }}>
+  {activeTab === 'feed' ? (
+    <FeedView messages={messages} setMessages={setMessages} /> // ✅ Fix: Pass setMessages
+  ) : activeTab === 'dashboard' ? (
+    <DashboardView />
+  ) : (
+    <ProfileView />
+  )}
+</Box>
 
-        <Box sx={{ flexGrow: 1, overflow: "auto", backgroundColor: "background.default", position: "relative", marginTop: "4px" }}>
-          {isFirstRun ? (
-            <>
-              <PitchCarouselNewUser 
-                videoUrl={location.state?.videoSrc || ""} 
-                isPortrait={location.state?.isPortrait || false} 
-                title={location.state?.idea || "My First Pitch"} 
-              />
-              {/* ✅ Ensure CoachCardBanner is visible during first-run */}
-              <CoachCardBanner progress={progress || "first_run_complete"} onChatOpen={() => console.log("💬 AI Chat Opened")} />
-            </>
-          ) : (
-            activeTab === 'feed' ? <FeedView /> : activeTab === 'dashboard' ? <DashboardView /> : <ProfileView />
-          )}
+
+        {/* ✅ Media Upload Dialog */}
+        <MediaUploadDialog open={mediaDialogOpen} onClose={() => setMediaDialogOpen(false)} onSendVideo={handleSendVideo} />
+
+        {/* ✅ Fixed Chat Input Always Above Content */}
+        <Box sx={{ position: "fixed", bottom: 0, width: "100%", backgroundColor: "white", zIndex: 10, boxShadow: "0px -2px 10px rgba(0, 0, 0, 0.1)" }}>
+          <ChatInput onSendMessage={handleSendMessage} onOpenMediaDialog={() => setMediaDialogOpen(true)} />
         </Box>
-
-        {/* ✅ Ensure AI Chat is integrated into the main view */}
-        </Box>
+      </Box>
     </ThemeProvider>
   );
 }
