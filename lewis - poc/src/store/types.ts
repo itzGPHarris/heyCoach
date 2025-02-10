@@ -1,5 +1,7 @@
 // 📌 Fully Corrected store/types.ts
 
+import { Message } from "../types/types";
+
 export interface UserProfile {
   avatar?: string;
   name: string;
@@ -62,6 +64,11 @@ export interface Notification {
   id: string;
   message: string;
   read: boolean;
+}
+export interface VideoUploadHandlerProps {
+  fileUrl: string;
+  isPortrait: boolean;
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
 }
 
 export type ViewType = 'feed' | 'dashboard' | 'collaborate' | 'profile' | 'settings';

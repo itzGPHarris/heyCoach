@@ -1,6 +1,6 @@
 import React from "react";
 import { AppBar, Toolbar, Box, IconButton, Avatar, Badge, Menu, MenuItem } from "@mui/material";
-import { User, Bell, Moon, Sun } from "lucide-react";
+import { User, Bell } from "lucide-react";
 
 interface AppHeaderProps {
   mode: "light" | "dark";
@@ -12,18 +12,15 @@ interface AppHeaderProps {
   handleMenuClose: () => void;
 }
 
-const AppHeader: React.FC<AppHeaderProps> = ({ mode, setMode, notifications, anchorEl, handleProfileClick, handleMenuClose }) => {
+const AppHeader: React.FC<AppHeaderProps> = ({  notifications, anchorEl, handleProfileClick, handleMenuClose }) => {
   return (
     <>
       <AppBar position="fixed" elevation={0} sx={{ backgroundColor: "white", borderBottom: "1px solid #ddd" }}>
         <Toolbar>
-          <Box sx={{ display: "flex", alignItems: "center", cursor: "pointer" }}>
+          <Box sx={{ display: "flex", alignItems: "left", cursor: "pointer" }}>
             <img src="/img/logo.svg" alt="LongJump Logo" style={{ height: 32, marginRight: 8 }} />
           </Box>
-          <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-            <IconButton onClick={() => setMode(mode === "light" ? "dark" : "light")}>
-              {mode === "light" ? <Moon size={20} /> : <Sun size={20} />}
-            </IconButton>
+          <Box sx={{ display: "flex", gap: 2, marginLeft: "auto" }}>
             <IconButton>
               <Badge badgeContent={notifications.filter((n) => !n.read).length || 0} color="error">
                 <Bell size={20} />

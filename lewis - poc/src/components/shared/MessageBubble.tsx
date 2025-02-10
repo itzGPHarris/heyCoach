@@ -20,7 +20,7 @@ const MessageBubble: React.FC<MessageProps> = ({ sender, text, component }) => {
         p: 2,
         backgroundColor: sender === "coach" ? "#f5f5f5" : "#0090F2",
         color: sender === "coach" ? "black" : "white",
-        borderRadius: 2,
+        borderRadius: 32,
         alignSelf: sender === "coach" ? "flex-start" : "flex-end",
         maxWidth: "800px",
         width: "fit-content",

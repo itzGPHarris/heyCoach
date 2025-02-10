@@ -1,12 +1,18 @@
 import React from "react";
-import { Box, Typography, Paper, Button } from "@mui/material";
+import { Box, Typography, Button } from "@mui/material";
 import MessageBubble from "../components/shared/MessageBubble"; 
 import { Message } from "../types/types"; 
+import { keyframes } from '@mui/system';
+
 
 interface MessageListProps {
   messages: Message[];
   onQuickReply: (reply: string) => void; // ✅ Added to handle quick-reply clicks
 }
+const fadeIn = keyframes`
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
 
 const MessageList: React.FC<MessageListProps> = ({ messages, onQuickReply }) => {
   return (
@@ -19,6 +25,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, onQuickReply }) => 
         gap: "12px",
         flexGrow: 1,
         padding: "8px 16px",
+        borderRadius: "12px",
       }}
     >
       {messages.map((msg) => (
@@ -28,7 +35,8 @@ const MessageList: React.FC<MessageListProps> = ({ messages, onQuickReply }) => 
           sx={{ 
             width: "100%", 
             display: "flex", 
-            flexDirection: "column", 
+            flexDirection: "column",
+            borderRadius: "12px", 
             alignItems: msg.sender === "coach" ? "flex-start" : "flex-end",
           }}
         >
@@ -40,16 +48,17 @@ const MessageList: React.FC<MessageListProps> = ({ messages, onQuickReply }) => 
               {msg.component ? msg.component : <MessageBubble sender={msg.sender} text={msg.text || ""} />}
             </>
           )}
-
           {msg.sender === "coach" && (
-            <Paper 
+            <Box 
               sx={{ 
-                p: 2, 
-                mt: 1, 
-                backgroundColor: "#F5F7FB", 
+                pb: .5,  
+                pl: 3,
+                pr: 3,
+                backgroundColor: "#fcfcfc", 
                 borderRadius: "12px", 
-                maxWidth: "75%", 
-                boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)" 
+                maxWidth: "90%", 
+                boxShadow: "0px 4px 12px rgba(0, 0, 0, 0)" ,
+                animation: `${fadeIn} 1s ease-in-out`,
               }}
             >
               <Typography variant="body1" sx={{ color: "#333", fontWeight: 500 }}>
@@ -71,8 +80,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, onQuickReply }) => 
                 </Box>
               )}
 
-
-            </Paper>
+            </Box>
           )}
         </Box>
       ))}
