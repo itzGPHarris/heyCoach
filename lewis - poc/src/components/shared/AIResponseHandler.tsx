@@ -16,7 +16,7 @@ export const handleAIResponse = (
         { 
           id: prev.length + 1, 
           sender: "coach", 
-          text: "🎥 Thanks! I'm analyzing your video now...",
+          text: "Thanks! I'm analyzing your video now...",
           timestamp: new Date().toLocaleTimeString() // ✅ Fix: Add timestamp
         }
       ]);

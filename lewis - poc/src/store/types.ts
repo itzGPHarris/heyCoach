@@ -28,18 +28,15 @@ export interface PitchAnalysis {
 
 
 export interface PitchVersion {
-  id: string;
-  title: string;
-  description: string;
-  playbackId?: string;
+  id: number;
   timestamp: string;
-  score: number;
-  likes: number;
-  feedback: Feedback[];
-  transcript?: string;
-  aiCoachSummary?: string;
-  metrics?: Metrics;
+  transcript: string;
+  analysis: string;
+  clarityScore: number;
+  pacingScore: number;
+  engagementScore: number;
 }
+
 
 export interface ChatMessage {
   id: string;
