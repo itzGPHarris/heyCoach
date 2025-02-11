@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography, Button, Stack, List, ListItem } from "@mui/material";
+import { Box, Typography, Button, List, ListItem } from "@mui/material";
 import { Message } from "./../types/types";
 
 interface MessageProps {
@@ -25,7 +25,7 @@ const MessageComponent: React.FC<MessageProps> = ({ message, onQuickReply }) => 
     let listItems: JSX.Element[] = []; // Track list items to be wrapped in <List>
 
     for (const [index, line] of lines.entries()) {
-      console.log("Processing line:", line); // ✅ Debugging output
+      console.log("Processing message line:", line); // ✅ Debugging output
 
       // ✅ Detect list items (- item)
       if (line.startsWith("- ")) {
@@ -120,15 +120,25 @@ const MessageComponent: React.FC<MessageProps> = ({ message, onQuickReply }) => 
           </Box>
         )}
 
-        {message.quickReplies && (
-          <Stack direction="column" spacing={1} mt={1}>
-            {message.quickReplies.map((reply) => (
-              <Button key={reply} variant="contained" size="small" onClick={() => onQuickReply(reply)}>
-                {reply}
-              </Button>
-            ))}
-          </Stack>
-        )}
+{message.quickReplies && (
+  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1 }}>
+    {message.quickReplies.map((reply, index) => (
+      <Button
+        key={`${reply}-${index}`} // ✅ Ensures unique keys
+        variant="contained"
+        size="small"
+        onClick={(event) => {
+          event.stopPropagation(); // ✅ Prevents event bubbling issues
+          console.log("Quick Reply Clicked:", reply); // ✅ Debugging log
+          onQuickReply(reply.trim().toLowerCase()); // ✅ Ensures consistent input
+        }}
+      >
+        {reply}
+      </Button>
+    ))}
+  </Box>
+)}
+
       </Box>
     </Box>
   );

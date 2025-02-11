@@ -1,13 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Box } from "@mui/material";
-import MessageComponent from "./MessageComponent"; // ✅ New UI component for rendering messages
+import MessageComponent from "./MessageComponent";
 import { Message } from "../types/types";
 import getAIResponse from "../components/shared/getAIResponse";
 import DetailedAnalysisDialog from "../components/shared/DetailedAnalysisDialog";
 import ImprovementsDialog from "../components/shared/ImprovementsDialog";
+import TeamFeedbackDialog from "../components/shared/TeamFeedbackDialog";
+import CompetitionsDialog from "../components/shared/CompetitionsDialog";
 import MediaUploadDialog from "../views/MediaUploadDialog";
-import { getLastPitchVersion } from "../utils/PitchVersionStorage";
+//import { getLastPitchVersion } from "../utils/PitchVersionStorage";
 import VideoUploadHandler from "../components/handlers/VideoUploadHandler";
+import ChatInput from "../components/shared/ChatInput";
 import emptyStateImage from "../assets/jumper.svg";
 
 interface FeedViewProps {
@@ -19,9 +22,10 @@ const FeedView: React.FC<FeedViewProps> = ({ messages, setMessages }) => {
   const feedRef = useRef<HTMLDivElement | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [improvementsDialogOpen, setImprovementsDialogOpen] = useState(false);
+  const [teamFeedbackDialogOpen, setTeamFeedbackDialogOpen] = useState(false);
+  const [competitionsDialogOpen, setCompetitionsDialogOpen] = useState(false);
   const [mediaDialogOpen, setMediaDialogOpen] = useState(false);
   const [isVersionUpload, setIsVersionUpload] = useState(false);
-  const [improvementsText, setImprovementsText] = useState("");
 
   /** Auto-scroll to bottom when new messages arrive */
   useEffect(() => {
@@ -31,53 +35,65 @@ const FeedView: React.FC<FeedViewProps> = ({ messages, setMessages }) => {
     }
   }, [messages]);
 
-  /** ✅ Handle Quick-Reply Button Clicks */
-  const handleQuickReply = async (reply: string) => {
-    if (reply === "See Detailed Breakdown") {
-      setDialogOpen(true);
-      return;
+  /** ✅ Handles Quick Replies */
+  const handleQuickReply = (reply: string) => {
+    console.log("Quick Reply Clicked:", reply); // ✅ Debugging log
+    processUserCommand(reply); // ✅ Ensure dialog opens immediately
+  };
+  
+
+  /** ✅ Handles User Input (Detects Commands or Normal Messages) */
+  const handleUserInput = (input: string) => {
+    const normalizedInput = input.toLowerCase().trim();
+    console.log("Processing User Input:", normalizedInput); // ✅ Debugging log
+  
+    processUserCommand(normalizedInput);
+    
+    // ✅ Add user message to feed immediately
+    setMessages((prev) => [
+      ...prev,
+      { id: Date.now(), sender: "user", text: input, timestamp: new Date().toLocaleTimeString() }
+    ]);
+  };
+  
+
+  /** ✅ Process Commands from Both Quick Replies & Chat Input */
+  const processUserCommand = async (input: string) => {
+    console.log("Processing Command:", input); // ✅ Debugging log
+  
+    const commandMap: Record<string, () => void> = {
+      "see detailed breakdown": () => setDialogOpen(true),
+      "see analysis": () => setDialogOpen(true),
+      "upload a new version": () => { setIsVersionUpload(true); setMediaDialogOpen(true); },
+      "upload new version": () => { setIsVersionUpload(true); setMediaDialogOpen(true); },
+      "show specific improvements": () => setImprovementsDialogOpen(true),
+      "get team feedback": () => setTeamFeedbackDialogOpen(true),
+      "enter a competition": () => setCompetitionsDialogOpen(true),
+    };
+  
+    if (commandMap[input]) {
+      console.log(`Opening Dialog for Command: ${input}`); // ✅ Debugging log
+      commandMap[input](); // ✅ Open the correct dialog
+      return; // ✅ Exit to prevent AI response
     }
-
-    if (reply === "Upload New Version") {
-      setIsVersionUpload(true);
-      setMediaDialogOpen(true);
-      return;
-    }
-
-    if (reply === "Show Specific Improvements") {
-      const lastVersion = getLastPitchVersion();
-      if (lastVersion) {
-        const clarityChange = (Math.random() * 10 - 5).toFixed(1);
-        const pacingChange = (Math.random() * 10 - 5).toFixed(1);
-        const engagementChange = (Math.random() * 10 - 5).toFixed(1);
-
-        let improvementsSummary = `🔍 Your pitch has been revised! Here’s what changed:\n\n`;
-        if (Math.abs(parseFloat(clarityChange)) > 2) {
-          improvementsSummary += `- **Clarity:** ${clarityChange > "0" ? "Improved" : "Needs More Work"} by ${Math.abs(parseFloat(clarityChange))}%\n`;
-        }
-        if (Math.abs(parseFloat(pacingChange)) > 2) {
-          improvementsSummary += `- **Pacing:** ${pacingChange > "0" ? "Improved" : "Still Rushed"} by ${Math.abs(parseFloat(pacingChange))}%\n`;
-        }
-        if (Math.abs(parseFloat(engagementChange)) > 2) {
-          improvementsSummary += `- **Engagement:** ${engagementChange > "0" ? "More Dynamic" : "Needs More Energy"} by ${Math.abs(parseFloat(engagementChange))}%\n`;
-        }
-
-        setImprovementsText(improvementsSummary);
-        setImprovementsDialogOpen(true);
-      }
-      return;
-    }
-
-    const timestamp = new Date().toLocaleTimeString();
-    setMessages((prev) => [...prev, { id: Date.now(), sender: "user", text: reply, timestamp }]);
-
+  
+    console.log("No match found, sending to AI."); // ✅ Debugging log
+  
+    // ✅ Send AI response only if it's NOT a recognized command
     setTimeout(async () => {
-      const response: string = await getAIResponse(reply);
-      setMessages((prev) => [...prev, { id: Date.now() + 1, sender: "coach", text: response, timestamp: new Date().toLocaleTimeString() }]);
+      const response: string = await getAIResponse(input);
+      setMessages((prev) => [
+        ...prev,
+        { id: Date.now(), sender: "coach", text: response, timestamp: new Date().toLocaleTimeString() }
+      ]);
     }, 1500);
   };
+  
+    
+  
+  
 
-  /** ✅ Handle Video Uploads */
+  /** ✅ Handle Video Upload */
   const handleSendVideo = (fileUrl: string, isPortrait: boolean) => {
     VideoUploadHandler({ fileUrl, isPortrait, setMessages, isVersionUpload });
     setIsVersionUpload(false);
@@ -88,14 +104,30 @@ const FeedView: React.FC<FeedViewProps> = ({ messages, setMessages }) => {
       
       <img src={emptyStateImage} alt="No messages" style={{ maxWidth: "80%", marginBottom: 16 }} />
 
-      {/* ✅ Render messages using MessageComponent instead of MessageList */}
+      {/* ✅ Render messages using MessageComponent */}
       {messages.map((message) => (
         <MessageComponent key={message.id} message={message} onQuickReply={handleQuickReply} />
       ))}
 
+      {/* ✅ User Chat Input */}
+      <ChatInput
+  onSendMessage={handleUserInput} // ✅ Ensures user input is processed correctly
+  onOpenMediaDialog={() => setMediaDialogOpen(true)}
+  onUserInput={handleUserInput} // ✅ Fixes "Function not implemented" error
+/>
+
+
+      {/* ✅ Dialogs */}
       <DetailedAnalysisDialog open={dialogOpen} onClose={() => setDialogOpen(false)} />
-      <ImprovementsDialog open={improvementsDialogOpen} onClose={() => setImprovementsDialogOpen(false)} improvementsText={improvementsText} />
-      <MediaUploadDialog open={mediaDialogOpen} onClose={() => setMediaDialogOpen(false)} onSendVideo={handleSendVideo} isVersionUpload={isVersionUpload} />
+      <ImprovementsDialog open={improvementsDialogOpen} onClose={() => setImprovementsDialogOpen(false)} improvementsText={""} />
+      <TeamFeedbackDialog open={teamFeedbackDialogOpen} onClose={() => setTeamFeedbackDialogOpen(false)} />
+      <CompetitionsDialog open={competitionsDialogOpen} onClose={() => setCompetitionsDialogOpen(false)} />
+      <MediaUploadDialog 
+        open={mediaDialogOpen} 
+        onClose={() => setMediaDialogOpen(false)} 
+        onSendVideo={handleSendVideo} 
+        isVersionUpload={isVersionUpload} 
+      />
     </Box>
   );
 };

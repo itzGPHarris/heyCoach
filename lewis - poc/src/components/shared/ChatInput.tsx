@@ -1,4 +1,4 @@
-// Updated ChatInput.tsx - Fixes Type Mismatch with FeedView
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from "react";
 import { Box, TextField, IconButton } from "@mui/material";
 import { Mic, Video, CirclePlus, ArrowUp } from "lucide-react";
@@ -6,18 +6,26 @@ import { Mic, Video, CirclePlus, ArrowUp } from "lucide-react";
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
   onOpenMediaDialog: () => void;
+  onUserInput: (input: string) => void;
   sx?: object;
 }
 
-const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, onOpenMediaDialog }) => {
+const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, onOpenMediaDialog, onUserInput }) => {
   const [input, setInput] = useState("");
   const [mediaMode, setMediaMode] = useState<"audio" | "video">("audio");
 
+  /** ✅ Handles Sending Messages & Commands */
   const handleSend = () => {
     if (!input.trim()) return;
-    onSendMessage(input);
-    setInput("");
+  
+    console.log("User clicked send:", input); // ✅ Debugging log
+  
+    onSendMessage(input.trim()); // ✅ Ensure message appears in the feed
+    onUserInput(input.trim()); // ✅ Process commands (if applicable)
+  
+    setInput(""); // ✅ Clear input field
   };
+  
 
   return (
     <Box sx={{
@@ -36,12 +44,12 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, onOpenMediaDialog 
       transform: "translateX(-50%)",
       maxWidth: "600px",
     }}>
-      {/* Add Button to Open Media Dialog */}
+      {/* ✅ Button to Open Media Dialog */}
       <IconButton onClick={onOpenMediaDialog}>
         <CirclePlus size={32} />
       </IconButton>
 
-      {/* Chat Input Field */}
+      {/* ✅ Chat Input Field */}
       <TextField
         fullWidth
         variant="outlined"
@@ -55,11 +63,11 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, onOpenMediaDialog 
         }}
       />
 
-      {/* Dynamic Button: Media Toggle or Send */}
-      <IconButton onClick={input.trim() ? handleSend : () => setMediaMode(mediaMode === "audio" ? "video" : "audio")}
-        color="primary">
-        {input.trim() ? <ArrowUp size={32} /> : (mediaMode === "audio" ? <Mic size={20} /> : <Video size={32} />)}
-      </IconButton>
+      {/* ✅ Dynamic Button: Send Message or Toggle Media */}
+      <IconButton onClick={handleSend} color="primary">
+          {input.trim() ? <ArrowUp size={32} /> : (mediaMode === "audio" ? <Mic size={20} /> : <Video size={32} />)}
+    </IconButton>
+
     </Box>
   );
 };

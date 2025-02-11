@@ -4,6 +4,7 @@ import { processVideoUpload } from "./VideoProcessor"; // ✅ AI messaging compo
 
 const VideoUploadHandler = async ({ fileUrl, isPortrait, setMessages, isVersionUpload }: VideoUploadHandlerProps) => {
   const timestamp = new Date().toLocaleTimeString();
+  console.log("✅ ✅ ✅ Upload Handler is Processing video upload:", fileUrl);
 
   // ✅ Step 1: Store the video URL as text (instead of JSX)
   const videoMessage: Message = {
