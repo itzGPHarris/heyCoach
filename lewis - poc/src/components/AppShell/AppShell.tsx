@@ -62,7 +62,7 @@ function AppShell() {
 
   /** ✅ Handles video uploads using VideoUploadHandler */
   const handleSendVideo = (fileUrl: string, isPortrait: boolean) => {
-    VideoUploadHandler({ fileUrl, isPortrait, setMessages }); // ✅ Calls refactored handler
+    VideoUploadHandler({ fileUrl, isPortrait, setMessages, isVersionUpload: false }); // ✅ Calls refactored handler
   };
 
   return (
@@ -92,7 +92,7 @@ function AppShell() {
 
 
         {/* ✅ Media Upload Dialog */}
-        <MediaUploadDialog open={mediaDialogOpen} onClose={() => setMediaDialogOpen(false)} onSendVideo={handleSendVideo} />
+        <MediaUploadDialog open={mediaDialogOpen} onClose={() => setMediaDialogOpen(false)} onSendVideo={handleSendVideo} isVersionUpload={false} />
 
         {/* ✅ Fixed Chat Input Always Above Content */}
         <Box sx={{ position: "fixed", bottom: 0, width: "100%", backgroundColor: "white", zIndex: 10, boxShadow: "0px -2px 10px rgba(0, 0, 0, 0.1)" }}>

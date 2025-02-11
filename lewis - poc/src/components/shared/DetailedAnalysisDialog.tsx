@@ -1,17 +1,42 @@
 import React from "react";
-import { Dialog, DialogTitle, DialogContent, Typography, Box, Button } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, Typography, Box, Button, IconButton } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import PitchAIAnalysis from "./PitchAIAnalysis";
+import InteractiveTranscript, { TranscriptSegment } from "./interactiveTranscript";
 
 interface DetailedAnalysisDialogProps {
   open: boolean;
   onClose: () => void;
 }
 
+const transcriptData: TranscriptSegment[] = [
+  { timecode: "00:00", text: "Welcome everyone, to the ummm most exciting business competition on the Internet.", highlights: [{ type: "filler", word: "ummm", suggestion: "(remove for clarity)" }] },
+  { timecode: "00:05", text: "This is Long Jump, where big ideas take the leap of faith and land into the world of opportunity." },
+  { timecode: "00:10", text: "You can call me Coach, your guide through this ummm incredible journey of innovation, creativity, and entrepreneurial spirit.", highlights: [{ type: "filler", word: "ummm", suggestion: "(replace with pause)" }] },
+  { timecode: "00:15", text: "Submit a 1 to 3-minute video pitch of ummm your product or business idea.", highlights: [{ type: "filler", word: "ummm", suggestion: "(remove for clarity)" }] },
+  { timecode: "00:20", text: "First impressions matter. Judges will look for originality, potential impact, and that special spark that sets your idea apart.", highlights: [{ type: "improvement", word: "Judges will", suggestion: "Judges will be evaluating" }] },
+  { timecode: "00:25", text: "The stakes are high. The winner ummm of Long Jump takes home $25,000.", highlights: [{ type: "filler", word: "ummm", suggestion: "(remove for confidence)" }] },
+  { timecode: "00:28", text: "That's $50,000 in total prizes up for grabs. Make your pitch count." },
+];
+
 const DetailedAnalysisDialog: React.FC<DetailedAnalysisDialogProps> = ({ open, onClose }) => {
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-      <DialogTitle>Detailed Analysis & Transcript</DialogTitle>
+      {/* Dialog Title with Close Icon */}
+      <DialogTitle sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        Detailed Analysis & Transcript
+        <IconButton onClick={onClose} sx={{ ml: "auto" }}>
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
+
       <DialogContent>
         {/* AI Analysis Section */}
+        <Box sx={{ mb: 2 }}>
+          <PitchAIAnalysis />
+        </Box>
+
+        {/* Detailed Feedback */}
         <Box sx={{ mb: 2 }}>
           <Typography variant="h6">Harper, here’s your detailed feedback:</Typography>
           <Typography variant="body1" sx={{ mt: 1 }}>
@@ -51,21 +76,10 @@ const DetailedAnalysisDialog: React.FC<DetailedAnalysisDialogProps> = ({ open, o
         {/* Transcript Section */}
         <Box sx={{ mt: 2 }}>
           <Typography variant="h6">Transcript with Coaching Notes</Typography>
-          <Typography variant="body2" sx={{ fontStyle: "italic", color: "gray" }}>
-            Filler words like **'uh'** and **'you know'** are highlighted for improvement.
-          </Typography>
-          <Typography variant="body1" sx={{ mt: 1, whiteSpace: "pre-wrap" }}>
-            **Hi, I'm Harper Lewis, founder of Radiant Hue.**  
-            _Uh,_ the beauty industry has made great strides, but many products still fall short in terms of inclusivity and environmental impact.  
-            Radiant Hue is a makeup brand that changes the narrative.  
-            We're dedicated to providing clean beauty products that are safe for all skin types and tones without compromising on quality or performance.  
-            Our inclusive a, _uh,_ range is designed to celebrate everyone's unique beauty using ethically sourced natural ingredients.  
-            With Radiant Hue, _uh,_ you can feel good about what you put on your skin and proud of the impact you're making, _you know._  
-            Together, let's redefine beauty one hue at a time.
-          </Typography>
+          <InteractiveTranscript transcript={transcriptData} />
         </Box>
 
-        {/* Close Button */}
+        {/* Bottom Close Button */}
         <Box sx={{ textAlign: "right", mt: 3 }}>
           <Button variant="contained" onClick={onClose}>Close</Button>
         </Box>

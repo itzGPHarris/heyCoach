@@ -5,6 +5,8 @@ interface TranscriptEntry {
   text: string;
 }
 
+
+
 const TranscriptSection = ({ transcript }: { transcript: string }) => {
   const entries: TranscriptEntry[] = transcript.split('\n').map((line, index) => ({
     time: formatTime(index * 15),

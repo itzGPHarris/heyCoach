@@ -1,7 +1,7 @@
 // 📌 Fully Updated store/index.ts with Fixes for Errors
 import { create } from 'zustand';
 import { MockAPIClient } from '../api/mockServices';
-import { StoreState, StoreActions, ChatMessage, ViewType, Notification, PitchAnalysis, Pitch } from './types';
+import { StoreState, StoreActions, ChatMessage, ViewType, Notification, PitchAnalysis, Pitch, PitchVersion } from './types';
 
 const mockClient = new MockAPIClient();
 
@@ -64,13 +64,13 @@ export const useStore = create<StoreState & StoreActions>((set, get) => ({
     }
   },
 
-  updatePitch: async (pitchId: string, updates: Partial<Pitch>) => {
+  updatePitch: async (pitchId: string, updates: Partial<PitchVersion>) => {
     set({ isLoading: true });
     try {
       const state = get();
       const updatedPitches = { ...state.pitches };
       if (updatedPitches[pitchId]) {
-        updatedPitches[pitchId] = { ...updatedPitches[pitchId], ...updates };
+        updatedPitches[pitchId] = { ...updatedPitches[pitchId], ...updates, id: pitchId };
       }
       set({ pitches: updatedPitches, isLoading: false });
     } catch (error) {
