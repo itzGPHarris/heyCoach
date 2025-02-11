@@ -7,6 +7,13 @@ export interface UserProfile {
   name: string;
 }
 
+export interface VideoUploadHandlerProps {
+  fileUrl: string;
+  isPortrait: boolean;
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+  isVersionUpload: boolean; // Added property
+
+}
 
 
 export interface Metrics {

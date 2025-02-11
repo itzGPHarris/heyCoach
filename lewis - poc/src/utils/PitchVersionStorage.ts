@@ -29,3 +29,17 @@ export const getLastPitchVersion = (): PitchVersion | null => {
   console.log("✅ Last Pitch Version Retrieved:", lastVersion); // ✅ Debug log
   return lastVersion;
 };
+
+
+const PROGRESS_STORAGE_KEY = "pitch_progress";
+
+/** ✅ Retrieve stored improvement progress */
+export const getPitchProgress = () => {
+  const storedProgress = localStorage.getItem(PROGRESS_STORAGE_KEY);
+  return storedProgress ? JSON.parse(storedProgress) : { clarity: 0, pacing: 0, engagement: 0 };
+};
+
+/** ✅ Save progress after each pitch update */
+export const savePitchProgress = (newProgress: { clarity: number; pacing: number; engagement: number }) => {
+  localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(newProgress));
+};

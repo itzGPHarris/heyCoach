@@ -11,6 +11,8 @@ interface MediaUploadDialogProps {
   onClose: () => void;
   onSendVideo: (fileUrl: string, isPortrait: boolean) => void;
   dialogStyles?: object;
+  isVersionUpload: boolean;
+
 }
 
 const MediaUploadDialog: React.FC<MediaUploadDialogProps> = ({ open, onClose, onSendVideo }) => {
@@ -19,14 +21,15 @@ const MediaUploadDialog: React.FC<MediaUploadDialogProps> = ({ open, onClose, on
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
-      
+  
       handleVideoUpload(file, (fileUrl: string, isPortrait: boolean) => {
-        console.log("Video uploaded:", fileUrl, "Portrait:", isPortrait); // ✅ Debugging log
-        onSendVideo(fileUrl, isPortrait); // ✅ Sends video to FeedView.tsx
-        onClose(); // ✅ Closes dialog after upload
+        console.log("Video uploaded:", fileUrl, "Portrait:", isPortrait);
+        onSendVideo(fileUrl, isPortrait); // ✅ Ensures correct version tracking
+        onClose();
       });
     }
   };
+  
   
 
   return (
