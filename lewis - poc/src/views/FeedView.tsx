@@ -8,6 +8,7 @@ import ImprovementsDialog from "../components/shared/ImprovementsDialog";
 import MediaUploadDialog from "../views/MediaUploadDialog";
 import { getLastPitchVersion } from "../utils/PitchVersionStorage";
 import VideoUploadHandler from "../components/handlers/VideoUploadHandler"; // ✅ Ensure upload handling works
+import emptyStateImage from "../assets/jumper.svg"; // ✅ Add an image
 
 interface FeedViewProps {
   messages: Message[];
@@ -85,6 +86,9 @@ const FeedView: React.FC<FeedViewProps> = ({ messages, setMessages }) => {
 
   return (
     <Box ref={feedRef} sx={{ flexGrow: 1, overflowY: "auto", display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: 800, height: "calc(100vh - 56px - 72px)", paddingBottom: "16px" }}>
+      
+      <img src={emptyStateImage} alt="No messages" style={{ maxWidth: "80%", marginBottom: 16 }} />
+
       <MessageList messages={messages} onQuickReply={handleQuickReply} />
       <DetailedAnalysisDialog open={dialogOpen} onClose={() => setDialogOpen(false)} />
       <ImprovementsDialog open={improvementsDialogOpen} onClose={() => setImprovementsDialogOpen(false)} improvementsText={improvementsText} />

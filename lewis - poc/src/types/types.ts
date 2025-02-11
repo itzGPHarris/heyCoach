@@ -6,4 +6,8 @@ export interface Message {
   timestamp: string;
   parentId?: number;
   quickReplies?: string[]; // ✅ Make quickReplies optional
+  isFormatted?: boolean; // ✅ Ensure this exists
+
 }
+
+

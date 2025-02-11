@@ -1,6 +1,7 @@
 // Updated on - 2025-02-05, Time: Pacific Time (PT), 15:05
-
 // Updated MessageBubble.tsx - Removes Unnecessary Boxes for Clean Feed UI
+
+
 import React from "react";
 import { Paper, Box } from "@mui/material";
 
