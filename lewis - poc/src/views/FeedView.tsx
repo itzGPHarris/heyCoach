@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Box } from "@mui/material";
-import MessageList from "./MessageList";
+import MessageComponent from "./MessageComponent"; // ✅ New UI component for rendering messages
 import { Message } from "../types/types";
 import getAIResponse from "../components/shared/getAIResponse";
 import DetailedAnalysisDialog from "../components/shared/DetailedAnalysisDialog";
 import ImprovementsDialog from "../components/shared/ImprovementsDialog";
 import MediaUploadDialog from "../views/MediaUploadDialog";
 import { getLastPitchVersion } from "../utils/PitchVersionStorage";
-import VideoUploadHandler from "../components/handlers/VideoUploadHandler"; // ✅ Ensure upload handling works
-import emptyStateImage from "../assets/jumper.svg"; // ✅ Add an image
+import VideoUploadHandler from "../components/handlers/VideoUploadHandler";
+import emptyStateImage from "../assets/jumper.svg";
 
 interface FeedViewProps {
   messages: Message[];
@@ -46,7 +46,6 @@ const FeedView: React.FC<FeedViewProps> = ({ messages, setMessages }) => {
 
     if (reply === "Show Specific Improvements") {
       const lastVersion = getLastPitchVersion();
-
       if (lastVersion) {
         const clarityChange = (Math.random() * 10 - 5).toFixed(1);
         const pacingChange = (Math.random() * 10 - 5).toFixed(1);
@@ -57,7 +56,7 @@ const FeedView: React.FC<FeedViewProps> = ({ messages, setMessages }) => {
           improvementsSummary += `- **Clarity:** ${clarityChange > "0" ? "Improved" : "Needs More Work"} by ${Math.abs(parseFloat(clarityChange))}%\n`;
         }
         if (Math.abs(parseFloat(pacingChange)) > 2) {
-          improvementsSummary += `- **Pacing:** ${pacingChange > "0" ? "More Balanced" : "Still Rushed"} by ${Math.abs(parseFloat(pacingChange))}%\n`;
+          improvementsSummary += `- **Pacing:** ${pacingChange > "0" ? "Improved" : "Still Rushed"} by ${Math.abs(parseFloat(pacingChange))}%\n`;
         }
         if (Math.abs(parseFloat(engagementChange)) > 2) {
           improvementsSummary += `- **Engagement:** ${engagementChange > "0" ? "More Dynamic" : "Needs More Energy"} by ${Math.abs(parseFloat(engagementChange))}%\n`;
@@ -81,7 +80,7 @@ const FeedView: React.FC<FeedViewProps> = ({ messages, setMessages }) => {
   /** ✅ Handle Video Uploads */
   const handleSendVideo = (fileUrl: string, isPortrait: boolean) => {
     VideoUploadHandler({ fileUrl, isPortrait, setMessages, isVersionUpload });
-    setIsVersionUpload(false); // ✅ Reset after upload
+    setIsVersionUpload(false);
   };
 
   return (
@@ -89,7 +88,11 @@ const FeedView: React.FC<FeedViewProps> = ({ messages, setMessages }) => {
       
       <img src={emptyStateImage} alt="No messages" style={{ maxWidth: "80%", marginBottom: 16 }} />
 
-      <MessageList messages={messages} onQuickReply={handleQuickReply} />
+      {/* ✅ Render messages using MessageComponent instead of MessageList */}
+      {messages.map((message) => (
+        <MessageComponent key={message.id} message={message} onQuickReply={handleQuickReply} />
+      ))}
+
       <DetailedAnalysisDialog open={dialogOpen} onClose={() => setDialogOpen(false)} />
       <ImprovementsDialog open={improvementsDialogOpen} onClose={() => setImprovementsDialogOpen(false)} improvementsText={improvementsText} />
       <MediaUploadDialog open={mediaDialogOpen} onClose={() => setMediaDialogOpen(false)} onSendVideo={handleSendVideo} isVersionUpload={isVersionUpload} />

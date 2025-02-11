@@ -19,7 +19,7 @@ const MessageBubble: React.FC<MessageProps> = ({ sender, text, component }) => {
     <Paper
       sx={{
         p: 2,
-        backgroundColor: sender === "coach" ? "#f5f5f5" : "#0090F2",
+        backgroundColor: sender === "coach" ? "#2E2E2E" : "#1976D2", // Dark gray for AI, blue for user
         color: sender === "coach" ? "black" : "white",
         borderRadius: 32,
         alignSelf: sender === "coach" ? "flex-start" : "flex-end",

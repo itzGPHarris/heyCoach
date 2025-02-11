@@ -33,7 +33,7 @@ export const processVideoUpload = (
     {
       id: Date.now(),
       sender: "coach",
-      text: "🎥 Got it! I'm analyzing your video...",
+      text: "Thank you! Give me a minute while I analyze your video...",
       timestamp: new Date().toLocaleTimeString(),
     }
   ]);
@@ -46,10 +46,10 @@ export const processVideoUpload = (
         {
           id: Date.now(),
           sender: "coach",
-          text: `📊 Here's a quick summary of your video.\n\n⏳ **Duration:** 2 min 15 sec\n🎤 **Clarity:** Well-spoken ⚡\n**Pacing:** Slightly rushed 👀\n**Engagement:** Good energy\n\nWould you like a deeper analysis?`,
+          text: `Here's a quick summary of your video:\nDuration: 2 min 15 sec\nClarity: Well-spoken\n**Pacing:** Slightly rushed\n**Engagement:** Good energy\n\nWould you like help improving your pitch?`,
           parentId: newPitch.id, // ✅ Associate summary with this video
           timestamp: new Date().toLocaleTimeString(),
-          quickReplies: ["See Detailed Breakdown", "Skip to Next Step", "Give Me One Quick Tip", "Upload New Version"],
+          quickReplies: ["See Analysis", "Upload New Version", "Get Team Feedback"],
         }
       ]);
     }, 4500);
@@ -91,10 +91,10 @@ export const processVideoUpload = (
         {
           id: Date.now(),
           sender: "coach",
-          text: `📊 Here's a quick summary of your updated version.\n\n⏳ **Duration:** 2 min 10 sec\n🎤 **Clarity:** ${clarityChange > "0" ? "Improved" : "Needs Work"}\n⚡ **Pacing:** ${pacingChange > "0" ? "More Balanced" : "Still Rushed"}\n👀 **Engagement:** ${engagementChange > "0" ? "More Dynamic" : "Still Needs Energy"}\n\nWould you like to see a breakdown of the differences?`,
+          text: `Here's a quick summary of your updated version.\n\nDuration: 2 min 10 sec\n Clarity: ${clarityChange > "0" ? "Improved" : "Needs Work"}\nPacing:** ${pacingChange > "0" ? "More Balanced" : "Still Rushed"}\nEngagement:** ${engagementChange > "0" ? "More Dynamic" : "Still Needs Energy"}\n\nWould you like to see a breakdown of the differences?`,
           parentId: newPitch.id, // ✅ Associate with the second video
           timestamp: new Date().toLocaleTimeString(),
-          quickReplies: ["Show Specific Improvements", "Skip Comparison"],
+          quickReplies: ["Here's what improved", "Get team feedback", "Upload New Version"],
         }
       ]);
     }, 9000);
