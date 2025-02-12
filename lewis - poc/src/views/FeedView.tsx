@@ -8,7 +8,6 @@ import ImprovementsDialog from "../components/shared/ImprovementsDialog";
 import TeamFeedbackDialog from "../components/shared/TeamFeedbackDialog";
 import CompetitionsDialog from "../components/shared/CompetitionsDialog";
 import MediaUploadDialog from "../views/MediaUploadDialog";
-//import { getLastPitchVersion } from "../utils/PitchVersionStorage";
 import VideoUploadHandler from "../components/handlers/VideoUploadHandler";
 import ChatInput from "../components/shared/ChatInput";
 import emptyStateImage from "../assets/coachlogo.svg";
@@ -28,7 +27,6 @@ const FeedView: React.FC<FeedViewProps> = ({ messages, setMessages }) => {
   const [mediaDialogOpen, setMediaDialogOpen] = useState(false);
   const [isVersionUpload, setIsVersionUpload] = useState(false);
 
-  /** Auto-scroll to bottom when new messages arrive */
   useEffect(() => {
     const feed = feedRef.current;
     if (feed) {
@@ -36,33 +34,32 @@ const FeedView: React.FC<FeedViewProps> = ({ messages, setMessages }) => {
     }
   }, [messages]);
 
-  /** ✅ Handles Quick Replies */
   const handleQuickReply = (reply: string) => {
-    console.log("Quick Reply Clicked:", reply); // ✅ Debugging log
-    processUserCommand(reply); // ✅ Ensure dialog opens immediately
+    console.log("Quick Reply Clicked:", reply);
+    processUserCommand(reply.trim().toLowerCase());
   };
-  
 
-  /** ✅ Handles User Input (Detects Commands or Normal Messages) */
   const handleUserInput = (input: string) => {
-    const normalizedInput = input.toLowerCase().trim();
-    console.log("Processing User Input:", normalizedInput); // ✅ Debugging log
-  
-    processUserCommand(normalizedInput);
-    
-    // ✅ Add user message to feed immediately
-    setMessages((prev) => [
-      ...prev,
-      { id: Date.now(), sender: "user", text: input, timestamp: new Date().toLocaleTimeString() }
-    ]);
-  };
+    console.log("🔥 handleUserInput CALLED with:", input);
+
+    setMessages((prev) => {
+      console.log("🥰 Updating messages:", prev);
+      const newMessages = [...prev, { id: crypto.randomUUID(), sender: "user", text: input, timestamp: new Date().toLocaleTimeString() }];
+      console.log("😎😎😎 New messages array:", newMessages);
+      return newMessages;
+  });
   
 
-  /** ✅ Process Commands from Both Quick Replies & Chat Input */
+    console.log("🚀 Calling processUserCommand..."); // ✅ This should always appear
+    processUserCommand(input.trim().toLowerCase());
+
+    console.log("✅✅✅✅ processUserCommand successfully called!"); // ✅ Debugging log
+};
+
+
+
   const processUserCommand = async (input: string) => {
-    const normalizedInput = input.toLowerCase().trim();
-    console.log("Processing Command:", normalizedInput); // ✅ Debugging log
-  
+    console.log("🎯🎯🎯🎯 processUserCommand executing with input:", input);    
     const commandMap: Record<string, () => void> = {
       "see detailed breakdown": () => setDialogOpen(true),
       "see analysis": () => setDialogOpen(true),
@@ -72,98 +69,45 @@ const FeedView: React.FC<FeedViewProps> = ({ messages, setMessages }) => {
       "get team feedback": () => setTeamFeedbackDialogOpen(true),
       "enter a competition": () => setCompetitionsDialogOpen(true),
     };
-  
-    if (commandMap[normalizedInput]) {
-      console.log(`Opening Dialog for Command: ${normalizedInput}`); // ✅ Debugging log
-      commandMap[normalizedInput](); // ✅ Calls the correct function
-      return; // ✅ Exits function to prevent AI processing
+
+    if (commandMap[input]) {
+      console.log(`Opening Dialog for Command: ${input}`);
+      commandMap[input]();
+      return;
     }
-  
-    console.log("No match found, sending to AI."); // ✅ Debugging log
-  
-    // ✅ Only update messages if the input is NOT a recognized command
-    setMessages((prev) => [...prev, { id: Date.now(), sender: "user", text: input, timestamp: new Date().toLocaleTimeString() }]);
-  
+
+    console.log("No match found, sending to AI.");
     setTimeout(async () => {
       const response: string = await getAIResponse(input);
-      setMessages((prev) => [...prev, { id: Date.now() + 1, sender: "coach", text: response, timestamp: new Date().toLocaleTimeString() }]);
+      setMessages((prev) => [...prev, { id: crypto.randomUUID(), sender: "coach", text: response, timestamp: new Date().toLocaleTimeString() }]);
     }, 1500);
   };
-    
-  
-  
+  console.log("🛠 handleUserInput in FeedView:", handleUserInput);
 
-  /** ✅ Handle Video Upload */
   const handleSendVideo = (fileUrl: string, isPortrait: boolean) => {
     VideoUploadHandler({ fileUrl, isPortrait, setMessages, isVersionUpload });
     setIsVersionUpload(false);
   };
 
   return (
-<Box 
-  ref={feedRef} 
-  sx={{ 
-    flexGrow: 1, 
-    overflowY: "auto", 
-    display: "flex", 
-    flexDirection: "column", 
-    alignItems: "center", 
-    justifyContent: "center",
-    width: "100%",
-    maxWidth: 800, 
-    margin: "0 auto",
-    height: "calc(100vh - 56px - 72px)", 
-    paddingBottom: "16px",
-  }}
->
-      <Box sx={{ 
-          height: "100%", 
-          display: "flex", 
-          flexDirection: "column", 
-          justifyContent: "flex-end", 
-          alignItems: "center", 
-          width: "100%", 
-          pb: 2, pl: 3, pr: 3,
-          }}> 
-          <img src={emptyStateImage} alt="No messages" style={{ maxWidth: "100%", width:"300px", }} />
-          <Box sx={{ marginTop: 4, textAlign: "center" }}>
-            <Typography variant="h2" color="text.secondary">
-                Ready to get Jump?
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ marginBottom: 2 }}>
-                Upload or record your first pitch video, and I'll help you refine it!
-          </Typography>
-              {/*<Button variant="contained" color="primary" onClick={() => setMediaDialogOpen(true)}>
-                Upload Video
-              </Button>*/}
-                        <img src={emptyArrowImage} alt="No messages" style={{ maxWidth: "100%", width:"600px", }} />
-
-              </Box>
-          </Box>
-      {/* ✅ Render messages using MessageComponent */}
+    <Box ref={feedRef} sx={{ flexGrow: 1, overflowY: "auto", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: "100%", maxWidth: 800, margin: "0 auto", height: "calc(100vh - 56px - 72px)", paddingBottom: "16px" }}>
+      <Box sx={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "flex-end", alignItems: "center", width: "100%", pb: 2, pl: 3, pr: 3 }}> 
+        <img src={emptyStateImage} alt="No messages" style={{ maxWidth: "100%", width: "300px" }} />
+        <Box sx={{ marginTop: 4, textAlign: "center" }}>
+          <Typography variant="h2" color="text.secondary">Ready to get Jump?</Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ marginBottom: 2 }}>Upload or record your first pitch video, and I'll help you refine it!</Typography>
+          <img src={emptyArrowImage} alt="No messages" style={{ maxWidth: "100%", width: "600px" }} />
+        </Box>
+      </Box>
       {messages.map((message) => (
         <MessageComponent key={message.id} message={message} onQuickReply={handleQuickReply} />
       ))}
-
-      {/* ✅ User Chat Input */}
-      <ChatInput
-  onSendMessage={handleUserInput} // ✅ Ensures user input is processed correctly
-  onOpenMediaDialog={() => setMediaDialogOpen(true)}
-  onUserInput={handleUserInput} // ✅ Fixes "Function not implemented" error
-/>
-
-
-      {/* ✅ Dialogs */}
+      <ChatInput onSendMessage={handleUserInput} onOpenMediaDialog={() => setMediaDialogOpen(true)} />
       <DetailedAnalysisDialog open={dialogOpen} onClose={() => setDialogOpen(false)} />
       <ImprovementsDialog open={improvementsDialogOpen} onClose={() => setImprovementsDialogOpen(false)} improvementsText={""} />
       <TeamFeedbackDialog open={teamFeedbackDialogOpen} onClose={() => setTeamFeedbackDialogOpen(false)} />
       <CompetitionsDialog open={competitionsDialogOpen} onClose={() => setCompetitionsDialogOpen(false)} />
-      <MediaUploadDialog 
-        open={mediaDialogOpen} 
-        onClose={() => setMediaDialogOpen(false)} 
-        onSendVideo={handleSendVideo} 
-        isVersionUpload={isVersionUpload} 
-      />
+      <MediaUploadDialog open={mediaDialogOpen} onClose={() => setMediaDialogOpen(false)} onSendVideo={handleSendVideo} isVersionUpload={isVersionUpload} />
     </Box>
   );
 };

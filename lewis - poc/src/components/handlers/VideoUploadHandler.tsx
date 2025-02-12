@@ -8,7 +8,7 @@ const VideoUploadHandler = async ({ fileUrl, isPortrait, setMessages, isVersionU
 
   // ✅ Step 1: Store the video URL as text (instead of JSX)
   const videoMessage: Message = {
-    id: Date.now(),
+    id: crypto.randomUUID(),
     sender: "user",
     text: fileUrl, // ✅ Store URL as text so it renders correctly
     timestamp,

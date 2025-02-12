@@ -36,7 +36,7 @@ function AppShell() {
   const handleSendMessage = async (input: string) => {
     const timestamp = new Date().toLocaleTimeString();
     const newUserMessage: Message = {
-      id: Date.now(),
+      id: crypto.randomUUID(), // ✅ Generates a unique string instead of a number
       sender: "user",
       text: input,
       timestamp,
@@ -47,10 +47,10 @@ function AppShell() {
     try {
       const response: string = await getAIResponse(input);
       const aiMessage: Message = {
-        id: Date.now() + 1,
+        id: crypto.randomUUID(), // ✅ Ensures the same type across messages
         sender: "coach",
         text: response,
-        parentId: newUserMessage.id,
+        parentId: newUserMessage.id, // ✅ Keeps `id` as a string
         timestamp: new Date().toLocaleTimeString(),
       };
 
@@ -122,7 +122,6 @@ function AppShell() {
         <ChatInput
   onSendMessage={handleSendMessage}
   onOpenMediaDialog={() => setMediaDialogOpen(true)}
-  onUserInput={handleSendMessage} // ✅ Ensure onUserInput is passed
 />
         </Box>
       </Box>

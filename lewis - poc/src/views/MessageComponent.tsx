@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography, Button, List, ListItem } from "@mui/material";
+import { Box, Typography, Button } from "@mui/material";
 import { Message } from "./../types/types";
 
 interface MessageProps {
@@ -10,83 +10,21 @@ interface MessageProps {
 const MessageComponent: React.FC<MessageProps> = ({ message, onQuickReply }) => {
   const isVideoMessage = message.text ? (message.text.startsWith("blob:") || message.text.match(/\.(mp4|mov)$/)) : false;
 
-  // ✅ Align coach messages (left) and user messages (right)
   const isCoach = message.sender === "coach";
-  const messageAlignment = isCoach ? "flex-start" : "flex-end"; // Left-align AI, right-align user
-  const messageBgColor = isCoach ? "#F9FAFB" : "#252c32"; // Background colors
-  const messageTextColor = isCoach ? "#000000" : "#FFFFFF"; // ✅ Coach text = black, User text = white
-  const timestampColor = isCoach ? "#666666" : "#E0E0E0"; // ✅ Custom timestamp colors
-
-  // ✅ Function to render formatted message content
-  const renderFormattedText = (text: string) => {
-    const elements: JSX.Element[] = [];
-    const lines = text.split("\n");
-
-    let listItems: JSX.Element[] = []; // Track list items to be wrapped in <List>
-
-    for (const [index, line] of lines.entries()) {
-      console.log("Processing message line:", line); // ✅ Debugging output
-
-      // ✅ Detect list items (- item)
-      if (line.startsWith("- ")) {
-        listItems.push(
-          <ListItem key={index} sx={{ color: messageTextColor, fontSize: "0.9rem" }}>
-            {line.replace("- ", "• ")}
-          </ListItem>
-        );
-        continue;
-      } else if (listItems.length > 0) {
-        // ✅ If we're leaving a list, wrap previous list items inside a <List>
-        elements.push(
-          <List key={`list-${index}`} sx={{ pl: 2 }}>
-            {listItems}
-          </List>
-        );
-        listItems = []; // Reset list tracking
-      }
-
-      // ✅ Detect bold text (**Bold:** Text) and ensure both parts show
-      const boldMatch = line.match(/\*\*(.*?)\*\*\s*:\s*(.*)/);
-      if (boldMatch) {
-        console.log("Detected bold line:", boldMatch); // ✅ Debugging line
-
-        elements.push(
-          <Typography key={index} variant="caption" sx={{ color: messageTextColor }}>
-            <strong>{boldMatch[1]}:</strong> {boldMatch[2]}
-          </Typography>
-        );
-        continue;
-      }
-
-      // ✅ Default text handling
-      elements.push(
-        <Typography key={index} variant="body1" sx={{ color: messageTextColor }}>
-          {line}
-        </Typography>
-      );
-    }
-
-    // ✅ If the last lines were list items, wrap them in <List>
-    if (listItems.length > 0) {
-      elements.push(
-        <List key="final-list" sx={{ pl: 2 }}>
-          {listItems}
-        </List>
-      );
-    }
-
-    return elements;
-  };
+  const messageAlignment = isCoach ? "flex-start" : "flex-end";
+  const messageBgColor = isCoach ? "#F9FAFB" : "#252c32";
+  const messageTextColor = isCoach ? "#000000" : "#FFFFFF";
+  const timestampColor = isCoach ? "#666666" : "#E0E0E0";
 
   return (
     <Box
       sx={{
         display: "flex",
-        justifyContent: messageAlignment, // Align messages
+        justifyContent: messageAlignment,
         width: "100%",
-        my: 0.75, // Space between messages
-        pl: 1.25, // Padding left
-        pr: 1.25, // Padding right
+        my: 0.75,
+        pl: 1.25,
+        pr: 1.25,
       }}
     >
       <Box
@@ -97,7 +35,6 @@ const MessageComponent: React.FC<MessageProps> = ({ message, onQuickReply }) => 
           maxWidth: "80%",
         }}
       >
-        {/* ✅ Sender name & timestamp in the same row */}
         <Box sx={{ display: "inline-flex", alignItems: "center" }}>
           <Typography variant="caption" sx={{ fontWeight: "bold", color: messageTextColor }}>
             {isCoach ? "Coach" : "Harper"}
@@ -116,30 +53,31 @@ const MessageComponent: React.FC<MessageProps> = ({ message, onQuickReply }) => 
           </Box>
         ) : (
           <Box sx={{ mt: 1 }}>
-            {message.text && renderFormattedText(message.text)}
+            <Typography variant="body1" sx={{ color: messageTextColor }}>
+              {message.text}
+            </Typography>
           </Box>
         )}
 
-{message.quickReplies && (
-  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1 }}>
-    {message.quickReplies.map((reply, index) => (
-      <Button
-      sx={{color:"#fff", backgroundColor:"#0090f2", borderRadius: 12}}
-        key={`${reply}-${index}`} // ✅ Ensures unique keys
-        variant="contained"
-        size="small"
-        onClick={(event) => {
-          event.stopPropagation(); // ✅ Prevents event bubbling issues
-          console.log("Quick Reply Clicked:", reply); // ✅ Debugging log
-          onQuickReply(reply.trim().toLowerCase()); // ✅ Ensures consistent input
-        }}
-      >
-        {reply}
-      </Button>
-    ))}
-  </Box>
-)}
-
+        {message.quickReplies && (
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1 }}>
+            {message.quickReplies.map((reply, index) => (
+              <Button
+                sx={{ color: "#fff", backgroundColor: "#0090f2", borderRadius: 12 }}
+                key={`${reply}-${index}`}
+                variant="contained"
+                size="small"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  console.log("Quick Reply Clicked:", reply);
+                  onQuickReply(reply.trim().toLowerCase());
+                }}
+              >
+                {reply}
+              </Button>
+            ))}
+          </Box>
+        )}
       </Box>
     </Box>
   );

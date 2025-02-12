@@ -1,11 +1,11 @@
 export interface Message {
-  id: number;
+  id: string;
   //sender: "user" | "coach";
   sender: string;
   text?: string;
   component?: JSX.Element;
   timestamp: string;
-  parentId?: number;
+  parentId?: string;
   quickReplies?: string[]; // ✅ Make quickReplies optional
   isFormatted?: boolean; // ✅ Ensure this exists
 
