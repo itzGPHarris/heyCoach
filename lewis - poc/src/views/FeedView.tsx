@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import MessageComponent from "./MessageComponent";
 import { Message } from "../types/types";
 import getAIResponse from "../components/shared/getAIResponse";
@@ -11,7 +11,8 @@ import MediaUploadDialog from "../views/MediaUploadDialog";
 //import { getLastPitchVersion } from "../utils/PitchVersionStorage";
 import VideoUploadHandler from "../components/handlers/VideoUploadHandler";
 import ChatInput from "../components/shared/ChatInput";
-import emptyStateImage from "../assets/jumper.svg";
+import emptyStateImage from "../assets/coachlogo.svg";
+import emptyArrowImage from "../assets/arrow.svg";
 
 interface FeedViewProps {
   messages: Message[];
@@ -99,10 +100,46 @@ const FeedView: React.FC<FeedViewProps> = ({ messages, setMessages }) => {
   };
 
   return (
-    <Box ref={feedRef} sx={{ flexGrow: 1, overflowY: "auto", display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: 800, height: "calc(100vh - 56px - 72px)", paddingBottom: "16px" }}>
-      
-      <img src={emptyStateImage} alt="No messages" style={{ maxWidth: "80%", marginBottom: 16 }} />
+<Box 
+  ref={feedRef} 
+  sx={{ 
+    flexGrow: 1, 
+    overflowY: "auto", 
+    display: "flex", 
+    flexDirection: "column", 
+    alignItems: "center", 
+    justifyContent: "center",
+    width: "100%",
+    maxWidth: 800, 
+    margin: "0 auto",
+    height: "calc(100vh - 56px - 72px)", 
+    paddingBottom: "16px",
+  }}
+>
+      <Box sx={{ 
+          height: "100%", 
+          display: "flex", 
+          flexDirection: "column", 
+          justifyContent: "flex-end", 
+          alignItems: "center", 
+          width: "100%", 
+          pb: 2, pl: 3, pr: 3,
+          }}> 
+          <img src={emptyStateImage} alt="No messages" style={{ maxWidth: "100%", width:"300px", }} />
+          <Box sx={{ marginTop: 4, textAlign: "center" }}>
+            <Typography variant="h2" color="text.secondary">
+                Ready to get Jump?
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ marginBottom: 2 }}>
+                Upload or record your first pitch video, and I'll help you refine it!
+          </Typography>
+              {/*<Button variant="contained" color="primary" onClick={() => setMediaDialogOpen(true)}>
+                Upload Video
+              </Button>*/}
+                        <img src={emptyArrowImage} alt="No messages" style={{ maxWidth: "100%", width:"600px", }} />
 
+              </Box>
+          </Box>
       {/* ✅ Render messages using MessageComponent */}
       {messages.map((message) => (
         <MessageComponent key={message.id} message={message} onQuickReply={handleQuickReply} />

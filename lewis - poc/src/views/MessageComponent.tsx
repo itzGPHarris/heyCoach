@@ -13,7 +13,7 @@ const MessageComponent: React.FC<MessageProps> = ({ message, onQuickReply }) => 
   // ✅ Align coach messages (left) and user messages (right)
   const isCoach = message.sender === "coach";
   const messageAlignment = isCoach ? "flex-start" : "flex-end"; // Left-align AI, right-align user
-  const messageBgColor = isCoach ? "#F5F5F5" : "#0090FC"; // Background colors
+  const messageBgColor = isCoach ? "#F9FAFB" : "#252c32"; // Background colors
   const messageTextColor = isCoach ? "#000000" : "#FFFFFF"; // ✅ Coach text = black, User text = white
   const timestampColor = isCoach ? "#666666" : "#E0E0E0"; // ✅ Custom timestamp colors
 
@@ -51,7 +51,7 @@ const MessageComponent: React.FC<MessageProps> = ({ message, onQuickReply }) => 
         console.log("Detected bold line:", boldMatch); // ✅ Debugging line
 
         elements.push(
-          <Typography key={index} variant="body2" sx={{ color: messageTextColor }}>
+          <Typography key={index} variant="caption" sx={{ color: messageTextColor }}>
             <strong>{boldMatch[1]}:</strong> {boldMatch[2]}
           </Typography>
         );
@@ -60,7 +60,7 @@ const MessageComponent: React.FC<MessageProps> = ({ message, onQuickReply }) => 
 
       // ✅ Default text handling
       elements.push(
-        <Typography key={index} variant="body2" sx={{ color: messageTextColor }}>
+        <Typography key={index} variant="body1" sx={{ color: messageTextColor }}>
           {line}
         </Typography>
       );
@@ -84,14 +84,14 @@ const MessageComponent: React.FC<MessageProps> = ({ message, onQuickReply }) => 
         display: "flex",
         justifyContent: messageAlignment, // Align messages
         width: "100%",
-        my: 0.25, // Space between messages
+        my: 0.75, // Space between messages
         pl: 1.25, // Padding left
         pr: 1.25, // Padding right
       }}
     >
       <Box
         sx={{
-          p: 1.5,
+          p: 2,
           borderRadius: 24,
           bgcolor: messageBgColor,
           maxWidth: "80%",
@@ -99,7 +99,7 @@ const MessageComponent: React.FC<MessageProps> = ({ message, onQuickReply }) => 
       >
         {/* ✅ Sender name & timestamp in the same row */}
         <Box sx={{ display: "inline-flex", alignItems: "center" }}>
-          <Typography variant="body1" sx={{ fontWeight: "bold", color: messageTextColor }}>
+          <Typography variant="caption" sx={{ fontWeight: "bold", color: messageTextColor }}>
             {isCoach ? "Coach" : "Harper"}
           </Typography>
           <Typography variant="caption" sx={{ color: timestampColor, ml: 1 }}>
@@ -124,6 +124,7 @@ const MessageComponent: React.FC<MessageProps> = ({ message, onQuickReply }) => 
   <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1 }}>
     {message.quickReplies.map((reply, index) => (
       <Button
+      sx={{color:"#fff", backgroundColor:"#0090f2", borderRadius: 12}}
         key={`${reply}-${index}`} // ✅ Ensures unique keys
         variant="contained"
         size="small"

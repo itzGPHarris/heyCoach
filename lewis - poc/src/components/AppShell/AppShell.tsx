@@ -80,14 +80,37 @@ function AppShell() {
           handleMenuClose={handleMenuClose} 
         />
 
-<Box sx={{ flexGrow: 1, overflow: "hidden", backgroundColor: "background.default", position: "relative", display: "flex", flexDirection: "column", marginTop: "56px", paddingBottom: "70px" }}>
-  {activeTab === 'feed' ? (
-    <FeedView messages={messages} setMessages={setMessages} /> // ✅ Fix: Pass setMessages
-  ) : activeTab === 'dashboard' ? (
-    <DashboardView />
-  ) : (
-    <ProfileView />
-  )}
+<Box sx={{ 
+  flexGrow: 1, 
+  overflow: "hidden", 
+  backgroundColor: "background.default", 
+  position: "relative", 
+  display: "flex", 
+  flexDirection: "column", 
+  alignItems: "center",  // ✅ Ensures horizontal centering
+  justifyContent: "center", 
+  width: "100%",
+  pl: 1, // ✅ Adds padding to the left
+  pr: 1, // ✅ Adds padding to the right
+  mb: 4, // ✅ Adds margin to the bottom
+}}>
+   <Box sx={{ 
+    width: "100%", 
+    maxWidth: "800px",  // ✅ Ensures content is not too wide
+    display: "flex",
+    justifyContent: "center", // ✅ Centers FeedView
+  }}>
+
+  
+
+    {activeTab === 'feed' ? (
+      <FeedView messages={messages} setMessages={setMessages} />
+    ) : activeTab === 'dashboard' ? (
+      <DashboardView />
+    ) : (
+      <ProfileView />
+    )}
+  </Box>
 </Box>
 
 

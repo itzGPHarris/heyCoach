@@ -10,7 +10,7 @@ interface ChatInputProps {
   sx?: object;
 }
 
-const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, onOpenMediaDialog, onUserInput }) => {
+const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, onOpenMediaDialog }) => {
   const [input, setInput] = useState("");
   const [mediaMode] = useState<"audio" | "video">("audio");
 
@@ -21,7 +21,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, onOpenMediaDialog,
     console.log("User clicked send:", input); // ✅ Debugging log
   
     onSendMessage(input.trim()); // ✅ Ensure message appears in the feed
-    onUserInput(input.trim()); // ✅ Process commands (if applicable)
+    //onUserInput(input.trim()); // ✅ Process commands (if applicable)
   
     setTimeout(() => {
       setInput(""); // ✅ Reset input field after sending
@@ -34,7 +34,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, onOpenMediaDialog,
     <Box sx={{
       display: "flex",
       alignItems: "center",
-      backgroundColor: "#ccc",
+      backgroundColor: "#0090f2",
       paddingTop: 2,
       paddingBottom: 2,
       paddingLeft:1, 
@@ -48,8 +48,8 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, onOpenMediaDialog,
       maxWidth: "600px",
     }}>
       {/* ✅ Button to Open Media Dialog */}
-      <IconButton onClick={onOpenMediaDialog}>
-        <CirclePlus size={32} />
+      <IconButton onClick={onOpenMediaDialog} sx={{color:"#fff"}}>
+        <CirclePlus size={36} />
       </IconButton>
 
       {/* ✅ Chat Input Field */}
@@ -72,9 +72,9 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, onOpenMediaDialog,
     console.log("Send button clicked"); // ✅ Debugging log
     handleSend();
   }}
-  color="primary"
+  sx={{color:"#fff"}}
 >
-  {input.trim() ? <ArrowUp size={32} /> : (mediaMode === "audio" ? <Mic size={20} /> : <Video size={32} />)}
+  {input.trim() ? <ArrowUp size={32} /> : (mediaMode === "audio" ? <Mic size={30} /> : <Video size={30} />)}
 </IconButton>
 
 
