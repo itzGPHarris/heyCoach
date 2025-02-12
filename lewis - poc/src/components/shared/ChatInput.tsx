@@ -12,7 +12,7 @@ interface ChatInputProps {
 
 const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, onOpenMediaDialog, onUserInput }) => {
   const [input, setInput] = useState("");
-  const [mediaMode, setMediaMode] = useState<"audio" | "video">("audio");
+  const [mediaMode] = useState<"audio" | "video">("audio");
 
   /** ✅ Handles Sending Messages & Commands */
   const handleSend = () => {
@@ -23,8 +23,11 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, onOpenMediaDialog,
     onSendMessage(input.trim()); // ✅ Ensure message appears in the feed
     onUserInput(input.trim()); // ✅ Process commands (if applicable)
   
-    setInput(""); // ✅ Clear input field
-  };
+    setTimeout(() => {
+      setInput(""); // ✅ Reset input field after sending
+      console.log("Input cleared"); // ✅ Debugging log
+    }, 0);
+    };
   
 
   return (
@@ -64,9 +67,16 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, onOpenMediaDialog,
       />
 
       {/* ✅ Dynamic Button: Send Message or Toggle Media */}
-      <IconButton onClick={handleSend} color="primary">
-          {input.trim() ? <ArrowUp size={32} /> : (mediaMode === "audio" ? <Mic size={20} /> : <Video size={32} />)}
-    </IconButton>
+      <IconButton
+  onClick={() => {
+    console.log("Send button clicked"); // ✅ Debugging log
+    handleSend();
+  }}
+  color="primary"
+>
+  {input.trim() ? <ArrowUp size={32} /> : (mediaMode === "audio" ? <Mic size={20} /> : <Video size={32} />)}
+</IconButton>
+
 
     </Box>
   );

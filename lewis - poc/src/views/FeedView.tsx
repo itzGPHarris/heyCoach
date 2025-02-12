@@ -59,7 +59,8 @@ const FeedView: React.FC<FeedViewProps> = ({ messages, setMessages }) => {
 
   /** ✅ Process Commands from Both Quick Replies & Chat Input */
   const processUserCommand = async (input: string) => {
-    console.log("Processing Command:", input); // ✅ Debugging log
+    const normalizedInput = input.toLowerCase().trim();
+    console.log("Processing Command:", normalizedInput); // ✅ Debugging log
   
     const commandMap: Record<string, () => void> = {
       "see detailed breakdown": () => setDialogOpen(true),
@@ -71,24 +72,22 @@ const FeedView: React.FC<FeedViewProps> = ({ messages, setMessages }) => {
       "enter a competition": () => setCompetitionsDialogOpen(true),
     };
   
-    if (commandMap[input]) {
-      console.log(`Opening Dialog for Command: ${input}`); // ✅ Debugging log
-      commandMap[input](); // ✅ Open the correct dialog
-      return; // ✅ Exit to prevent AI response
+    if (commandMap[normalizedInput]) {
+      console.log(`Opening Dialog for Command: ${normalizedInput}`); // ✅ Debugging log
+      commandMap[normalizedInput](); // ✅ Calls the correct function
+      return; // ✅ Exits function to prevent AI processing
     }
   
     console.log("No match found, sending to AI."); // ✅ Debugging log
   
-    // ✅ Send AI response only if it's NOT a recognized command
+    // ✅ Only update messages if the input is NOT a recognized command
+    setMessages((prev) => [...prev, { id: Date.now(), sender: "user", text: input, timestamp: new Date().toLocaleTimeString() }]);
+  
     setTimeout(async () => {
       const response: string = await getAIResponse(input);
-      setMessages((prev) => [
-        ...prev,
-        { id: Date.now(), sender: "coach", text: response, timestamp: new Date().toLocaleTimeString() }
-      ]);
+      setMessages((prev) => [...prev, { id: Date.now() + 1, sender: "coach", text: response, timestamp: new Date().toLocaleTimeString() }]);
     }, 1500);
   };
-  
     
   
   

@@ -96,7 +96,11 @@ function AppShell() {
 
         {/* ✅ Fixed Chat Input Always Above Content */}
         <Box sx={{ position: "fixed", bottom: 0, width: "100%", backgroundColor: "white", zIndex: 10, boxShadow: "0px -2px 10px rgba(0, 0, 0, 0.1)" }}>
-          <ChatInput onSendMessage={handleSendMessage} onOpenMediaDialog={() => setMediaDialogOpen(true)} />
+        <ChatInput
+  onSendMessage={handleSendMessage}
+  onOpenMediaDialog={() => setMediaDialogOpen(true)}
+  onUserInput={handleSendMessage} // ✅ Ensure onUserInput is passed
+/>
         </Box>
       </Box>
     </ThemeProvider>
