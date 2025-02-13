@@ -1,4 +1,5 @@
 export interface Message {
+  pitchId: string;
   id: string;
   //sender: "user" | "coach";
   sender: string;

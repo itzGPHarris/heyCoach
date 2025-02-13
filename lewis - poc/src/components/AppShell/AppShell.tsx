@@ -36,10 +36,11 @@ function AppShell() {
   const handleSendMessage = async (input: string) => {
     const timestamp = new Date().toLocaleTimeString();
     const newUserMessage: Message = {
-      id: Date.now(),
+      id: crypto.randomUUID(),
       sender: "user",
       text: input,
       timestamp,
+      pitchId: ""
     };
 
     setMessages((prev) => [...prev, newUserMessage]);
@@ -47,11 +48,12 @@ function AppShell() {
     try {
       const response: string = await getAIResponse(input);
       const aiMessage: Message = {
-        id: Date.now() + 1,
+        id: crypto.randomUUID(),
         sender: "coach",
         text: response,
         parentId: newUserMessage.id,
         timestamp: new Date().toLocaleTimeString(),
+        pitchId: ""
       };
 
       setMessages((prev) => [...prev, aiMessage]);
@@ -99,7 +101,7 @@ function AppShell() {
         <ChatInput
   onSendMessage={handleSendMessage}
   onOpenMediaDialog={() => setMediaDialogOpen(true)}
-  onUserInput={handleSendMessage} // ✅ Ensure onUserInput is passed
+  // onUserInput={handleSendMessage} // ✅ Ensure onUserInput is passed
 />
         </Box>
       </Box>
