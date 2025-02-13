@@ -1,28 +1,27 @@
 import React, { useState } from "react";
-import { ThemeProvider, CssBaseline, Box } from "@mui/material";
+import { ThemeProvider, CssBaseline, Box, Dialog, DialogTitle, DialogContent, DialogActions, Button } from "@mui/material";
 import { getTheme } from "../../styles/theme";
 import useStore from "../../store";
 import FeedView from "../../views/FeedView";
 import DashboardView from "../../views/DashboardView";
 import ProfileView from "../../views/ProfileView";
 import ChatInput from "../../components/shared/ChatInput";
-import getAIResponse from "../../components/shared/getAIResponse"; 
 import { Message } from "../../types/types";
-import VideoUploadHandler from "../../components/handlers/VideoUploadHandler"; // ✅ Import new handler
-import AppHeader from "../../components/shared/AppHeader"; // ✅ Import header component
-import MediaUploadDialog from "../../views/MediaUploadDialog"; // ✅ Import media dialog
+import AppHeader from "../../components/shared/AppHeader";
+import MediaUploadDialog from "../../views/MediaUploadDialog"; 
 
 function AppShell() {
-  const [mode, setMode] = useState<'light' | 'dark'>('light');
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const store = useStore();
-
-  // ✅ Manage messages state in AppShell
   const [messages, setMessages] = useState<Message[]>([]);
   const [mediaDialogOpen, setMediaDialogOpen] = useState(false);
-
   const notifications = store.notifications || [];
-  const activeTab = store.activeTab || 'feed';
+  const activeTab = store.activeTab || "feed";
+
+  // State for dialogs
+  const [profileDialogOpen, setProfileDialogOpen] = useState(false);
+  const [dashboardDialogOpen, setDashboardDialogOpen] = useState(false);
+  const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
 
   const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -32,97 +31,93 @@ function AppShell() {
     setAnchorEl(null);
   };
 
-  /** ✅ Handles user text messages */
-  const handleSendMessage = async (input: string) => {
-    const timestamp = new Date().toLocaleTimeString();
-    const newUserMessage: Message = {
-      id: crypto.randomUUID(), // ✅ Generates a unique string instead of a number
-      sender: "user",
-      text: input,
-      timestamp,
-    };
-
-    setMessages((prev) => [...prev, newUserMessage]);
-
-    try {
-      const response: string = await getAIResponse(input);
-      const aiMessage: Message = {
-        id: crypto.randomUUID(), // ✅ Ensures the same type across messages
-        sender: "coach",
-        text: response,
-        parentId: newUserMessage.id, // ✅ Keeps `id` as a string
-        timestamp: new Date().toLocaleTimeString(),
-      };
-
-      setMessages((prev) => [...prev, aiMessage]);
-    } catch (error) {
-      console.error("Error fetching AI response:", error);
-    }
+  // Functions to open dialogs
+  const handleOpenProfileDialog = () => {
+    setProfileDialogOpen(true);
+    handleMenuClose();
   };
 
-  /** ✅ Handles video uploads using VideoUploadHandler */
-  const handleSendVideo = (fileUrl: string, isPortrait: boolean) => {
-    VideoUploadHandler({ fileUrl, isPortrait, setMessages, isVersionUpload: false }); // ✅ Calls refactored handler
+  const handleOpenDashboardDialog = () => {
+    setDashboardDialogOpen(true);
+    handleMenuClose();
+  };
+
+  const handleOpenSettingsDialog = () => {
+    setSettingsDialogOpen(true);
+    handleMenuClose();
+  };
+
+  // Function to close all dialogs
+  const handleCloseDialogs = () => {
+    setProfileDialogOpen(false);
+    setDashboardDialogOpen(false);
+    setSettingsDialogOpen(false);
   };
 
   return (
     <ThemeProvider theme={getTheme(mode)}>
       <CssBaseline />
       <Box sx={{ height: "100vh", display: "flex", flexDirection: "column" }}>
-        
-        {/* ✅ Use AppHeader Component */}
+        {/* App Header with updated props */}
         <AppHeader 
-          mode={mode} 
-          setMode={setMode} 
           notifications={notifications} 
           anchorEl={anchorEl} 
           handleProfileClick={handleProfileClick} 
-          handleMenuClose={handleMenuClose} 
+          handleMenuClose={handleMenuClose}
+          handleOpenProfileDialog={handleOpenProfileDialog}
+          handleOpenDashboardDialog={handleOpenDashboardDialog}
+          handleOpenSettingsDialog={handleOpenSettingsDialog}
         />
 
-<Box sx={{ 
-  flexGrow: 1, 
-  overflow: "hidden", 
-  backgroundColor: "background.default", 
-  position: "relative", 
-  display: "flex", 
-  flexDirection: "column", 
-  alignItems: "center",  // ✅ Ensures horizontal centering
-  justifyContent: "center", 
-  width: "100%",
-  pl: 1, // ✅ Adds padding to the left
-  pr: 1, // ✅ Adds padding to the right
-  mb: 4, // ✅ Adds margin to the bottom
-}}>
-   <Box sx={{ 
-    width: "100%", 
-    maxWidth: "800px",  // ✅ Ensures content is not too wide
-    display: "flex",
-    justifyContent: "center", // ✅ Centers FeedView
-  }}>
+        <Box sx={{ flexGrow: 1, overflow: "hidden", backgroundColor: "background.default", display: "flex", justifyContent: "center" }}>
+          {activeTab === "feed" ? (
+            <FeedView messages={messages} setMessages={setMessages} />
+          ) : activeTab === "dashboard" ? (
+            <DashboardView />
+          ) : (
+            <ProfileView />
+          )}
+        </Box>
 
-  
+        {/* Media Upload Dialog */}
+        <MediaUploadDialog open={mediaDialogOpen} onClose={() => setMediaDialogOpen(false)} onSendVideo={() => {}} isVersionUpload={false} />
 
-    {activeTab === 'feed' ? (
-      <FeedView messages={messages} setMessages={setMessages} />
-    ) : activeTab === 'dashboard' ? (
-      <DashboardView />
-    ) : (
-      <ProfileView />
-    )}
-  </Box>
-</Box>
+        {/* Profile Dialog */}
+        <Dialog open={profileDialogOpen} onClose={handleCloseDialogs}>
+          <DialogTitle>Profile</DialogTitle>
+          <DialogContent>
+            <ProfileView />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseDialogs}>Close</Button>
+          </DialogActions>
+        </Dialog>
 
+        {/* Dashboard Dialog */}
+        <Dialog open={dashboardDialogOpen} onClose={handleCloseDialogs}>
+          <DialogTitle>Dashboard</DialogTitle>
+          <DialogContent>
+            <DashboardView />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseDialogs}>Close</Button>
+          </DialogActions>
+        </Dialog>
 
-        {/* ✅ Media Upload Dialog */}
-        <MediaUploadDialog open={mediaDialogOpen} onClose={() => setMediaDialogOpen(false)} onSendVideo={handleSendVideo} isVersionUpload={false} />
+        {/* Account Settings Dialog */}
+        <Dialog open={settingsDialogOpen} onClose={handleCloseDialogs}>
+          <DialogTitle>Account Settings</DialogTitle>
+          <DialogContent>
+            <p>Settings coming soon...</p>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseDialogs}>Close</Button>
+          </DialogActions>
+        </Dialog>
 
-        {/* ✅ Fixed Chat Input Always Above Content */}
+        {/* Chat Input */}
         <Box sx={{ position: "fixed", bottom: 0, width: "100%", backgroundColor: "white", zIndex: 10, boxShadow: "0px -2px 10px rgba(0, 0, 0, 0.1)" }}>
-        <ChatInput
-  onSendMessage={handleSendMessage}
-  onOpenMediaDialog={() => setMediaDialogOpen(true)}
-/>
+          <ChatInput onSendMessage={() => {}} onOpenMediaDialog={() => setMediaDialogOpen(true)} />
         </Box>
       </Box>
     </ThemeProvider>

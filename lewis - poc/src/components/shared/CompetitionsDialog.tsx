@@ -1,5 +1,6 @@
 import React from "react";
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, List, ListItem, ListItemText } from "@mui/material";
+import Competition from "./Competition";
 
 interface CompetitionsDialogProps {
   open: boolean;
@@ -43,6 +44,7 @@ const CompetitionsDialog: React.FC<CompetitionsDialogProps> = ({ open, onClose }
             </ListItem>
           ))}
         </List>
+        < Competition />
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="secondary">

@@ -45,7 +45,7 @@ export const processVideoUpload = (
         {
           id: crypto.randomUUID(),
           sender: "coach",
-          text: `Here's a quick summary of your video:\nDuration: 2 min 15 sec\nClarity: Well-spoken\n**Pacing:** Slightly rushed\n**Engagement:** Good energy\n\nWould you like help improving your pitch?`,
+          text: `Here's a quick summary of your video:\nDuration: 2 min 15 sec\nClarity: Well-spoken\nPacing: Slightly rushed\n**Engagement: Good energy\n\nWould you like help improving your pitch?`,
           parentId: newPitch.id.toString(), // ✅ Associate summary with this video
           timestamp: new Date().toLocaleTimeString(),
           quickReplies: ["See Analysis", "Upload New Version", "Get Team Feedback"],
@@ -62,7 +62,7 @@ export const processVideoUpload = (
         {
           id: crypto.randomUUID(),
           sender: "coach",
-          text: "🔄 Looks like you've uploaded a new version! Let me compare it to your last pitch...",
+          text: "🔄 Oh! A new version! Let me compare it to your last pitch...",
           timestamp: new Date().toLocaleTimeString(),
         }
       ]);
@@ -93,7 +93,7 @@ export const processVideoUpload = (
           text: `Here's a quick summary of your updated version.\n\nDuration: 2 min 10 sec\n Clarity: ${clarityChange > "0" ? "Improved" : "Needs Work"}\nPacing:** ${pacingChange > "0" ? "More Balanced" : "Still Rushed"}\nEngagement:** ${engagementChange > "0" ? "More Dynamic" : "Still Needs Energy"}\n\nWould you like to see a breakdown of the differences?`,
           parentId: newPitch.id.toString(), // ✅ Associate with the second video
           timestamp: new Date().toLocaleTimeString(),
-          quickReplies: ["Here's what improved", "Get team feedback", "Upload New Version"],
+          quickReplies: ["Here's what improved", "Get team feedback", "Enter a competition"],
         }
       ]);
     }, 9000);
