@@ -15,13 +15,14 @@ import emptyStateImage from "../assets/coachlogo.svg";
 import emptyArrowImage from "../assets/arrow.svg";
 import topArrowImage from "../assets/arrow-top.svg";
 import TeamFeedbackCard from "../components/shared/teamFeedbackCard";
+import DashboardView from "./DashboardView";
 
 interface FeedViewProps {
   messages: Message[];
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
 }
 
-const FeedView: React.FC<FeedViewProps> = ({ messages, setMessages }) => {
+  const FeedView: React.FC<FeedViewProps> = ({ messages, setMessages }) => {
   const feedRef = useRef<HTMLDivElement | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [improvementsDialogOpen, setImprovementsDialogOpen] = useState(false);
@@ -29,6 +30,8 @@ const FeedView: React.FC<FeedViewProps> = ({ messages, setMessages }) => {
   const [competitionsDialogOpen, setCompetitionsDialogOpen] = useState(false);
   const [mediaDialogOpen, setMediaDialogOpen] = useState(false);
   const [isVersionUpload, setIsVersionUpload] = useState(false);
+  const [dashboardOpen, setDashboardOpen] = useState(false);
+
 
   useEffect(() => {
     console.log("🔥🔥🔥 Messages state updated:", messages);
@@ -100,6 +103,10 @@ const FeedView: React.FC<FeedViewProps> = ({ messages, setMessages }) => {
     setIsVersionUpload(false);
   };
 
+    function handleCloseDashboard(): void {
+      throw new Error("Function not implemented.");
+    }
+
   return (
     <Box ref={feedRef} sx={{ flexGrow: 1, overflowY: "auto", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: "100%", maxWidth: 800, margin: "0 auto", height: "calc(100vh - 56px - 72px)", paddingBottom: "16px" }}>
           <Box sx={{  maxWidth: "100%", width: "600" , justifyContent: "flex-top", pt: 2, pl: 3, pr: 3 }}>
@@ -123,6 +130,8 @@ const FeedView: React.FC<FeedViewProps> = ({ messages, setMessages }) => {
       <TeamFeedbackDialog open={teamFeedbackDialogOpen} onClose={() => setTeamFeedbackDialogOpen(false)} />
       <CompetitionsDialog open={competitionsDialogOpen} onClose={() => setCompetitionsDialogOpen(false)} />
       <MediaUploadDialog open={mediaDialogOpen} onClose={() => setMediaDialogOpen(false)} onSendVideo={handleSendVideo} isVersionUpload={isVersionUpload} />
+      <DashboardView open={dashboardOpen} onClose={handleCloseDashboard} />
+
     </Box>
     
   );

@@ -24,15 +24,15 @@ const TeamFeedbackCard: React.FC<TeamFeedbackCardProps> = ({ feedbackData, onQui
 
   return (
     <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.3 }}>
-      <Box sx={{ mb: 2, p: 3,display: "flex", flexDirection: "column", width: "100%", borderRadius: 4,  }}>
-      <Typography variant="caption" color="textSecondary">
+      <Box sx={{ mb: 2, p: 3,display: "flex", flexDirection: "column", width: "100%", borderRadius: 4, alignItems:"center"  }}>
+          <Typography variant="caption" color="textSecondary">
             {timestamp}
           </Typography>
           <Typography variant="body1" gutterBottom>
-            You received feedback on your latest video!
+            🤠 You received feedback on your latest video!
           </Typography>
           
-          <Button  size="small" onClick={handleExpandClick}>
+          <Button  sx={{color:"#009FC0"}} size="small" onClick={handleExpandClick}>
             {expanded ? "Hide Feedback" : "View Feedback"}
           </Button>
           <Collapse in={expanded} timeout="auto" unmountOnExit>

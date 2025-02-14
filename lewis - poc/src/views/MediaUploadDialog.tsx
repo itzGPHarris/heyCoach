@@ -46,13 +46,12 @@ const MediaUploadDialog: React.FC<MediaUploadDialogProps> = ({ open, onClose, on
       <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 0, p: 2, bgcolor: "white" }}>
         <Button variant="contained" sx={{ bgcolor: "#0090f2", cursor: "pointer", textAlign: "left" }} component="label">
           <input type="file" accept="video/*" hidden onChange={handleFileUpload} />
-          <Typography variant="body2">Video</Typography>
+          <Typography variant="body2">Upload video</Typography>
         </Button>
-        <Button disabled><Typography variant="body2">Images</Typography></Button>
-        <Button disabled><Typography variant="body2">Files...</Typography></Button>
+        <Button disabled><Typography variant="body2">Record video</Typography></Button>
+        <Button disabled><Typography variant="body2">Add PDF or DOC</Typography></Button>
         <Divider sx={{padding:.75}} />
-        <Button disabled><Typography variant="body2">Add a project</Typography></Button>
-        <Button disabled><Typography variant="body2">Context...?</Typography></Button>
+        <Button disabled><Typography variant="body2">Choose a coach</Typography></Button>
 
       </DialogContent>
     </Dialog>
