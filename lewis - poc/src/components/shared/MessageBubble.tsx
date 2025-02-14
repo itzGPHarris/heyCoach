@@ -6,9 +6,10 @@ import React from "react";
 import { Paper, Box } from "@mui/material";
 
 interface MessageProps {
-  sender: "user" | "coach";
+  sender: "user" | "coach" | "team";
   text?: string;
   component?: JSX.Element;
+  backgroundColor?: string;
 }
 
 const MessageBubble: React.FC<MessageProps> = ({ sender, text, component }) => {

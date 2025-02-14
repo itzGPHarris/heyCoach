@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useRef, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import MessageComponent from "./MessageComponent";
@@ -13,6 +14,7 @@ import ChatInput from "../components/shared/ChatInput";
 import emptyStateImage from "../assets/coachlogo.svg";
 import emptyArrowImage from "../assets/arrow.svg";
 import topArrowImage from "../assets/arrow-top.svg";
+import TeamFeedbackCard from "../components/shared/teamFeedbackCard";
 
 interface FeedViewProps {
   messages: Message[];
@@ -46,7 +48,7 @@ const FeedView: React.FC<FeedViewProps> = ({ messages, setMessages }) => {
     
     setMessages((prev) => {
       console.log("🥰 Updating messages:", prev);
-      const newMessages = [...prev, { id: crypto.randomUUID(), sender: "user", text: input, timestamp: new Date().toLocaleTimeString() }];
+      const newMessages = [...prev, { id: crypto.randomUUID(), pitchId: "defaultPitchId", sender: "user", text: input, timestamp: new Date().toLocaleTimeString() }];
       console.log("😎😎😎 New messages array:", newMessages);
 
       // ✅ Ensure `processUserCommand` is always called after `setMessages`
@@ -82,11 +84,17 @@ const FeedView: React.FC<FeedViewProps> = ({ messages, setMessages }) => {
       const response: string = await getAIResponse(input);
       setMessages((prev) => {
         console.log("🤖 Adding AI response to messages:", prev);
-        return [...prev, { id: crypto.randomUUID(), sender: "coach", text: response, timestamp: new Date().toLocaleTimeString() }];
+        return [...prev, { id: crypto.randomUUID(), pitchId: "defaultPitchId", sender: "coach", text: response, timestamp: new Date().toLocaleTimeString() }];
       });
     }, 1500);
   };
-
+  const [teamFeedback, setTeamFeedback] = useState([
+    { user: "John", comment: "Your ending is strong, but the middle felt rushed." },
+    { user: "Maria", comment: "Try making the call-to-action more direct." },
+    { user: "Alex", comment: "Great energy! Maybe slow down just a bit." },
+  ]);
+  
+  
   const handleSendVideo = (fileUrl: string, isPortrait: boolean) => {
     VideoUploadHandler({ fileUrl, isPortrait, setMessages, isVersionUpload });
     setIsVersionUpload(false);
@@ -94,9 +102,10 @@ const FeedView: React.FC<FeedViewProps> = ({ messages, setMessages }) => {
 
   return (
     <Box ref={feedRef} sx={{ flexGrow: 1, overflowY: "auto", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: "100%", maxWidth: 800, margin: "0 auto", height: "calc(100vh - 56px - 72px)", paddingBottom: "16px" }}>
-     <Box sx={{  maxWidth: "100%", width: "600" , justifyContent: "flex-top", pt: 2, pl: 3, pr: 3 }}>
-        <img src={topArrowImage} alt="No messages" style={{ maxWidth: "100%", width: "800px" }} />
-      </Box> 
+          <Box sx={{  maxWidth: "100%", width: "600" , justifyContent: "flex-top", pt: 2, pl: 3, pr: 3 }}>
+            <TeamFeedbackCard feedbackData={teamFeedback} onQuickReply={handleQuickReply} />
+        </Box>
+      
       <Box sx={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "flex-end", alignItems: "center", width: "100%", pb: 2, pl: 3, pr: 3 }}> 
       <img src={emptyStateImage} alt="No messages" style={{ maxWidth: "100%", width: "300px" }} />
         <Box sx={{ marginTop: 4, textAlign: "center" }}>
@@ -115,6 +124,7 @@ const FeedView: React.FC<FeedViewProps> = ({ messages, setMessages }) => {
       <CompetitionsDialog open={competitionsDialogOpen} onClose={() => setCompetitionsDialogOpen(false)} />
       <MediaUploadDialog open={mediaDialogOpen} onClose={() => setMediaDialogOpen(false)} onSendVideo={handleSendVideo} isVersionUpload={isVersionUpload} />
     </Box>
+    
   );
 };
 
