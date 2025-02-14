@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from "react";
 import {
   AppBar,
@@ -15,15 +16,19 @@ import TeamFeedbackDialog from "./TeamFeedbackDialog";
 import GroupsIcon from "@mui/icons-material/Groups";
 import harperAvatar from "../../assets/harper.png"; // ✅ Import the image
 
-interface AppHeaderProps {
-  setDashboardOpen: (open: boolean) => void;
+type AppHeaderProps = {
+  setDashboardOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setProfileOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setSettingsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   anchorEl: HTMLElement | null;
   handleProfileClick: (event: React.MouseEvent<HTMLElement>) => void;
   handleMenuClose: () => void;
-}
+};
 
 const AppHeader: React.FC<AppHeaderProps> = ({
-  setDashboardOpen,  // Accept the prop
+  setDashboardOpen,
+  setProfileOpen,
+  setSettingsOpen,
   anchorEl,
   handleProfileClick,
   handleMenuClose,
@@ -33,9 +38,9 @@ const AppHeader: React.FC<AppHeaderProps> = ({
   const newTeamMessages = 3;
 
   function handleOpenDashboard(): void {
-    console.log("Opening Dashboard from AppHeader"); 
-    setDashboardOpen(true);  // ✅ Open the dashboard
-    handleMenuClose(); 
+    console.log("Opening Dashboard from AppHeader");
+    setDashboardOpen(true);
+    handleMenuClose();
   }
 
   return (
@@ -46,7 +51,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
             <img src="/img/logo.svg" alt="LongJump Logo" style={{ height: 32, marginRight: 8 }} />
           </Box>
           <Box sx={{ display: "flex", gap: 2, marginLeft: "auto" }}>
-            <IconButton sx={{ mt: 2 }} onClick={() => setTeamDialogOpen(true)}> 
+            <IconButton sx={{ mt: 2 }} onClick={() => setTeamDialogOpen(true)}>
               <Badge
                 badgeContent={newTeamMessages}
                 sx={{ "& .MuiBadge-badge": { backgroundColor: "#8e50ab", color: "white", fontSize: "9px" } }}
@@ -71,16 +76,34 @@ const AppHeader: React.FC<AppHeaderProps> = ({
       >
         <MenuItem
           onClick={() => {
-            setActiveTab("profile");
+            console.log("Opening Profile Dialog");
+            setProfileOpen(true); // ✅ Correctly using the prop
             handleMenuClose();
           }}
         >
           Profile
         </MenuItem>
-        <MenuItem onClick={handleOpenDashboard}>  {/* ✅ Use new function */}
+
+        <MenuItem
+          onClick={() => {
+            console.log("Opening Dashboard Dialog");
+            setDashboardOpen(true); // ✅ Correctly using the prop
+            handleMenuClose();
+          }}
+        >
           Dashboard
         </MenuItem>
-        <MenuItem onClick={handleMenuClose}>Account Settings</MenuItem>
+
+        <MenuItem
+          onClick={() => {
+            console.log("Opening Settings Dialog");
+            setSettingsOpen(true); // ✅ Correctly using the prop
+            handleMenuClose();
+          }}
+        >
+          Settings
+        </MenuItem>
+
         <MenuItem onClick={handleMenuClose}>Sign Out</MenuItem>
       </Menu>
 
@@ -90,3 +113,4 @@ const AppHeader: React.FC<AppHeaderProps> = ({
 };
 
 export default AppHeader;
+

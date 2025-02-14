@@ -3,15 +3,32 @@ import React from 'react';
 import { 
   Box, 
   Typography, 
-  Avatar, 
-  Paper, 
   Grid, 
+  Avatar,
+  Paper, 
   Card, 
-  CardContent 
+  CardContent,
+  Dialog, DialogContent, DialogTitle, IconButton,
 } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
-const ProfileView: React.FC = () => {
+
+interface ProfileViewProps {
+  open: boolean;
+  onClose: () => void;
+}
+
+const ProfileView: React.FC<ProfileViewProps> = ({ open, onClose }) => {
+
   return (
+    <Dialog open={open} onClose={onClose} fullScreen sx={{ height: "95vh", display: "flex", margin: 2, flexDirection: "column" }}>
+    <DialogTitle sx={{ flexShrink: 0 }}>Profile
+        <IconButton onClick={onClose} sx={{ position: "absolute", right: 8, top: 8 }}>
+          <CloseIcon />
+        </IconButton>
+    </DialogTitle>
+    <DialogContent sx={{ flexGrow: 1, overflowY: "auto" }}>
+
     <Box p={3}>
       <Grid container spacing={3}>
         <Grid item xs={12} md={4}>
@@ -61,6 +78,8 @@ const ProfileView: React.FC = () => {
         </Grid>
       </Grid>
     </Box>
+    </DialogContent>
+  </Dialog>
   );
 };
 

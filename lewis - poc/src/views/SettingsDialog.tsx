@@ -1,4 +1,4 @@
-// src/components/DashboardView.tsx
+// src/components/SettingsDialog.tsx
 import React from 'react';
 import { 
   Box, 
@@ -7,22 +7,20 @@ import {
   Paper, 
   Card, 
   CardContent,
-  Dialog, DialogContent, DialogTitle, IconButton,
+  Dialog, DialogContent, DialogTitle, IconButton
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
 
-
-
-interface DashboardViewProps {
+interface SettingsDialogrops {
   open: boolean;
   onClose: () => void;
 }
 
-const DashboardView: React.FC<DashboardViewProps> = ({ open, onClose }) => {
+const SettingsDialog: React.FC<SettingsDialogrops> = ({ open, onClose }) => {
   return (
     <Dialog open={open} onClose={onClose} fullScreen sx={{ height: "95vh", display: "flex", margin: 2, flexDirection: "column" }}>
-      <DialogTitle sx={{ flexShrink: 0 }}>Dashboard
+      <DialogTitle sx={{ flexShrink: 0 }}>Settings
       <IconButton onClick={onClose} sx={{ position: "absolute", right: 8, top: 8 }}>
           <CloseIcon />
         </IconButton>
@@ -67,5 +65,5 @@ const DashboardView: React.FC<DashboardViewProps> = ({ open, onClose }) => {
   );
 };
 
-export default DashboardView;
+export default SettingsDialog;
 
