@@ -37,9 +37,9 @@ const MessageComponent: React.FC<MessageProps> = ({ message, onQuickReply }) => 
       >
         <Box sx={{ display: "inline-flex", alignItems: "center" }}>
           <Typography variant="caption" sx={{ fontWeight: "bold", color: messageTextColor }}>
-            {isCoach ? "Coach" : "Harper"}
+            {isCoach ? "" : ""} {/* hiding coach and sender names here */} 
           </Typography>
-          <Typography variant="caption" sx={{ color: timestampColor, ml: 1 }}>
+          <Typography variant="caption" sx={{ color: timestampColor }}>
             {message.timestamp}
           </Typography>
         </Box>
