@@ -1,7 +1,18 @@
-import React from "react";
-import { AppBar, Toolbar, Box, IconButton, Avatar, Menu, MenuItem } from "@mui/material";
-import { User, Bell } from "lucide-react";
-import useStore from "../../store"; // ✅ Import Zustand store
+import React, { useState } from "react";
+import {
+  AppBar,
+  Toolbar,
+  Box,
+  IconButton,
+  Avatar,
+  Menu,
+  MenuItem,
+  Badge,
+} from "@mui/material";
+import useStore from "../../store";
+import TeamFeedbackDialog from "./TeamFeedbackDialog";
+import GroupsIcon from "@mui/icons-material/Groups";
+import harperAvatar from "../../assets/harper.png"; // ✅ Import the image
 
 interface AppHeaderProps {
   mode: "light" | "dark";
@@ -12,26 +23,36 @@ interface AppHeaderProps {
   handleMenuClose: () => void;
 }
 
-const AppHeader: React.FC<AppHeaderProps> = ({ anchorEl, handleProfileClick, handleMenuClose }) => {
-  const setActiveTab = useStore((state) => state.setActiveTab); // ✅ Get Zustand setter
+const AppHeader: React.FC<AppHeaderProps> = ({
+  anchorEl,
+  handleProfileClick,
+  handleMenuClose,
+}) => {
+  const setActiveTab = useStore((state) => state.setActiveTab);
+  const [teamDialogOpen, setTeamDialogOpen] = useState(false);
+  const newTeamMessages = 3; // Change this dynamically based on actual data
 
   return (
     <>
       <AppBar position="fixed" elevation={0} sx={{ backgroundColor: "white", borderBottom: "1px solid #ddd" }}>
         <Toolbar>
-          {/* ✅ Clicking the logo sends user to 'feed' */}
           <Box sx={{ display: "flex", alignItems: "left", cursor: "pointer" }} onClick={() => setActiveTab("feed")}>
             <img src="/img/logo.svg" alt="LongJump Logo" style={{ height: 32, marginRight: 8 }} />
           </Box>
           <Box sx={{ display: "flex", gap: 2, marginLeft: "auto" }}>
-            <IconButton>
-              <Bell size={20} />
-            </IconButton>
-            <IconButton onClick={handleProfileClick}>
-              <Avatar src="">
-                <User size={20} />
-              </Avatar>
-            </IconButton>
+            <IconButton sx={{mt:2}} onClick={() => setTeamDialogOpen(true)}> 
+              <Badge
+                badgeContent={newTeamMessages}
+                sx={{ "& .MuiBadge-badge": { backgroundColor: "#8e50ab", color: "white", fontSize:"9px" } }} // Change color here
+ >
+              <GroupsIcon fontSize="large" />
+  </Badge>
+</IconButton>
+
+<IconButton onClick={handleProfileClick}>
+  <Avatar src={harperAvatar} sx={{ width: 40, height: 40 }} />
+</IconButton>
+
           </Box>
         </Toolbar>
       </AppBar>
@@ -43,7 +64,6 @@ const AppHeader: React.FC<AppHeaderProps> = ({ anchorEl, handleProfileClick, han
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         transformOrigin={{ vertical: "top", horizontal: "right" }}
       >
-        {/* ✅ Updates activeTab on click */}
         <MenuItem
           onClick={() => {
             setActiveTab("profile");
@@ -63,6 +83,9 @@ const AppHeader: React.FC<AppHeaderProps> = ({ anchorEl, handleProfileClick, han
         <MenuItem onClick={handleMenuClose}>Account Settings</MenuItem>
         <MenuItem onClick={handleMenuClose}>Sign Out</MenuItem>
       </Menu>
+
+      {/* Team Feedback Dialog */}
+      <TeamFeedbackDialog open={teamDialogOpen} onClose={() => setTeamDialogOpen(false)} />
     </>
   );
 };

@@ -1,58 +1,140 @@
 import React, { useState } from "react";
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, TextField, IconButton } from "@mui/material";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Tabs,
+  Tab,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Avatar,
+  Typography,
+  Box,
+  TextField,
+  IconButton,
+  Menu,
+  MenuItem,
+  Divider,
+} from "@mui/material";
+import { X, Copy, Check, PlusCircle, MoreVertical } from "lucide-react";
+import FeedbackTab from "./FeedbackTab"; // Import the new FeedbackTab component
+
+interface TeamMember {
+  id: string;
+  name: string;
+  role: string;
+  email?: string;
+}
 
 interface TeamFeedbackDialogProps {
   open: boolean;
   onClose: () => void;
 }
 
-const TeamFeedbackDialog: React.FC<TeamFeedbackDialogProps> = ({ open, onClose }) => {
-  const [copied, setCopied] = useState(false);
-  const shareableLink = "https://yourapp.com/feedback/team-session"; // Replace with dynamic link
+const mockTeam: TeamMember[] = [
+  { id: "1", name: "Sarah Chen", role: "Co-founder", email: "sarah@example.com" },
+  { id: "2", name: "Michael Patel", role: "Designer", email: "michael@example.com" },
+  { id: "3", name: "Alex Kim", role: "Developer", email: "alex@example.com" },
+];
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(shareableLink);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+const TeamFeedbackDialog: React.FC<TeamFeedbackDialogProps> = ({ open, onClose }) => {
+  const [tabValue, setTabValue] = useState(1);
+  const [copied, setCopied] = useState(false);
+  const [newTeammate, setNewTeammate] = useState("");
+  const [team, setTeam] = useState(mockTeam);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
+
+  const handleCopy = async () => {
+    try {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy:", err);
+    }
+  };
+
+  const handleAddTeammate = () => {
+    if (newTeammate.trim()) {
+      setTeam([...team, { id: crypto.randomUUID(), name: newTeammate, role: "Pending" }]);
+      setNewTeammate("");
+    }
+  };
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setTabValue(newValue);
+  };
+
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, member: TeamMember) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedMember(member);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setSelectedMember(null);
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Get Team Feedback</DialogTitle>
-      <DialogContent>
-        <Typography variant="body1" gutterBottom>
-          Invite your team to review your pitch and provide feedback.
-        </Typography>
-        <Typography variant="body2" color="textSecondary" gutterBottom>
-          Copy the link below and share it with your teammates.
-        </Typography>
+    <Dialog open={open} onClose={onClose} fullScreen sx={{ height: "95vh", display: "flex", margin:2, flexDirection: "column" }}>
+      <DialogTitle sx={{ flexShrink: 0 }}>
+        Team & Feedback
+        <IconButton onClick={onClose} sx={{ position: "absolute", right: 8, top: 8 }}>
+          <X size={20} />
+        </IconButton>
+      </DialogTitle>
+      <DialogContent sx={{ flexGrow: 1, overflowY: "auto" }}>
+      <Tabs value={tabValue} onChange={handleTabChange}> <Tab label="Feedback" value={1} /> <Tab label="Team" value={0} />
+      </Tabs>        {tabValue === 0 && (
+          <Box sx={{ maxHeight: "100%", overflowY: "auto", p: 2, mt: 2 }}>
+              <Box  sx={{display: "flex", alignItems: "center", gap: .5, mb: 2}}>
+  <IconButton onClick={handleCopy}>
+  {copied ? <Check size={20} /> : <Copy size={20} />}
+</IconButton>
+<Typography variant="body2"  sx={{color:"#8e50ab"}}>
+  Copy to share and invite team members
+</Typography>
+</Box>
+<Box sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
+<Box >
+  <Typography variant="caption" color="text.secondary">
+   Add a team member now, or share the link below to invite them to give feedback
+ </Typography>
+</Box>
+<Box sx={{ display: "flex", gap: 1, mt: 1, mb: 2 }}>
+  <TextField fullWidth size="small" placeholder="Enter email, LinkedIn ID, or Discord username" value={newTeammate} onChange={(e) => setNewTeammate(e.target.value)} />
+  <IconButton color="primary" onClick={handleAddTeammate}>
+  <PlusCircle size={20} />
+  </IconButton>
+</Box>
+ <Divider sx={{pt:1, mb:2}} />
 
-        <TextField
-          fullWidth
-          variant="outlined"
-          value={shareableLink}
-          InputProps={{
-            readOnly: true,
-            endAdornment: (
-              <IconButton onClick={handleCopy}>
-                <ContentCopyIcon />
-              </IconButton>
-            ),
-          }}
-          sx={{ mt: 1 }}
-        />
-        {copied && (
-          <Typography variant="caption" color="green" sx={{ mt: 1 }}>
-            Link copied to clipboard!
-          </Typography>
+</Box>
+            <Typography variant="subtitle2" gutterBottom>Team Members</Typography>
+            <List>
+              {team.map((member) => (
+                <ListItem key={member.id} secondaryAction={
+                  <IconButton onClick={(event) => handleMenuOpen(event, member)}>
+                    <MoreVertical size={20} />
+                  </IconButton>
+                }>
+                  <ListItemAvatar>
+                    <Avatar>{member.name.split(" ").map((n) => n[0]).join("")}</Avatar>
+                  </ListItemAvatar>
+                  <ListItemText primary={member.name} secondary={`${member.role} • ${member.email}`} />
+                </ListItem>
+              ))}
+            </List>
+          </Box>
         )}
+        {tabValue === 1 && <FeedbackTab />} {/* Render the FeedbackTab component */}
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="secondary">
-          Close
-        </Button>
-      </DialogActions>
+      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+        <MenuItem onClick={() => console.log("Edit User", selectedMember)}>Edit</MenuItem>
+        <MenuItem onClick={() => console.log("Delete User", selectedMember)}>Remove</MenuItem>
+      </Menu>
     </Dialog>
   );
 };
