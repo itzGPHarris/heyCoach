@@ -59,3 +59,33 @@ export interface StoreActions {
   setShowNewPitchModal: (show: boolean) => void;
   setShowTeamModal: (show: boolean) => void;
 }
+
+export type Pitch = {
+  id: string;
+  title: string;
+  description: string;
+  playbackId: string;
+  score: number;
+  likes: number;
+  comments: string[];
+  transcript: string;
+  timestamp: string;
+  feedback: string[];
+  metrics: Metrics;
+  aiCoachSummary: string;
+  history: string[];
+  videoUrl: string;
+  isPortrait: boolean;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
+  pitchAnalysisId?: string;
+  pitchAnalysis?: string;
+  competitionId?: string;
+  competition?: string;
+  user?: string;
+  isPublic: boolean;
+  isDeleted: boolean;
+  isFlagged: boolean;
+  isReviewed: boolean;
+};
