@@ -11,7 +11,7 @@ async function getAIResponse(input: string): Promise<string> {
     return "Would you like a **detailed breakdown** of pacing, engagement, and clarity?";
   }
 
-  return `Coach: Here’s my feedback on "${input}"...`;
+  return `Here’s my feedback on "${input}"...`;
 }
 
 export default getAIResponse;

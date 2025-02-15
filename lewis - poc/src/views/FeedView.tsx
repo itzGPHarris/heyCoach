@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import MessageComponent from "./MessageComponent";
 import { Message } from "../types/types";
-import getAIResponse from "../components/shared/getAIResponse";
+//import getAIResponse from "../components/shared/getAIResponse";
 import DetailedAnalysisDialog from "../components/shared/DetailedAnalysisDialog";
 import ImprovementsDialog from "../components/shared/ImprovementsDialog";
 import TeamFeedbackDialog from "../components/shared/TeamFeedbackDialog";
@@ -84,12 +84,44 @@ interface FeedViewProps {
 
     console.log("No match found, sending to AI.");
     setTimeout(async () => {
-      const response: string = await getAIResponse(input);
-      setMessages((prev) => {
-        console.log("🤖 Adding AI response to messages:", prev);
-        return [...prev, { id: crypto.randomUUID(), pitchId: "defaultPitchId", sender: "coach" as const, text: response, timestamp: new Date(), content: response, fromAI: true }];
-      });
-    }, 1500);
+      const staticResponses: Record<string, string[]> = {
+        "confidence": [
+          "Confidence comes with practice. Try recording yourself multiple times and reviewing your progress.",
+          "A strong stance and clear voice projection can help you appear more confident.",
+          "Would you like some specific techniques to build confidence in your delivery?"
+        ],
+        "filler words": [
+          "Minimizing 'uh' and 'you know' makes your pitch sound more polished. Try pausing instead of using fillers.",
+          "Recording and reviewing your speech can help you identify and reduce filler words.",
+          "Would you like exercises to help eliminate filler words from your speech?"
+        ],
+      };
+      
+      const findAIResponse = (input: string) => {
+        const lowerMessage = input.toLowerCase();
+        const matchedKeyword = Object.keys(staticResponses).find((keyword) => lowerMessage.includes(keyword));
+        
+        return matchedKeyword 
+          ? staticResponses[matchedKeyword][Math.floor(Math.random() * staticResponses[matchedKeyword].length)] 
+          : "That's an interesting point! Could you clarify what you need help with?";
+      };
+      
+      setTimeout(() => {
+        const aiMessage = findAIResponse(input);
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: crypto.randomUUID(),
+            pitchId: "defaultPitchId",
+            sender: "coach",
+            text: aiMessage,
+            timestamp: new Date(),
+            content: aiMessage,
+            fromAI: true,
+          },
+        ]);
+      }, 1500);
+    } , 1000);     
   };
   const [teamFeedback, setTeamFeedback] = useState([
     { user: "John", comment: "Your ending is strong, but the middle felt rushed." },

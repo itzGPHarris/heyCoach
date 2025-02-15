@@ -75,7 +75,7 @@ const TeamFeedbackDialog: React.FC<TeamFeedbackDialogProps> = ({ open, onClose }
   return (
     <Dialog open={open} onClose={onClose} fullScreen sx={{ height: "95vh", display: "flex", margin:2, flexDirection: "column" }}>
       <DialogTitle sx={{ flexShrink: 0 }}>
-        Collaborators & Contacts
+        Contacts
         <IconButton onClick={onClose} sx={{ position: "absolute", right: 8, top: 8 }}>
           <X size={20} />
         </IconButton>

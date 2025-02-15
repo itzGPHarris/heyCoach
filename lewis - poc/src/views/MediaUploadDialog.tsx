@@ -1,6 +1,6 @@
 // MediaUploadDialog.tsx - Positions Content Correctly Inside Dialog
 import React from "react";
-import { Dialog, DialogContent, Typography, Button } from "@mui/material";
+import { Dialog, DialogContent, Typography, Button, Divider } from "@mui/material";
 import { useVideoUpload } from "./../hooks/useVideoUpload";
 
 
@@ -49,8 +49,8 @@ const MediaUploadDialog: React.FC<MediaUploadDialogProps> = ({ open, onClose, on
         </Button>
         <Button disabled><Typography variant="body2">Record video</Typography></Button>
         <Button disabled><Typography variant="body2">Upload PDF</Typography></Button>
-       {/*} <Divider sx={{padding:.75}} />
-        <Button disabled><Typography variant="body2">Choose a coach</Typography></Button>*/}
+       <Divider sx={{padding:.75}} />
+        <Button disabled><Typography variant="body2">Choose a coach</Typography></Button>
 
       </DialogContent>
     </Dialog>
