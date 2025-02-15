@@ -51,7 +51,7 @@ interface FeedViewProps {
     
     setMessages((prev) => {
       console.log("🥰 Updating messages:", prev);
-      const newMessages = [...prev, { id: crypto.randomUUID(), pitchId: "defaultPitchId", sender: "user", text: input, timestamp: new Date().toLocaleTimeString() }];
+      const newMessages = [...prev, { id: crypto.randomUUID(), pitchId: "defaultPitchId", sender: "user" as const, text: input, timestamp: new Date(), content: input, fromAI: false }];
       console.log("😎😎😎 New messages array:", newMessages);
 
       // ✅ Ensure `processUserCommand` is always called after `setMessages`
@@ -87,7 +87,7 @@ interface FeedViewProps {
       const response: string = await getAIResponse(input);
       setMessages((prev) => {
         console.log("🤖 Adding AI response to messages:", prev);
-        return [...prev, { id: crypto.randomUUID(), pitchId: "defaultPitchId", sender: "coach", text: response, timestamp: new Date().toLocaleTimeString() }];
+        return [...prev, { id: crypto.randomUUID(), pitchId: "defaultPitchId", sender: "coach" as const, text: response, timestamp: new Date(), content: response, fromAI: true }];
       });
     }, 1500);
   };

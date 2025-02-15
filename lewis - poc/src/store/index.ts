@@ -9,20 +9,20 @@ const mockClient = new MockAPIClient();
 export const useStore = create<StoreState & StoreActions>((set, get) => ({
   activeTab: "feed" as ViewType,
   setActiveTab: (tab) => set({ activeTab: tab }),
-
   showAICoach: false,
   toggleAICoach: () => set((state) => ({ showAICoach: !state.showAICoach })),
-
   coachMessages: [],
-  setCoachMessages: (messages: ChatMessage[]) => {
-    set({ 
-      coachMessages: messages.map(message => ({
-        ...message,
-        timestamp: message.timestamp instanceof Date ? message.timestamp : new Date(message.timestamp),
-        sender: message.sender || "unknown"  // ✅ Ensure 'sender' is always included
-      })) 
-    });
-  },
+  
+      setCoachMessages: (messages: ChatMessage[]) => {
+        set({ 
+          coachMessages: messages.map(message => ({
+            ...message,
+            timestamp: message.timestamp instanceof Date ? message.timestamp : new Date(message.timestamp),
+            sender: message.sender === "user" || message.sender === "coach" ? message.sender : "user",  // ✅ Ensure 'sender' is always included
+            pitchId: message.pitchId || ""  // ✅ Ensure 'pitchId' is always included
+          })) 
+        });
+      },
 
   // ✅ Ensure all required properties from StoreState are initialized
   messages: [],

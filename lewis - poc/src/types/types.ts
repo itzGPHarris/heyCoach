@@ -1,4 +1,3 @@
-import { ChatMessage } from "../store";
 
 /* types/types.ts */
 export interface Message {
@@ -6,11 +5,10 @@ export interface Message {
   fromAI: boolean; // ✅ Ensure 'fromAI' is a boolean, not a function
   pitchId: string;
   id: string;
-  //sender: "user" | "coach";
-  sender: string;
+  sender: "user" | "coach";
   text?: string;
   component?: JSX.Element;
-  timestamp: string;
+  timestamp: Date;
   parentId?: string;
   quickReplies?: string[]; // ✅ Make quickReplies optional
   isFormatted?: boolean; // ✅ Ensure this exists
@@ -30,6 +28,7 @@ export interface ChatMessage {
   content: string; // ✅ This is required for AICoach
   timestamp: Date;
   fromAI: boolean; // ✅ Required for AI/user distinction
-  sender: 'user' | 'coach' | 'team';
+  sender: "user" | "coach";
+  pitchId?: string; // Added pitchId property
 
 }

@@ -40,7 +40,7 @@ const MessageComponent: React.FC<MessageProps> = ({ message, onQuickReply }) => 
             {isCoach ? "Coach" : "Harper"}
           </Typography>
           <Typography variant="caption" sx={{ color: timestampColor, ml: 1 }}>
-            {message.timestamp}
+            {message.timestamp.toLocaleString()}
           </Typography>
         </Box>
 

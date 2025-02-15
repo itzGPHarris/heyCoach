@@ -58,6 +58,8 @@ export interface StoreActions {
   setActiveCompetition: (competitionId: string | null) => void;
   setShowNewPitchModal: (show: boolean) => void;
   setShowTeamModal: (show: boolean) => void;
+  setCoachMessages: (messages: ChatMessage[]) => void;
+
 }
 
 export type Pitch = {
@@ -97,17 +99,38 @@ export interface PitchVersion {
 }
 
 export interface ChatMessage {
-  sender: string;
   id: string;
   content: string; // ✅ This is required for AICoach
   timestamp: Date;
   fromAI: boolean; // ✅ Required for AI/user distinction
+  sender?: "user" | "coach";
+  pitchId?: string; // Added pitchId property
+
 }
+
 export interface Message {
-  id: string;
   content: string; // ✅ Change 'text' to 'content' to match ChatMessage
   fromAI: boolean; // ✅ Ensure 'fromAI' is a boolean, not a function
+  pitchId: string;
+  id: string;
+  sender: "user" | "coach";
+  text?: string;
+  component?: JSX.Element;
   timestamp: Date;
-  pitchId?: string;
-  sender: string;
+  parentId?: string;
+  quickReplies?: string[]; // ✅ Make quickReplies optional
+  isFormatted?: boolean; // ✅ Ensure this exists
+
+}
+export interface Competition {
+  id: string;
+  title: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  isActive: boolean;
+  isPublic: boolean;
+  participants: string[];
+  createdAt: string;
+  updatedAt: string;
 }

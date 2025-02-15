@@ -43,7 +43,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, onQuickReply }) => 
           {msg.sender === "user" && (
             <>
               <Typography variant="caption" sx={{ color: "gray", mb: 1 }}>
-                {msg.timestamp}
+                {msg.timestamp.toLocaleString()}
               </Typography>
               {msg.component ? msg.component : <MessageBubble sender={msg.sender} text={msg.text || ""} />}
             </>

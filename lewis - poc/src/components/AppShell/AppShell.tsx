@@ -7,7 +7,7 @@ import FeedView from "../../views/FeedView";
 import DashboardView from "../../views/DashboardView";
 import ProfileView from "../../views/ProfileView";
 import ChatInput from "../../components/shared/ChatInput";
-import getAIResponse from "../../components/shared/getAIResponse";
+import getAIResponse from '../../components/shared/getAIResponse';
 import { Message } from "../../types/types";
 import VideoUploadHandler from "../../components/handlers/VideoUploadHandler";
 import AppHeader from "../../components/shared/AppHeader";
@@ -38,13 +38,15 @@ function AppShell() {
 
   /** ✅ Handles user text messages */
   const handleSendMessage = async (input: string) => {
-    const timestamp = new Date().toLocaleTimeString();
+    const timestamp = new Date();
     const newUserMessage: Message = {
       id: crypto.randomUUID(),
       sender: "user",
       text: input,
       timestamp,
-      pitchId: ""
+      pitchId: "",
+      content: input,
+      fromAI: false
     };
 
     setMessages((prev) => [...prev, newUserMessage]);
@@ -56,8 +58,10 @@ function AppShell() {
         sender: "coach",
         text: response,
         parentId: newUserMessage.id,
-        timestamp: new Date().toLocaleTimeString(),
-        pitchId: ""
+        timestamp: new Date(),
+        pitchId: "",
+        content: "",
+        fromAI: false
       };
       setMessages((prev) => [...prev, aiMessage]);
     } catch (error) {
