@@ -75,7 +75,7 @@ const TeamFeedbackDialog: React.FC<TeamFeedbackDialogProps> = ({ open, onClose }
   return (
     <Dialog open={open} onClose={onClose} fullScreen sx={{ height: "95vh", display: "flex", margin:2, flexDirection: "column" }}>
       <DialogTitle sx={{ flexShrink: 0 }}>
-        Contacts
+        Collaborators & Contacts
         <IconButton onClick={onClose} sx={{ position: "absolute", right: 8, top: 8 }}>
           <X size={20} />
         </IconButton>
@@ -125,7 +125,7 @@ const TeamFeedbackDialog: React.FC<TeamFeedbackDialogProps> = ({ open, onClose }
        
       </DialogContent>
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-        <MenuItem onClick={() => console.log("Edit User", selectedMember)}>Add to submission</MenuItem>
+        <MenuItem onClick={() => console.log("Edit User", selectedMember)}>Make collaborator</MenuItem>
         <MenuItem onClick={() => console.log("Delete User", selectedMember)}>Edit</MenuItem>
         <MenuItem onClick={() => console.log("Delete User", selectedMember)}>Remove</MenuItem>
 
