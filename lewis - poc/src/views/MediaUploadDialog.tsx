@@ -2,7 +2,6 @@
 import React from "react";
 import { Dialog, DialogContent, Typography, Button } from "@mui/material";
 import { useVideoUpload } from "./../hooks/useVideoUpload";
-import Divider from '@mui/material/Divider';
 
 
 
@@ -49,9 +48,9 @@ const MediaUploadDialog: React.FC<MediaUploadDialogProps> = ({ open, onClose, on
           <Typography variant="body2">Upload video</Typography>
         </Button>
         <Button disabled><Typography variant="body2">Record video</Typography></Button>
-        <Button disabled><Typography variant="body2">Add PDF or DOC</Typography></Button>
-        <Divider sx={{padding:.75}} />
-        <Button disabled><Typography variant="body2">Choose a coach</Typography></Button>
+        <Button disabled><Typography variant="body2">Upload PDF</Typography></Button>
+       {/*} <Divider sx={{padding:.75}} />
+        <Button disabled><Typography variant="body2">Choose a coach</Typography></Button>*/}
 
       </DialogContent>
     </Dialog>
