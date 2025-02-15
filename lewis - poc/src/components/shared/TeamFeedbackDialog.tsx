@@ -3,8 +3,6 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  Tabs,
-  Tab,
   List,
   ListItem,
   ListItemAvatar,
@@ -19,7 +17,7 @@ import {
   Divider,
 } from "@mui/material";
 import { X, Copy, Check, PlusCircle, MoreVertical } from "lucide-react";
-import FeedbackTab from "./FeedbackTab"; // Import the new FeedbackTab component
+//import FeedbackTab from "./FeedbackTab"; // Import the new FeedbackTab component
 
 interface TeamMember {
   id: string;
@@ -40,7 +38,6 @@ const mockTeam: TeamMember[] = [
 ];
 
 const TeamFeedbackDialog: React.FC<TeamFeedbackDialogProps> = ({ open, onClose }) => {
-  const [tabValue, setTabValue] = useState(1);
   const [copied, setCopied] = useState(false);
   const [newTeammate, setNewTeammate] = useState("");
   const [team, setTeam] = useState(mockTeam);
@@ -63,9 +60,7 @@ const TeamFeedbackDialog: React.FC<TeamFeedbackDialogProps> = ({ open, onClose }
     }
   };
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setTabValue(newValue);
-  };
+  
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, member: TeamMember) => {
     setAnchorEl(event.currentTarget);
@@ -80,27 +75,26 @@ const TeamFeedbackDialog: React.FC<TeamFeedbackDialogProps> = ({ open, onClose }
   return (
     <Dialog open={open} onClose={onClose} fullScreen sx={{ height: "95vh", display: "flex", margin:2, flexDirection: "column" }}>
       <DialogTitle sx={{ flexShrink: 0 }}>
-        Team & Feedback
+        Contacts
         <IconButton onClick={onClose} sx={{ position: "absolute", right: 8, top: 8 }}>
           <X size={20} />
         </IconButton>
       </DialogTitle>
       <DialogContent sx={{ flexGrow: 1, overflowY: "auto" }}>
-      <Tabs value={tabValue} onChange={handleTabChange}> <Tab label="Feedback" value={1} /> <Tab label="Team" value={0} />
-      </Tabs>        {tabValue === 0 && (
+      
           <Box sx={{ maxHeight: "100%", overflowY: "auto", p: 2, mt: 2 }}>
               <Box  sx={{display: "flex", alignItems: "center", gap: .5, mb: 2}}>
   <IconButton onClick={handleCopy}>
   {copied ? <Check size={20} /> : <Copy size={20} />}
 </IconButton>
 <Typography variant="body2"  sx={{color:"#8e50ab"}}>
-  Copy to share and invite team members
+  Copy to share and invite contacts
 </Typography>
 </Box>
 <Box sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
 <Box >
   <Typography variant="caption" color="text.secondary">
-   Add a team member now, or share the link below to invite them to give feedback
+   Add a contact now, or share the link below to invite them to give feedback
  </Typography>
 </Box>
 <Box sx={{ display: "flex", gap: 1, mt: 1, mb: 2 }}>
@@ -128,12 +122,13 @@ const TeamFeedbackDialog: React.FC<TeamFeedbackDialogProps> = ({ open, onClose }
               ))}
             </List>
           </Box>
-        )}
-        {tabValue === 1 && <FeedbackTab />} {/* Render the FeedbackTab component */}
+       
       </DialogContent>
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-        <MenuItem onClick={() => console.log("Edit User", selectedMember)}>Edit</MenuItem>
+        <MenuItem onClick={() => console.log("Edit User", selectedMember)}>Add to submission</MenuItem>
+        <MenuItem onClick={() => console.log("Delete User", selectedMember)}>Edit</MenuItem>
         <MenuItem onClick={() => console.log("Delete User", selectedMember)}>Remove</MenuItem>
+
       </Menu>
     </Dialog>
   );

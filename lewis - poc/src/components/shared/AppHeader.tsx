@@ -91,7 +91,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({
             handleMenuClose();
           }}
         >
-          Dashboard
+          Submissions
         </MenuItem>
 
         <MenuItem

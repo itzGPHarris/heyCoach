@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Competition, PitchAnalysis, User, PitchFeedback } from './types';
-import { Pitch, Metrics } from '../store/types'; // ✅ Import `Pitch` from `store/types.ts`
+import { Pitch, Metrics, Message } from '../store/types'; // ✅ Import `Pitch` from `store/types.ts`
 
 export const mockCompetitions: Competition[] = [
   {

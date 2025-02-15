@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Message } from "../types/types";
+//import { Message } from "../types/types";
 
 export interface UserProfile {
   avatar?: string;
@@ -24,9 +24,9 @@ export type ViewType = "feed" | "dashboard" | "profile"; // ✅ Define allowed v
 
 export interface StoreState {
   activeTab: ViewType; // ✅ Ensure `activeTab` exists in StoreState
-  pitches: Record<string, unknown>;
+  pitches: Record<string, Pitch>; // ✅ Ensures `pitches` is correctly typed
+  selectedPitch: Pitch | null; // ✅ Ensures selectedPitch has the correct type
   activePitchVersion: number;
-  selectedPitch: string | null;
   messages: Message[];
   coachMessages: Message[];
   showAICoach: boolean;
@@ -89,3 +89,25 @@ export type Pitch = {
   isFlagged: boolean;
   isReviewed: boolean;
 };
+
+export interface PitchVersion {
+  id: string;
+  version: number;
+  content: string;
+}
+
+export interface ChatMessage {
+  sender: string;
+  id: string;
+  content: string; // ✅ This is required for AICoach
+  timestamp: Date;
+  fromAI: boolean; // ✅ Required for AI/user distinction
+}
+export interface Message {
+  id: string;
+  content: string; // ✅ Change 'text' to 'content' to match ChatMessage
+  fromAI: boolean; // ✅ Ensure 'fromAI' is a boolean, not a function
+  timestamp: Date;
+  pitchId?: string;
+  sender: string;
+}

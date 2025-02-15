@@ -107,3 +107,9 @@ export interface User {
     text: string;
     timestamp: string;
   }
+  export interface StoreActions {
+    setActiveTab: (tab: string) => void;
+    toggleAICoach: () => void;
+    setCoachMessages: (messages: ChatMessage[]) => void; // ✅ Ensure this is included
+  }
+  

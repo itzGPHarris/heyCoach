@@ -13,18 +13,44 @@ import {
 import { Send as SendIcon, Close as CloseIcon } from '@mui/icons-material';
 import useStore from '../../store';
 import ContextPanel from './ContextPanel';
-import { ChatMessage } from '../../store/types';
-// Removed local ChatMessage interface as it conflicts with the imported one
+
+interface ChatMessage {
+  id: string;
+  content: string;
+  fromAI: boolean;
+  timestamp: Date;
+}
 
 const AICoach: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [input, setInput] = useState('');
-  const { showAICoach, toggleAICoach, coachMessages } = useStore();
+  const { showAICoach, toggleAICoach, coachMessages, setCoachMessages } = useStore(); // ✅ setCoachMessages is now included
 
   const handleSend = () => {
     if (!input.trim()) return;
-    // Add message handling logic here
+
+    // ✅ Ensure new message conforms to ChatMessage type
+    const newMessage: ChatMessage = {
+      id: crypto.randomUUID(),
+      content: input, // ✅ Use 'content' instead of 'text'
+      fromAI: false, // ✅ User messages should not be AI
+      timestamp: new Date(),
+    };
+
+    setCoachMessages([...coachMessages, newMessage]);
+
+    // ✅ Simulate AI response
+    setTimeout(() => {
+      const aiResponse: ChatMessage = {
+        id: crypto.randomUUID(),
+        content: "Interesting! Can you elaborate on that?", // ✅ Ensure 'content' is used
+        fromAI: true, // ✅ AI response should be fromAI: true
+        timestamp: new Date(),
+      };
+      setCoachMessages([...coachMessages, newMessage, aiResponse]);
+    }, 1500);
+
     setInput('');
   };
 
@@ -71,8 +97,8 @@ const AICoach: React.FC = () => {
           flexDirection: 'column',
           gap: 2
         }}>
-          {coachMessages.map((message, index) => (
-            <ChatBubble key={index} message={message} />
+          {coachMessages.map((message) => (
+            <ChatBubble key={message.id} message={message} />
           ))}
         </Box>
 
@@ -117,9 +143,9 @@ const ChatBubble: React.FC<{ message: ChatMessage }> = ({ message }) => (
         color: message.fromAI ? 'text.primary' : 'primary.contrastText',
       }}
     >
-      <Typography variant="body1">{message.content}</Typography>
+      <Typography variant="body1">{message.content}</Typography> {/* ✅ Ensure 'content' is used */}
       <Typography variant="caption" sx={{ display: 'block', mt: 1, opacity: 0.7 }}>
-        {message.timestamp.toLocaleTimeString()}
+        {message.timestamp.toLocaleTimeString()} {/* ✅ Ensure timestamp is displayed properly */}
       </Typography>
     </Paper>
   </Box>
