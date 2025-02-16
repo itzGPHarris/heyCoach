@@ -37,6 +37,7 @@ setMessages((prev) => [
     timestamp: new Date(),
     pitchId: newPitch.id.toString(), // ✅ Ensure pitchId is included
     content: "Thank you! Give me a minute while I analyze your video...",
+    text: "Thank you! Give me a minute while I analyze your video...",
     fromAI: true,
   }
 ]);
@@ -71,8 +72,8 @@ if (isVersionUpload && lastVersion) {
         sender: "coach",
         timestamp: new Date(),
         pitchId: newPitch.id.toString(), // ✅ Ensure pitchId is included
-        content: "🔄 Oh! A new version! Let me compare it to your last pitch...",
-        text: "🔄 Oh! A new version! Let me compare it to your last pitch...",
+        content: "Oh! A new version! Let me compare it to your last pitch...",
+        text: "Oh! A new version! Let me compare it to your last pitch...",
         fromAI: true,
       }
     ]);

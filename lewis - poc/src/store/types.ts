@@ -118,7 +118,8 @@ export interface Message {
   component?: JSX.Element;
   timestamp: Date;
   parentId?: string;
-  quickReplies?: string[]; // ✅ Make quickReplies optional
+  quickReplies?: string[];
+  onQuickReply?: (reply: string) => void;
   isFormatted?: boolean; // ✅ Ensure this exists
 
 }

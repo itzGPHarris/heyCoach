@@ -1,6 +1,7 @@
 import React from "react";
-import { Box, Typography, Button } from "@mui/material";
+import { Box, Typography, Button, Avatar } from "@mui/material";
 import { Message } from "./../types/types";
+import CoachAvatar from './CoachAvatar';
 
 interface MessageProps {
   message: Message;
@@ -9,68 +10,109 @@ interface MessageProps {
 
 const MessageComponent: React.FC<MessageProps> = ({ message, onQuickReply }) => {
   const isVideoMessage = message.text ? (message.text.startsWith("blob:") || message.text.match(/\.(mp4|mov)$/)) : false;
-
   const isCoach = message.sender === "coach";
-  const messageAlignment = isCoach ? "flex-start" : "flex-end";
-  const messageBgColor = isCoach ? "#F9FAFB" : "#252c32";
-  const messageTextColor = isCoach ? "#000000" : "#FFFFFF";
-  const timestampColor = isCoach ? "#666666" : "#E0E0E0";
+
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
 
   return (
     <Box
-      sx={{
-        display: "flex",
-        justifyContent: messageAlignment,
-        width: "100%",
-        my: 0.75,
-        pl: 1.25,
-        pr: 1.25,
-      }}
+    sx={{
+      display: "flex",
+      width: "100%",
+      my: 1.5,
+      pl: 3,
+      pr: 1,
+      gap: 2,
+      alignItems: "flex-end", // Align items to bottom
+    }}
     >
-      <Box
-        sx={{
-          p: 2,
-          borderRadius: 24,
-          bgcolor: messageBgColor,
-          maxWidth: "80%",
-        }}
-      >
-        <Box sx={{ display: "inline-flex", alignItems: "center" }}>
-          <Typography variant="caption" sx={{ fontWeight: "bold", color: messageTextColor }}>
-            {isCoach ? "Coach" : "Harper"}
+      {/* Avatar Section - Now using animated CoachAvatar for AI */}
+      <Box sx={{ width: 32, height: 32, mt: 1 }}>
+        {isCoach ? (
+          <CoachAvatar />
+        ) : (
+          <Avatar
+            sx={{
+              width: 32,
+              height: 32,
+              bgcolor: '#0090f2',
+              fontSize: `14px`, // Adjust initial size relative to avatar size
+              fontWeight: 900 // Make initials bolder
+
+            }}
+          >
+            {getInitials("Harper Lewis")}
+          </Avatar>
+        )}
+      </Box>
+
+      {/* Rest of the message component remains the same */}
+      <Box sx={{ flex: 1 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 0.5 }}>
+          <Typography variant="caption" sx={{ fontWeight: "bold" }}>
+            {isCoach ? "" : ""} {/* Updated AI Coach text */}
           </Typography>
-          <Typography variant="caption" sx={{ color: timestampColor, ml: 1 }}>
+          <Typography variant="caption" sx={{ color: "text.secondary" }}>
             {message.timestamp.toLocaleString()}
           </Typography>
         </Box>
 
-        {isVideoMessage ? (
-          <Box sx={{ mt: 1, width: "100%" }}>
-            <video controls width="100%" style={{ borderRadius: 8 }}>
-              <source src={message.text} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-          </Box>
-        ) : (
-          <Box sx={{ mt: 1 }}>
-            <Typography variant="body1" sx={{ color: messageTextColor }}>
+        <Box
+          sx={{
+            p: 2,
+            borderRadius: "16px",
+            bgcolor: isCoach ? "fff" : "#333",
+            color: isCoach ? "text.primary" : "common.white",
+            maxWidth: "90%",
+          }}
+        >
+          {isVideoMessage ? (
+            <Box sx={{ width: "100%" }}>
+              <video controls style={{ borderRadius: 8, maxWidth: "100%" }}>
+                <source src={message.text} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </Box>
+          ) : (
+            <Typography variant="body1">
               {message.text}
             </Typography>
-          </Box>
-        )}
+          )}
+        </Box>
 
-        {message.quickReplies && (
-          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1 }}>
+        {message.quickReplies && message.quickReplies.length > 0 && (
+          <Box sx={{ 
+            display: "flex", 
+            flexWrap: "wrap", 
+            gap: 1, 
+            mt: 1,
+            maxWidth: "90%"
+          }}>
             {message.quickReplies.map((reply, index) => (
               <Button
-                sx={{ color: "#fff", backgroundColor: "#0090f2", borderRadius: 12 }}
                 key={`${reply}-${index}`}
-                variant="contained"
+                variant="outlined"
                 size="small"
                 onClick={(event) => {
                   event.stopPropagation();
-                  console.log("Quick Reply Clicked:", reply);
                   onQuickReply(reply.trim().toLowerCase());
+                }}
+                sx={{
+                  borderRadius: 12,
+                  textTransform: 'none',
+                  borderColor: '#0090f2',
+                  color: '#0090f2',
+                  '&:hover': {
+                    backgroundColor: '#0090f2',
+                    color: 'common.white',
+                  },
                 }}
               >
                 {reply}

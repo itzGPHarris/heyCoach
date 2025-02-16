@@ -74,6 +74,8 @@ interface FeedViewProps {
       "show specific improvements": () => setImprovementsDialogOpen(true),
       "get team feedback": () => setTeamFeedbackDialogOpen(true),
       "enter a competition": () => setCompetitionsDialogOpen(true),
+      "new pitch": () => { setIsVersionUpload(true); setMediaDialogOpen(true); },
+
     };
 
     if (commandMap[input]) {

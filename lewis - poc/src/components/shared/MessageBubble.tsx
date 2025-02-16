@@ -1,37 +1,118 @@
-// Updated on - 2025-02-05, Time: Pacific Time (PT), 15:05
-// Updated MessageBubble.tsx - Removes Unnecessary Boxes for Clean Feed UI
-
-
+// MessageBubble.tsx
 import React from "react";
-import { Paper, Box } from "@mui/material";
+import { Box, Button, Avatar } from "@mui/material";
+import { Bot } from 'lucide-react';
 
 interface MessageProps {
   sender: "user" | "coach" | "team";
   text?: string;
   component?: JSX.Element;
   backgroundColor?: string;
+  quickReplies?: string[];
+  onQuickReply?: (reply: string) => void;
 }
 
-const MessageBubble: React.FC<MessageProps> = ({ sender, text, component }) => {
-  // ✅ Only wrap user/coach messages in Paper but keep other components unboxed
- const isStandardMessage = !!text || !!component; // 🔹 Ensure both text and components are considered valid messages
+const MessageBubble: React.FC<MessageProps> = ({ 
+  sender, 
+  text, 
+  component, 
+  quickReplies,
+  onQuickReply 
+}) => {
+  const isCoach = sender === "coach";
+  const isStandardMessage = !!text || !!component;
 
-  return isStandardMessage ? (
-    <Paper
-      sx={{
-        p: 2,
-        backgroundColor: sender === "coach" ? "#2E2E2E" : "#1976D2", // Dark gray for AI, blue for user
-        color: sender === "coach" ? "black" : "white",
-        borderRadius: 32,
-        alignSelf: sender === "coach" ? "flex-start" : "flex-end",
-        maxWidth: "800px",
-        width: "fit-content",
-      }}
-    >
-      {text}
-    </Paper>
-  ) : (
-    <Box sx={{ width: "100%", maxWidth: "800px" }}>{component}</Box> // ✅ No extra boxes around embedded components
+  // Function to get user initials
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  return (
+    <Box sx={{ 
+      display: 'flex',
+      width: "100%",
+      maxWidth: "800px",
+      mb: 2,
+      gap: 2,
+    }}>
+      {/* Avatar */}
+      <Avatar
+        sx={{
+          width: 40,
+          height: 40,
+          bgcolor: isCoach ? 'primary.main' : 'secondary.main',
+          mt: 1
+        }}
+      >
+        {isCoach ? (
+          <Bot size={24} />
+        ) : (
+          getInitials("User Name")
+        )}
+      </Avatar>
+
+      {/* Message Content */}
+      <Box sx={{ flex: 1 }}>
+        {isStandardMessage && (
+          <Box
+            sx={{
+              p: 2,
+              backgroundColor: isCoach ? "grey.100" : "#030303",
+              color: isCoach ? "text.primary" : "common.white",
+              borderRadius: "16px",
+              maxWidth: "90%",
+            }}
+          >
+            {text}
+            {component}
+          </Box>
+        )}
+
+        {!isStandardMessage && component && (
+          <Box sx={{ width: "100%" }}>{component}</Box>
+        )}
+
+        {/* Quick Replies */}
+        {quickReplies && quickReplies.length > 0 && (
+          <Box sx={{ 
+            display: 'flex', 
+            flexWrap: 'wrap', 
+            gap: 1, 
+            mt: 1,
+            maxWidth: "90%"
+          }}>
+            {quickReplies.map((reply, index) => (
+              <Button
+                key={index}
+                variant="outlined"
+                size="small"
+                onClick={() => {
+                  console.log('Quick reply clicked:', reply);
+                  onQuickReply?.(reply);
+                }}
+                sx={{
+                  borderRadius: 12,
+                  textTransform: 'none',
+                  borderColor: 'primary.main',
+                  color: 'primary.main',
+                  '&:hover': {
+                    backgroundColor: 'primary.main',
+                    color: 'common.white',
+                  },
+                }}
+              >
+                {reply}
+              </Button>
+            ))}
+          </Box>
+        )}
+      </Box>
+    </Box>
   );
 };
 

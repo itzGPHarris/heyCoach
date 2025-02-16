@@ -1,4 +1,3 @@
-// AIResponseHandler.tsx - Ensures Correct AI Response After Video Upload
 import { Dispatch, SetStateAction } from "react";
 import { Message } from "../../types/types";
 
@@ -11,7 +10,7 @@ const DELAYS = {
 export const handleAIResponse = (
   input: string,
   setMessages: Dispatch<SetStateAction<Message[]>>,
-  pitchId: string // ✅ Add pitchId as a parameter
+  pitchId: string
 ) => {
   const timestamp = new Date();
 
@@ -20,12 +19,14 @@ export const handleAIResponse = (
       setMessages((prev) => [
         ...prev,
         { 
-          id: crypto.randomUUID(), // ✅ Ensures unique ID
-          sender: "coach", 
+          id: crypto.randomUUID(),
+          sender: "coach",
           content: "Thanks! I'm analyzing your video now...",
+          text: "Thanks! I'm analyzing your video now...",
           fromAI: true,
           timestamp: timestamp,
-          pitchId // ✅ Ensure pitchId is included
+          pitchId,
+          quickReplies: ["Get quick analysis", "Wait for detailed breakdown"]
         }
       ]);
     }, DELAYS.AI_RESPONSE);
@@ -34,12 +35,14 @@ export const handleAIResponse = (
       setMessages((prev) => [
         ...prev,
         {
-          id: crypto.randomUUID(), // ✅ Ensures unique ID
+          id: crypto.randomUUID(),
           sender: "coach",
-          content: "📊 Here’s a quick summary:\n\n⏳ Duration: 2 min 15 sec\n🎤 Clarity: Well-spoken, minor background noise\n⚡ Pacing: Slightly rushed in the middle\n👀 Engagement: Strong visuals, good energy\n\nWould you like a deeper analysis with suggestions?",
+          content: "📊 Here's a quick summary:\n\n⏳ Duration: 2 min 15 sec\n🎤 Clarity: Well-spoken, minor background noise\n⚡ Pacing: Slightly rushed in the middle\n👀 Engagement: Strong visuals, good energy\n\nWould you like a deeper analysis with suggestions?",
+          text: "📊 Here's a quick summary:\n\n⏳ Duration: 2 min 15 sec\n🎤 Clarity: Well-spoken, minor background noise\n⚡ Pacing: Slightly rushed in the middle\n👀 Engagement: Strong visuals, good energy\n\nWould you like a deeper analysis with suggestions?",
           fromAI: true,
           timestamp: timestamp,
-          pitchId // ✅ Ensure pitchId is included
+          pitchId,
+          quickReplies: ["See detailed breakdown", "Show specific improvements"]
         }
       ]);
     }, DELAYS.AI_ANALYSIS);
@@ -48,12 +51,14 @@ export const handleAIResponse = (
       setMessages((prev) => [
         ...prev,
         {
-          id: crypto.randomUUID(), // ✅ Ensures unique ID
+          id: crypto.randomUUID(),
           sender: "coach",
           content: "🔍 **Detailed Analysis:**\n\n✅ Introduction: Strong and confident, great hook\n❗ Middle Section: Pacing too fast, consider adding pauses\n🎭 Body Language: Engaging, but some gestures could be refined\n📢 Projection: Clear voice, slight echo in audio\n\nWould you like to compare this with a previous version of your pitch?",
+          text: "🔍 **Detailed Analysis:**\n\n✅ Introduction: Strong and confident, great hook\n❗ Middle Section: Pacing too fast, consider adding pauses\n🎭 Body Language: Engaging, but some gestures could be refined\n📢 Projection: Clear voice, slight echo in audio\n\nWould you like to compare this with a previous version of your pitch?",
           fromAI: true,
           timestamp,
-          pitchId // ✅ Ensure pitchId is included
+          pitchId,
+          quickReplies: ["Compare versions", "Get team feedback", "Upload new version"]
         }
       ]);
     }, DELAYS.DETAILED_ANALYSIS);
