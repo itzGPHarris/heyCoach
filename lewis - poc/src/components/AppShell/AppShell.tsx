@@ -14,6 +14,7 @@ import AppHeader from "../../components/shared/AppHeader";
 import MediaUploadDialog from "../../views/MediaUploadDialog";
 import SettingsDialog from "../../views/SettingsDialog";
 import { COACH_COMMANDS, getCommandFromTrigger, CommandAction } from '../../utils/constants';
+import CompetitionsDialog from "../../components/shared/CompetitionsDialog";
 
 
 function AppShell() {
@@ -25,6 +26,8 @@ function AppShell() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [mediaDialogOpen, setMediaDialogOpen] = useState(false);
+  const [competitionsDialogOpen, setCompetitionsDialogOpen] = useState(false);
+  
 
   const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -39,7 +42,7 @@ function AppShell() {
       'openDashboard': () => setDashboardOpen(true),
       'openTeamFeedback': () => {}, // Add appropriate handler
       'openImprovements': () => {}, // Add appropriate handler
-      'openCompetitions': () => {} // Add appropriate handler
+      'openCompetitions': () => setCompetitionsDialogOpen(true) ,
     };
 
     actionMap[action]();
@@ -153,6 +156,8 @@ function AppShell() {
         <DashboardView open={dashboardOpen} onClose={() => setDashboardOpen(false)} />
         <ProfileView open={profileOpen} onClose={() => setProfileOpen(false)} />
         <SettingsDialog open={settingsOpen} onClose={() => setSettingsOpen(false)} /> 
+        <CompetitionsDialog open={competitionsDialogOpen} onClose={() => setCompetitionsDialogOpen(false)} />
+
         <MediaUploadDialog 
           open={mediaDialogOpen} 
           onClose={() => setMediaDialogOpen(false)} 

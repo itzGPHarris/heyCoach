@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, CircularProgress } from "@mui/material";
+import { Box, Typography } from "@mui/material";
+import CoachSpinner from "../../views/CoachSpinner";
 interface AIAnalysis {
   clarity: number;
   engagement: number;
@@ -7,6 +8,9 @@ interface AIAnalysis {
   structure: number;
   suggestions: string[];
 }
+
+
+
 
 const generateAIFeedback = (): AIAnalysis => {
   return {
@@ -48,7 +52,7 @@ const PitchAIAnalysis: React.FC = () => {
     setTimeout(() => {
       setAnalysis(generateAIFeedback());
       setLoading(false);
-    }, 1000); // Simulate AI processing delay
+    }, 4000); // Simulate AI processing delay
   }, []);
 
   return (
@@ -56,7 +60,10 @@ const PitchAIAnalysis: React.FC = () => {
      
 
       {loading ? (
-        <CircularProgress />
+      <div style={{ width: '64px', height: '64px' }}>
+       <CoachSpinner />
+     </div>
+       
       ) : analysis ? (
         <Box id="analysis-section" sx={{display: "block" }}>
           <Typography variant="body1"><strong>Clarity:</strong> {analysis.clarity}%</Typography>
