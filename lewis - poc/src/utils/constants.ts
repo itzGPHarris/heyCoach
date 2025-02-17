@@ -36,7 +36,7 @@
       quickReplies: ["Overall metrics", "Specific improvements"]
     },
     TEAM_FEEDBACK: {
-      triggers: ['team feedback', 'get feedback', 'show feedback'],
+      triggers: ['team feedback', 'get feedback', 'show feedback', 'feedback'],
       action: 'openTeamFeedback',
       responses: [
         "Let's check what feedback your team has provided. Would you like to see recent comments or request new feedback?"
