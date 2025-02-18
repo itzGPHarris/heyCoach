@@ -37,16 +37,19 @@ const TeamFeedbackCard = ({ feedbackData, onQuickReply, onReaction }: TeamFeedba
       transition={{ duration: 0.3 }}
       style={{ width: '100%' }}
     >
-      <Box sx={{ mb: 2, mt:2, p: 3, borderRadius: 24, bgcolor: 'background.paper', boxShadow: 10 }}>
+      <Box sx={{ mb: 2, mt:2, p: 3, borderRadius: 24, bgcolor: 'background.paper',  boxShadow: '0px 0px 30px rgba(0, 0, 0, 0.1)',
+ }}>
         {/* Default View */}
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: .5, mt: -6 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: .75, mt: -6 }}>
           {/* 1. Coach Avatar */}
           <div style={{ width: '48px', height: '48px' }}>
             <CoachSpinner />
           </div>
-          
+          <Typography sx={{ color: 'text.secondary', textAlign: 'center' }}>
+              You have new feedback from your team!
+            </Typography>
           {/* 2. Avatar Stack and Message */}
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: .5 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: .75 }}>
             {/* Avatar Stack */}
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               {feedbackData.slice(0, displayedAvatars).map((feedback, index) => (
@@ -81,20 +84,18 @@ const TeamFeedbackCard = ({ feedbackData, onQuickReply, onReaction }: TeamFeedba
               )}
             </Box>
             
-            <Typography sx={{ color: 'text.secondary', textAlign: 'center' }}>
-              New feedback from your team
-            </Typography>
+           
           </Box>
 
           {/* 3. Time */}
-          <Typography variant="caption" color="text.secondary">
+         {/* } <Typography variant="caption" color="text.secondary">
             {new Date().toLocaleTimeString()}
-          </Typography>
+          </Typography> */}
 
           {/* 4. View Feedback Button */}
           <Button
             onClick={() => setExpanded(!expanded)}
-            sx={{ color: 'primary.main' }}
+            sx={{ color: '#0090f2' }}
           >
             {expanded ? 'Hide Feedback' : 'View Feedback'}
           </Button>

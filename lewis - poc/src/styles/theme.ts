@@ -107,7 +107,7 @@ const darkTheme: ThemeOptions = {
     MuiCard: {
       styleOverrides: {
         root: {
-          boxShadow: '0px 0px 30px rgba(0, 0, 0, 0.1)',
+          boxShadow: '0px 0px 30px rgba(0, 0, 0, 0.01)',
           borderRadius: 2,
         },
       },
