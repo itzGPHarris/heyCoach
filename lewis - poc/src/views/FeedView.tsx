@@ -6,7 +6,7 @@ import { Message } from "../types/types";
 import DetailedAnalysisDialog from "../components/shared/DetailedAnalysisDialog";
 import ImprovementsDialog from "../components/shared/ImprovementsDialog";
 import TeamFeedbackDialog from "../components/shared/TeamFeedbackDialog";
-import CompetitionsDialog from "../components/shared/CompetitionsDialog";
+import CompetitionDialog from "../components/shared/dialogs/CompetitionDialog";  {/* competitions */}
 import MediaUploadDialog from "../views/MediaUploadDialog";
 import VideoUploadHandler from "../components/handlers/VideoUploadHandler";
 import ChatInput from "../components/shared/ChatInput";
@@ -28,7 +28,7 @@ const FeedView: React.FC<FeedViewProps> = ({ messages, setMessages }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [improvementsDialogOpen, setImprovementsDialogOpen] = useState(false);
   const [teamFeedbackDialogOpen, setTeamFeedbackDialogOpen] = useState(false);
-  const [competitionsDialogOpen, setCompetitionsDialogOpen] = useState(false);
+  const [competitionDialogOpen, setCompetitionDialogOpen] = useState(false);
   const [mediaDialogOpen, setMediaDialogOpen] = useState(false);
   const [isVersionUpload, setIsVersionUpload] = useState(false);
 
@@ -135,7 +135,7 @@ const FeedView: React.FC<FeedViewProps> = ({ messages, setMessages }) => {
       "upload new version": () => { setIsVersionUpload(true); setMediaDialogOpen(true); },
       "show specific improvements": () => setImprovementsDialogOpen(true),
       "get team feedback": () => setTeamFeedbackDialogOpen(true),
-      "enter a competition": () => setCompetitionsDialogOpen(true),
+      "enter a competition": () => setCompetitionDialogOpen(true),
       "new pitch": () => { setIsVersionUpload(true); setMediaDialogOpen(true); },
     };
 
@@ -264,9 +264,9 @@ const FeedView: React.FC<FeedViewProps> = ({ messages, setMessages }) => {
         open={teamFeedbackDialogOpen} 
         onClose={() => setTeamFeedbackDialogOpen(false)} 
       />
-      <CompetitionsDialog 
-        open={competitionsDialogOpen} 
-        onClose={() => setCompetitionsDialogOpen(false)} 
+      <CompetitionDialog 
+        open={competitionDialogOpen} 
+        onClose={() => setCompetitionDialogOpen(false)} 
       />
       <MediaUploadDialog 
         open={mediaDialogOpen} 
