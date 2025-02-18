@@ -109,8 +109,8 @@ const CoachSpinner = () => {
                 <animateTransform
                   attributeName="transform"
                   type="rotate"
-                  from="0 50 50"
-                  to="360 50 50"
+                  from="0 45 45"
+                  to="360 45 45"
                   dur="15s"
                   repeatCount="indefinite"
                 />
@@ -121,16 +121,16 @@ const CoachSpinner = () => {
                 <animateTransform
                   attributeName="transform"
                   type="rotate"
-                  from="0 50 50"
-                  to="360 50 50"
+                  from="0 45 45"
+                  to="360 45 45"
                   dur="7s"
                   repeatCount="indefinite"
                 />
 
                 {/* Center dot */}
                 <circle
-                  cx="45"
-                  cy="45"
+                  cx="50"
+                  cy="50"
                   r="2.4"
                   fill="#16d335"
                   filter="url(#glow)"
@@ -143,9 +143,9 @@ const CoachSpinner = () => {
                   <g key={index}>
                     {/* Connecting line */}
                     <line
-                      x1="45"
-                      y1="45 "
-                      x2="48"
+                      x1="50" 
+                      y1="50 "
+                      x2="50"
                       y2="20"
                       stroke="#16d335"
                       strokeWidth=".5"
@@ -155,7 +155,7 @@ const CoachSpinner = () => {
                     
                     {/* Orbiting dot */}
                     <circle
-                      cx="48"
+                      cx="50"
                       cy="20"
                       r={index === 0 ? 5 : index === 1 ? 3 : 8}
                       fill="#16d335"
