@@ -207,14 +207,14 @@ const FeedView: React.FC<FeedViewProps> = ({ messages, setMessages }) => {
       }}
     >
       
-      <Box sx={{ maxWidth: "100%", pt: 4, px: 3 }}>
+      <Box sx={{ maxWidth: "100%", pt: 4, px: 2 }}>
         <TeamFeedbackCard 
           feedbackData={teamFeedback}
           onQuickReply={handleQuickReply}
           onReaction={handleReaction}
         />
       </Box>
-      
+
       {messages.length === 0 && (
         <Box sx={{ 
           height: "100%", 

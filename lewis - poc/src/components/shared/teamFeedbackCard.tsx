@@ -41,12 +41,12 @@ const TeamFeedbackCard = ({ feedbackData, onQuickReply, onReaction }: TeamFeedba
         {/* Default View */}
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: .5, mt: -6 }}>
           {/* 1. Coach Avatar */}
-          <div style={{ width: '64px', height: '64px' }}>
+          <div style={{ width: '48px', height: '48px' }}>
             <CoachSpinner />
           </div>
           
           {/* 2. Avatar Stack and Message */}
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: .5 }}>
             {/* Avatar Stack */}
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               {feedbackData.slice(0, displayedAvatars).map((feedback, index) => (
@@ -72,7 +72,7 @@ const TeamFeedbackCard = ({ feedbackData, onQuickReply, onReaction }: TeamFeedba
                     border: 2,
                     borderColor: 'background.paper',
                     ml: -1,
-                    fontSize: '0.875rem',
+                    fontSize: '0.85rem',
                     color: 'text.secondary'
                   }}
                 >
@@ -119,7 +119,7 @@ const TeamFeedbackCard = ({ feedbackData, onQuickReply, onReaction }: TeamFeedba
                 <Box sx={{ 
                   display: 'flex', 
                   alignItems: 'center', 
-                  gap: 2,
+                  gap: .75,
                   mb: 1
                 }}>
                   <Avatar
@@ -130,12 +130,15 @@ const TeamFeedbackCard = ({ feedbackData, onQuickReply, onReaction }: TeamFeedba
                   
                   <Box sx={{ 
                     flex: 1,
-                    p: 2,
+                    p: .25,
                     bgcolor: 'white',
                     borderRadius: 2,
                     color: 'text.primary'
                   }}>
-                    {feedback.comment}
+                    <Typography variant="body2" sx={{ fontSize: '0.875rem' }}>
+                      {feedback.comment}
+                    </Typography>
+
                   </Box>
 
                   {feedback.videoThumbnail && (
