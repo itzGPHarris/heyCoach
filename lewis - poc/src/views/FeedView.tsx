@@ -16,6 +16,7 @@ import TeamFeedbackCard from "../components/shared/teamFeedbackCard";
 import harperthumb1 from '../assets/harperthumb1.png';
 import harperthumb2 from '../assets/harperthumb2.png';
 import harperthumb3 from '../assets/harperthumb3.png';
+import { generateUUID } from '../utils/uuid';
 
 
 interface FeedViewProps {
@@ -109,7 +110,7 @@ const FeedView: React.FC<FeedViewProps> = ({ messages, setMessages }) => {
     
     setMessages((prev) => {
       const newMessages = [...prev, {
-        id: crypto.randomUUID(),
+        id: generateUUID(),
         pitchId: "defaultPitchId",
         sender: "user" as const,
         text: input,
@@ -173,7 +174,7 @@ const FeedView: React.FC<FeedViewProps> = ({ messages, setMessages }) => {
       setMessages((prev) => [
         ...prev,
         {
-          id: crypto.randomUUID(),
+          id: generateUUID(),
           pitchId: "defaultPitchId",
           sender: "coach",
           text: aiMessage,

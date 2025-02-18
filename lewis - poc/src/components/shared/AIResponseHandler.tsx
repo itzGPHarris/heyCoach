@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 import { Message } from "../../types/types";
+import { generateUUID } from '../../utils/uuid';
 
 const DELAYS = {
   AI_RESPONSE: 1000,
@@ -19,7 +20,7 @@ export const handleAIResponse = (
       setMessages((prev) => [
         ...prev,
         { 
-          id: crypto.randomUUID(),
+          id: generateUUID(),
           sender: "coach",
           content: "Thanks! I'm analyzing your video now...",
           text: "Thanks! I'm analyzing your video now...",
@@ -35,7 +36,7 @@ export const handleAIResponse = (
       setMessages((prev) => [
         ...prev,
         {
-          id: crypto.randomUUID(),
+          id:generateUUID(),
           sender: "coach",
           content: "📊 Here's a quick summary:\n\n⏳ Duration: 2 min 15 sec\n🎤 Clarity: Well-spoken, minor background noise\n⚡ Pacing: Slightly rushed in the middle\n👀 Engagement: Strong visuals, good energy\n\nWould you like a deeper analysis with suggestions?",
           text: "📊 Here's a quick summary:\n\n⏳ Duration: 2 min 15 sec\n🎤 Clarity: Well-spoken, minor background noise\n⚡ Pacing: Slightly rushed in the middle\n👀 Engagement: Strong visuals, good energy\n\nWould you like a deeper analysis with suggestions?",
@@ -51,7 +52,7 @@ export const handleAIResponse = (
       setMessages((prev) => [
         ...prev,
         {
-          id: crypto.randomUUID(),
+          id: generateUUID(),
           sender: "coach",
           content: "🔍 **Detailed Analysis:**\n\n✅ Introduction: Strong and confident, great hook\n❗ Middle Section: Pacing too fast, consider adding pauses\n🎭 Body Language: Engaging, but some gestures could be refined\n📢 Projection: Clear voice, slight echo in audio\n\nWould you like to compare this with a previous version of your pitch?",
           text: "🔍 **Detailed Analysis:**\n\n✅ Introduction: Strong and confident, great hook\n❗ Middle Section: Pacing too fast, consider adding pauses\n🎭 Body Language: Engaging, but some gestures could be refined\n📢 Projection: Clear voice, slight echo in audio\n\nWould you like to compare this with a previous version of your pitch?",

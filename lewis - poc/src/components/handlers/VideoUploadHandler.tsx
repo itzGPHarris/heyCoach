@@ -1,6 +1,7 @@
 import { Message } from "../../types/types";
 import { VideoUploadHandlerProps } from "../../store/types";
 import { processVideoUpload } from "./VideoProcessor"; // ✅ AI messaging component
+import { generateUUID } from '../../utils/uuid';
 
 const VideoUploadHandler = async ({ fileUrl, isPortrait, setMessages, isVersionUpload }: VideoUploadHandlerProps) => {
   const timestamp = new Date();
@@ -8,7 +9,7 @@ const VideoUploadHandler = async ({ fileUrl, isPortrait, setMessages, isVersionU
 
   // ✅ Step 1: Store the video URL as text (instead of JSX)
   const videoMessage: Message = {
-    id: crypto.randomUUID(),
+    id: generateUUID(),
     sender: "user",
     text: fileUrl, // ✅ Store URL as text so it renders correctly
     timestamp: timestamp,

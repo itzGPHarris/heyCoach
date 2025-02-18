@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Message } from "../../store/types"; // ✅ Ensure this import is consistent across the project
 import { getLastPitchVersion, savePitchVersion } from "../../utils/PitchVersionStorage"; 
+import { generateUUID } from '../../utils/uuid';
 
 export const processVideoUpload = (
   _fileUrl: string,
@@ -32,7 +33,7 @@ export const processVideoUpload = (
 setMessages((prev) => [
   ...prev,
   {
-    id: crypto.randomUUID(),
+    id: generateUUID(),
     sender: "coach",
     timestamp: new Date(),
     pitchId: newPitch.id.toString(), // ✅ Ensure pitchId is included
@@ -48,7 +49,7 @@ if (!isVersionUpload) {
       setMessages((prev) => [
         ...prev,
         {
-          id: crypto.randomUUID(),
+          id: generateUUID(),
           sender: "coach",
           parentId: newPitch.id.toString(), // ✅ Associate summary with this video
           timestamp: new Date(),
@@ -68,7 +69,7 @@ if (isVersionUpload && lastVersion) {
     setMessages((prev) => [
       ...prev,
       {
-        id: crypto.randomUUID(),
+        id: generateUUID(),
         sender: "coach",
         timestamp: new Date(),
         pitchId: newPitch.id.toString(), // ✅ Ensure pitchId is included
@@ -99,7 +100,7 @@ if (isVersionUpload && lastVersion) {
     setMessages((prev) => [
       ...prev,
       {
-        id: crypto.randomUUID(),
+        id: generateUUID(),
         sender: "coach",
         content: `Here's a quick summary of your updated version.\n\nDuration: 2 min 10 sec\nClarity: ${clarityChange > "0" ? "Improved" : "Needs Work"}\nPacing: ${pacingChange > "0" ? "More Balanced" : "Still Rushed"}\nEngagement: ${engagementChange > "0" ? "More Dynamic" : "Still Needs Energy"}\n\nWould you like to see a breakdown of the differences?`,
         text: `Here's a quick summary of your updated version.\n\nDuration: 2 min 10 sec\nClarity: ${clarityChange > "0" ? "Improved" : "Needs Work"}\nPacing: ${pacingChange > "0" ? "More Balanced" : "Still Rushed"}\nEngagement: ${engagementChange > "0" ? "More Dynamic" : "Still Needs Energy"}\n\nWould you like to see a breakdown of the differences?`,

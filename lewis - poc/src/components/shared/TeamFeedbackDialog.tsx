@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 import { X, Copy, Check, PlusCircle, MoreVertical } from "lucide-react";
 //import FeedbackTab from "./FeedbackTab"; // Import the new FeedbackTab component
+import { generateUUID } from '../../utils/uuid';
 
 interface TeamMember {
   id: string;
@@ -55,7 +56,7 @@ const TeamFeedbackDialog: React.FC<TeamFeedbackDialogProps> = ({ open, onClose }
 
   const handleAddTeammate = () => {
     if (newTeammate.trim()) {
-      setTeam([...team, { id: crypto.randomUUID(), name: newTeammate, role: "Pending" }]);
+      setTeam([...team, { id: generateUUID(), name: newTeammate, role: "Pending" }]);
       setNewTeammate("");
     }
   };

@@ -13,6 +13,7 @@ import {
 import { Send as SendIcon, Close as CloseIcon } from '@mui/icons-material';
 import useStore from '../../store';
 import ContextPanel from './ContextPanel';
+import { generateUUID } from '../../utils/uuid';
 
 interface ChatMessage {
   id: string;
@@ -32,7 +33,7 @@ const AICoach: React.FC = () => {
 
     // ✅ Ensure new message conforms to ChatMessage type
     const newMessage: ChatMessage = {
-      id: crypto.randomUUID(),
+      id: generateUUID(),
       content: input, // ✅ Use 'content' instead of 'text'
       fromAI: false, // ✅ User messages should not be AI
       timestamp: new Date(),
@@ -43,7 +44,7 @@ const AICoach: React.FC = () => {
     // ✅ Simulate AI response
     setTimeout(() => {
       const aiResponse: ChatMessage = {
-        id: crypto.randomUUID(),
+        id: generateUUID(),
         content: "Interesting! Can you elaborate on that?", // ✅ Ensure 'content' is used
         fromAI: true, // ✅ AI response should be fromAI: true
         timestamp: new Date(),

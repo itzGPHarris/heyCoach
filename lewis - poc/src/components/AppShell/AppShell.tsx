@@ -15,6 +15,7 @@ import MediaUploadDialog from "../../views/MediaUploadDialog";
 import SettingsDialog from "../../views/SettingsDialog";
 import { COACH_COMMANDS, getCommandFromTrigger, CommandAction } from '../../utils/constants';
 import CompetitionsDialog from "../shared/dialogs/CompetitionDialog";
+import { generateUUID } from '../../utils/uuid';
 
 
 function AppShell() {
@@ -54,7 +55,7 @@ function AppShell() {
     
     // Add user message
     const userMessage: Message = {
-      id: crypto.randomUUID(),
+      id: generateUUID(),
       sender: "user",
       text: input,
       timestamp: new Date(),
@@ -71,7 +72,7 @@ function AppShell() {
       // Add AI response for the command
       const commandResponse = COACH_COMMANDS[commandMatch.command];
       const aiMessage: Message = {
-        id: crypto.randomUUID(),
+        id: generateUUID(),
         sender: "coach",
         text: commandResponse.responses[0], // Use first response
         timestamp: new Date(),
@@ -88,7 +89,7 @@ function AppShell() {
     try {
       const response = await getAIResponse(input);
       const aiMessage: Message = {
-        id: crypto.randomUUID(),
+        id: generateUUID(),
         sender: "coach",
         text: response.text,
         parentId: userMessage.id,
