@@ -1,33 +1,48 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from "react";
 import { ThemeProvider, CssBaseline, Box } from "@mui/material";
-import { getTheme } from "../../styles/theme";
-//import useStore from "../../store";
+{/* views */}
 import FeedView from "../../views/FeedView";
-import DashboardView from "../../views/DashboardView";
-import ProfileView from "../../views/ProfileView";
 import ChatInput from "../../components/shared/ChatInput";
 import getAIResponse from '../../components/shared/getAIResponse';
-import { Message } from "../../types/types";
 import VideoUploadHandler from "../../components/handlers/VideoUploadHandler";
 import AppHeader from "../../components/shared/AppHeader";
+
+{/* utilities */}
+import { generateUUID } from '../../utils/uuid';
+import { COACH_COMMANDS, getCommandFromTrigger, CommandAction } from '../../utils/constants';
+import { Message } from "../../types/types";
+import { getTheme } from "../../styles/theme";
+
+{/* dialogs */}
+import CompetitionsDialog from "../shared/dialogs/CompetitionDialog";
+import PitchVersionsDialog from '../shared/dialogs/PitchVersionsDialog';
 import MediaUploadDialog from "../../views/MediaUploadDialog";
 import SettingsDialog from "../../views/SettingsDialog";
-import { COACH_COMMANDS, getCommandFromTrigger, CommandAction } from '../../utils/constants';
-import CompetitionsDialog from "../shared/dialogs/CompetitionDialog";
-import { generateUUID } from '../../utils/uuid';
+import DashboardView from "../../views/DashboardView";
+import ProfileView from "../../views/ProfileView";
+
+
+
+
 
 
 function AppShell() {
   const [mode, setMode] = useState<'light' | 'dark'>('light');
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  //const store = useStore();
   const [dashboardOpen, setDashboardOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [mediaDialogOpen, setMediaDialogOpen] = useState(false);
   const [competitionDialogOpen, setCompetitionDialogOpen] = useState(false);
+  const [isVersionsDialogOpen, setIsVersionsDialogOpen] = useState(false);
+
+  // Handle the "pitch versions" command
+  const handleVersionsCommand = () => {
+    setIsVersionsDialogOpen(true);
+  }
+
   
 
   const handleProfileClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -44,6 +59,7 @@ function AppShell() {
       'openTeamFeedback': () => {}, // Add appropriate handler
       'openImprovements': () => {}, // Add appropriate handler
       'openCompetitions': () => setCompetitionDialogOpen(true) ,
+      'openPitchVersions': () => setIsVersionsDialogOpen(true) ,
     };
 
     actionMap[action]();
@@ -158,6 +174,9 @@ function AppShell() {
         <ProfileView open={profileOpen} onClose={() => setProfileOpen(false)} />
         <SettingsDialog open={settingsOpen} onClose={() => setSettingsOpen(false)} /> 
         <CompetitionsDialog open={competitionDialogOpen} onClose={() => setCompetitionDialogOpen(false)} />
+        <PitchVersionsDialog open={isVersionsDialogOpen} onClose={() => setIsVersionsDialogOpen(false)}
+      />
+
 
         <MediaUploadDialog 
           open={mediaDialogOpen} 

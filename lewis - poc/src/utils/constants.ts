@@ -9,7 +9,82 @@
       ANALYSIS: '/api/pitch/analyze'
     }
   } as const;
-
+  export const SAMPLE_PITCH_DATA = {
+    RADIANT_HUE: {
+      versions: [
+        {
+          id: 'harper-v1',
+          title: 'RadiantHue Initial Pitch',
+          videoUrl: 'v3Y602TiLPaUfsZN9VfumowhaC3IWCA200tCMWvg2AkPo',
+          timestamp: '2025-01-15T10:00:00Z',
+          analysis: {
+            score: 70,
+            metrics: {
+              clarity: 65,
+              pace: 75,
+              engagement: 70
+            }
+          },
+          feedback: [
+            {
+              id: 'f1',
+              author: 'Coach',
+              content: 'Good initial pitch. Focus on slower delivery in the introduction.',
+              timestamp: '2025-01-15T10:30:00Z'
+            }
+          ],
+          isFavorite: false
+        },
+        {
+          id: 'harper-v2',
+          title: 'RadiantHue Refined Pitch',
+          videoUrl: 'YYtQ34SRyksieH026qohfbOhBNd02LQAK3Fgt8wk5J8tM',
+          timestamp: '2025-01-16T14:00:00Z',
+          analysis: {
+            score: 82,
+            metrics: {
+              clarity: 80,
+              pace: 85,
+              engagement: 81
+            }
+          },
+          feedback: [
+            {
+              id: 'f2',
+              author: 'Coach',
+              content: 'Much improved! Your pacing is better and the value proposition is clearer.',
+              timestamp: '2025-01-16T14:30:00Z'
+            }
+          ],
+          isFavorite: true
+        },
+        {
+          id: 'harper-v3',
+          title: 'RadiantHue Final Pitch',
+          videoUrl: '00YR82qyS8utVtQuisE48P5BGqeeaUVxxJfR8LhiRsFk',
+          timestamp: '2025-01-17T16:00:00Z',
+          analysis: {
+            score: 90,
+            metrics: {
+              clarity: 88,
+              pace: 92,
+              engagement: 90
+            }
+          },
+          feedback: [
+            {
+              id: 'f3',
+              author: 'Coach',
+              content: 'Excellent final version! Your confidence shows and the message is compelling.',
+              timestamp: '2025-01-17T16:30:00Z'
+            }
+          ],
+          isFavorite: false
+        }
+      ]
+    }
+  } as const;
+  
   export const COACH_COMMANDS = {
     NEW_PITCH: {
       triggers: ['new pitch', 'upload new pitch', 'record pitch'],
@@ -58,6 +133,14 @@
         "I can help you find pitch competitions. Would you like to see upcoming events or practice for a specific competition?"
       ],
       quickReplies: ["Show events", "Competition prep"]
+    },
+    VERSIONS: {
+      triggers: ['history', 'version', 'find version'],
+      action: 'openPitchVersions',
+      responses: [
+        "I can help you find pitch versions. Would you like to see upcoming events or practice for a specific competition?"
+      ],
+      quickReplies: ["Compare pitches", "View history"]
     }
   } as const;
   
@@ -67,7 +150,8 @@
     | 'openDashboard'
     | 'openTeamFeedback'
     | 'openImprovements'
-    | 'openCompetitions';
+    | 'openCompetitions'
+    | 'openPitchVersions';
   
   // Helper type for command keys
   export type CommandKey = keyof typeof COACH_COMMANDS;
