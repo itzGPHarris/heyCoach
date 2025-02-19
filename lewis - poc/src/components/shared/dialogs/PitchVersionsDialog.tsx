@@ -193,11 +193,12 @@ const PitchVersionsDialog = ({ open, onClose }: PitchVersionsDialogProps) => {
         open={open} 
         onClose={onClose}
         maxWidth="lg"
-      fullWidth
+         fullWidth
       PaperProps={{
         sx: {
           m: 1,  // Reduced margin (default is 3)
           width: '100%',
+          maxWidth: '600px',  // Adjust based on your margin
           maxHeight: 'calc(100% - 16px)'  // Adjust based on your margin
         }
         }}
@@ -205,7 +206,7 @@ const PitchVersionsDialog = ({ open, onClose }: PitchVersionsDialogProps) => {
         <DialogTitle>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
            {/*} <Typography variant="h6">RadiantHue Pitch Versions</Typography> */}
-            <Typography variant="h6" color="text.secondary">
+            <Typography variant="body2" color="text.secondary">
               Version {currentIndex + 1} of {versions.length}
             </Typography>
             <IconButton onClick={onClose} sx={{ position: "absolute", right: 8, top: 8 }}>
