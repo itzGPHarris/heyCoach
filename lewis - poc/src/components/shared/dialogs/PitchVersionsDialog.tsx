@@ -16,6 +16,7 @@ import {
   StarBorder 
 } from '@mui/icons-material';
 import MuxPlayer from '@mux/mux-player-react';  // Add this import
+import { X } from "lucide-react";
 
 import { SAMPLE_PITCH_DATA } from '../../../utils/constants';
 // Dot Indicator Component
@@ -192,22 +193,24 @@ const PitchVersionsDialog = ({ open, onClose }: PitchVersionsDialogProps) => {
         open={open} 
         onClose={onClose}
         maxWidth="lg"
-        fullWidth
-        sx={{
-          '& .MuiDialog-paper': {
-            height: '90vh', // Take up 90% of viewport height
-            display: 'flex',
-            flexDirection: 'column',
-            margin: 2
-          }
+      fullWidth
+      PaperProps={{
+        sx: {
+          m: 1,  // Reduced margin (default is 3)
+          width: '100%',
+          maxHeight: 'calc(100% - 16px)'  // Adjust based on your margin
+        }
         }}
       >
         <DialogTitle>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography variant="h6">RadiantHue Pitch Versions</Typography>
-            <Typography variant="body2" color="text.secondary">
+           {/*} <Typography variant="h6">RadiantHue Pitch Versions</Typography> */}
+            <Typography variant="h6" color="text.secondary">
               Version {currentIndex + 1} of {versions.length}
             </Typography>
+            <IconButton onClick={onClose} sx={{ position: "absolute", right: 8, top: 8 }}>
+          <X size={20} />
+        </IconButton>
           </Box>
         </DialogTitle>
         <DialogContent sx={{ 
@@ -215,8 +218,9 @@ const PitchVersionsDialog = ({ open, onClose }: PitchVersionsDialogProps) => {
           overflow: 'auto',
           display: 'flex',
           flexDirection: 'column',
-          gap: 2,
-          pb: 3 // Add padding at bottom for dot indicators
+          gap: 1,
+          pb: 3 ,
+          px:1// Add padding at bottom for dot indicators
         }}>
           <PitchCarousel 
             versions={versions}
