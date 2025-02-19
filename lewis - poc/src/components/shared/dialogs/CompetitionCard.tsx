@@ -44,13 +44,13 @@ const StyledCard = styled(Card)(({ theme }) => ({
   border: `2px solid ${theme.palette.grey[300]}`,
   borderRadius: theme.spacing(2),
   background: `linear-gradient(45deg, ${theme.palette.primary.dark}0D, ${theme.palette.background.paper})`,
-  margin: theme.spacing(2, 0),
+  margin: theme.spacing(1, 0),
   boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',  // Subtle shadow
   '& .MuiCardHeader-root': {
     padding: theme.spacing(3),
   },
   '& .MuiCardContent-root': {
-    padding: theme.spacing(3),
+    padding: theme.spacing(2),
   },
   '&:hover': {
     borderColor: theme.palette.primary.light,

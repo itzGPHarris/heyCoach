@@ -48,7 +48,7 @@ const DurationChip = styled(Box)(({ theme }) => ({
   position: 'absolute',
   bottom: theme.spacing(1),
   right: theme.spacing(1),
-  backgroundColor: 'rgba(0, 0, 0, 0.75)',
+  backgroundColor: 'rgba(0, 0, 0, 0.5)',
   color: theme.palette.common.white,
   padding: theme.spacing(0.5, 1),
   borderRadius: theme.shape.borderRadius,
@@ -61,8 +61,8 @@ const PitchSelector = ({ pitches, selectedPitchId, onPitchSelect }: PitchSelecto
   const selectedPitch = pitches.find(pitch => pitch.id === selectedPitchId);
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h6" gutterBottom>
+    <Box sx={{ p: .25, mt: 2 }}>
+      <Typography variant="caption" gutterBottom>
         Select Pitch for Submission
       </Typography>
       
@@ -112,69 +112,88 @@ const PitchSelector = ({ pitches, selectedPitchId, onPitchSelect }: PitchSelecto
         </FormHelperText>
       </FormControl>
       
-      {/* Preview of selected pitch */}
-      {selectedPitch && (
-        <StyledVideoCard>
-          <Grid container>
-            {/* Video Thumbnail - Left Column */}
-            <Grid item xs={5} sx={{ position: 'relative' }}>
-              <CardMedia
-                component="img"
-                sx={{
-                  width: '100%',
-                  aspectRatio: '16/9',
-                  objectFit: 'cover'
+{/* Preview of selected pitch */}
+{selectedPitch && (
+  <StyledVideoCard>
+    <Grid container>
+      {/* Video Thumbnail */}
+      <Grid 
+        item 
+        xs={12}     // Full width on mobile
+        sm={5}      // 5/12 width on tablet and up
+        sx={{ 
+          position: 'relative',
+          width: '100%' // Ensures full width in mobile
+        }}
+      >
+        <CardMedia
+          component="img"
+          sx={{
+            width: '100%',
+            aspectRatio: '16/9',
+            objectFit: 'cover'
+          }}
+          image={selectedPitch.thumbnailUrl}
+          alt={selectedPitch.title}
+        />
+        <DurationChip>
+          <VideoFileIcon sx={{ fontSize: 16 }} />
+          <Typography variant="caption">
+            {selectedPitch.duration}
+          </Typography>
+        </DurationChip>
+      </Grid>
+
+      {/* Details */}
+      <Grid 
+        item 
+        xs={12}     // Full width on mobile
+        sm={7}      // 7/12 width on tablet and up
+      >
+        <Box sx={{ 
+          p: 2,
+          // Add some extra padding on mobile
+          px: { xs: 2, sm: 3 },
+          py: { xs: 3, sm: 2 }
+        }}>
+          <Typography variant="h6" gutterBottom>
+            {selectedPitch.title}
+          </Typography>
+          
+          <Stack spacing={1}>
+            <Typography variant="body2" color="text.secondary">
+              Last modified: {selectedPitch.lastModified}
+            </Typography>
+            
+            <Stack direction="row" spacing={1} alignItems="center">
+              {selectedPitch.isFavorite && (
+                <StarIcon color="warning" />
+              )}
+              {selectedPitch.coachRecommended && (
+                <ThumbUpIcon color="success" />
+              )}
+            </Stack>
+
+            {selectedPitch.previousCompetition && (
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  color: 'success.main',
+                  fontWeight: 'medium',
+                  // Adjust text size on mobile
+                  fontSize: { xs: '0.875rem', sm: 'inherit' }
                 }}
-                image={selectedPitch.thumbnailUrl}
-                alt={selectedPitch.title}
-              />
-              <DurationChip>
-                <VideoFileIcon sx={{ fontSize: 16 }} />
-                <Typography variant="caption">
-                  {selectedPitch.duration}
-                </Typography>
-              </DurationChip>
-            </Grid>
-
-            {/* Details - Right Column */}
-            <Grid item xs={7}>
-              <Box sx={{ p: 2 }}>
-                <Typography variant="h6" gutterBottom>
-                  {selectedPitch.title}
-                </Typography>
-                
-                <Stack spacing={1}>
-                  <Typography variant="body2" color="text.secondary">
-                    Last modified: {selectedPitch.lastModified}
-                  </Typography>
-                  
-                  <Stack direction="row" spacing={1} alignItems="center">
-                    {selectedPitch.isFavorite && (
-                      <StarIcon color="warning" />
-                    )}
-                    {selectedPitch.coachRecommended && (
-                      <ThumbUpIcon color="success" />
-                    )}
-                  </Stack>
-
-                  {selectedPitch.previousCompetition && (
-                    <Typography 
-                      variant="body2" 
-                      sx={{ 
-                        color: 'success.main',
-                        fontWeight: 'medium'
-                      }}
-                    >
-                      Previous submission - {selectedPitch.previousCompetition.place} place in{' '}
-                      {selectedPitch.previousCompetition.name}
-                    </Typography>
-                  )}
-                </Stack>
-              </Box>
-            </Grid>
-          </Grid>
-        </StyledVideoCard>
-      )}
+              >
+                Previous submission - {selectedPitch.previousCompetition.place} place in{' '}
+                {selectedPitch.previousCompetition.name}
+              </Typography>
+            )}
+          </Stack>
+        </Box>
+      </Grid>
+    </Grid>
+  </StyledVideoCard>
+)}
     </Box>
   );
 };

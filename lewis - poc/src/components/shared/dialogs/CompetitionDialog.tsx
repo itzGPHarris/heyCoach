@@ -157,8 +157,14 @@ const CompetitionDialog: React.FC<CompetitionDialogProps> = ({ open, onClose }) 
       onClose={onClose}
       maxWidth="lg"
       fullWidth
-    >
-      <DialogTitle>
+      PaperProps={{
+        sx: {
+          m: 1,  // Reduced margin (default is 3)
+          width: '100%',
+          maxHeight: 'calc(100% - 16px)'  // Adjust based on your margin
+        }
+      }}
+    >      <DialogTitle>
         <Typography variant="h2" component="div">
           Competition Hub
         </Typography>
@@ -173,7 +179,7 @@ const CompetitionDialog: React.FC<CompetitionDialogProps> = ({ open, onClose }) 
       <StyledDialogContent dividers>
         <ScrollableContent>
           {/* Pitch Selection */}
-          <Box sx={{mb: 3, px: 1}}>
+          <Box sx={{mb: 3, px: .25}}>
             <PitchSelector
               pitches={pitches}
               selectedPitchId={selectedPitchId}
@@ -182,7 +188,7 @@ const CompetitionDialog: React.FC<CompetitionDialogProps> = ({ open, onClose }) 
           </Box>
 
           {/* Featured Competition */}
-          <Box sx={{mb: 3, px: 4}}>
+          <Box sx={{mb: 3, px: .25}}>
             <FeaturedCompetition
               {...featuredCompetition}
               onSubmit={handlePitchSubmit}
@@ -191,7 +197,7 @@ const CompetitionDialog: React.FC<CompetitionDialogProps> = ({ open, onClose }) 
           </Box>
 
           {/* Active Competitions */}
-          <Box sx={{mb: 3, px: 4 }}>
+          <Box sx={{mb: 3, px: .25 }}>
             <Typography variant="h6" gutterBottom>
               Active Competitions
             </Typography>

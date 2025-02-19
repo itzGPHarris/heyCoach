@@ -125,7 +125,7 @@ const FeaturedCompetition = ({
           <LogoWrapper>
             <img src={challengIconURL} alt="Challenge Icon" />
             <TrophyBadge>
-              <TrophyIcon sx={{ color: "#fff" }} />
+              <TrophyIcon sx={{ color: "#fff", opacity: 0, }} />
             </TrophyBadge>
           </LogoWrapper>
         }
