@@ -6,7 +6,7 @@ import { Box, CardContent, Collapse, Typography, IconButton } from "@mui/materia
 import { ExpandMore, BarChart } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import PitchAIAnalysis from "./PitchAIAnalysis";
-import PitchComments from "./PitchComments";
+import PitchComments from "../PitchComments";
 
 interface TranscriptSegment {
   timecode: string;

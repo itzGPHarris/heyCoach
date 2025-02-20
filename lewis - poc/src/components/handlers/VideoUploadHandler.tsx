@@ -1,25 +1,38 @@
-import { Message } from "../../types/types";
-import { VideoUploadHandlerProps } from "../../store/types";
-import { processVideoUpload } from "./VideoProcessor"; // ✅ AI messaging component
+// src/components/handlers/VideoUploadHandler.tsx
+import { Message } from "../../store/types";
+import { processVideoUpload } from "./VideoProcessor";
 import { generateUUID } from '../../utils/uuid';
 
-const VideoUploadHandler = async ({ fileUrl, isPortrait, setMessages, isVersionUpload }: VideoUploadHandlerProps) => {
-  const timestamp = new Date();
-  console.log("✅ ✅ ✅ Upload Handler is Processing video upload:", fileUrl);
+// Define the interface at the top of the file
+interface VideoUploadHandlerProps {
+  fileUrl: string;
+  isPortrait: boolean;
+  setMessages: (message: Message) => void;
+  isVersionUpload: boolean;
+}
 
-  // ✅ Step 1: Store the video URL as text (instead of JSX)
+const VideoUploadHandler = ({ 
+  fileUrl, 
+  isPortrait, 
+  setMessages, 
+  isVersionUpload 
+}: VideoUploadHandlerProps) => {
+  console.log("🎬 VideoUploadHandler - Received video:", { fileUrl, isPortrait });
+
+  // Add video message
   const videoMessage: Message = {
     id: generateUUID(),
     sender: "user",
-    text: fileUrl, // ✅ Store URL as text so it renders correctly
-    timestamp: timestamp,
-    content: "", // Add appropriate content
+    content: fileUrl,  // This should be the blob URL
+    timestamp: new Date(),
+    pitchId: Date.now().toString(),
     fromAI: false,
-    pitchId: "", // Add appropriate pitchId
+    isVideo: true
   };
-  setMessages((prev) => [...prev, videoMessage]);
+  
+  setMessages(videoMessage);
 
-  // ✅ Step 2: Process AI response
+  // Process for AI response
   processVideoUpload(fileUrl, isPortrait, setMessages, isVersionUpload);
 };
 

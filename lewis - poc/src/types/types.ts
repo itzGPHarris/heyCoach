@@ -13,6 +13,7 @@ export interface Message {
   quickReplies?: string[];
   onQuickReply?: (reply: string) => void;
   isFormatted?: boolean; // ✅ Ensure this exists
+  isVideo?: boolean;  // Add this flag
 
 }
 

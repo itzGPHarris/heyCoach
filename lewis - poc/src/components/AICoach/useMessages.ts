@@ -5,7 +5,7 @@ import useStore from '../../store';
 export const useMessages = (pitchId: string | null) => {
   const [isTyping, setIsTyping] = useState(false);
   const store = useStore();
-  const addMessage = 'addMessage' in store ? (store as unknown as { addMessage: (msg: any) => void }).addMessage : () => {}; // ✅ Provide default function if undefined
+  const addMessage = 'addMessage' in store ? (store as unknown as { addMessage: (msg: { content: string; fromAI: boolean; timestamp: Date; pitchId?: string }) => void }).addMessage : () => {}; // ✅ Provide default function if undefined
   const getMessagesForPitch = store.getMessagesForPitch || (() => []); // ✅ Prevent errors if missing
 
   const simulateAIResponse = async () => {

@@ -1,29 +1,18 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from "react";
-import {
-  AppBar,
-  Toolbar,
-  Box,
-  IconButton,
-  Avatar,
-  Menu,
-  
-  MenuItem,
-  Badge,
-} from "@mui/material";
+import { AppBar, Toolbar, Box, IconButton, Avatar, Menu, MenuItem, Badge } from "@mui/material";
 import useStore from "../../store";
-import TeamFeedbackDialog from "./TeamFeedbackDialog";
+import TeamFeedbackDialog from "../shared/dialogs/TeamFeedbackDialog";
 import GroupsIcon from "@mui/icons-material/Groups";
-import harperAvatar from "../../assets/harper.png"; // ✅ Import the image
+import harperAvatar from "../../assets/harper.png";
 
-type AppHeaderProps = {
-  setDashboardOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setProfileOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setSettingsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+interface AppHeaderProps {
+  setDashboardOpen: (open: boolean) => void;
+  setProfileOpen: (open: boolean) => void;
+  setSettingsOpen: (open: boolean) => void;
   anchorEl: HTMLElement | null;
   handleProfileClick: (event: React.MouseEvent<HTMLElement>) => void;
   handleMenuClose: () => void;
-};
+}
 
 const AppHeader: React.FC<AppHeaderProps> = ({
   setDashboardOpen,
@@ -36,12 +25,6 @@ const AppHeader: React.FC<AppHeaderProps> = ({
   const setActiveTab = useStore((state) => state.setActiveTab);
   const [teamDialogOpen, setTeamDialogOpen] = useState(false);
   const newTeamMessages = 3;
-
-  function handleOpenDashboard(): void {
-    console.log("Opening Dashboard from AppHeader");
-    setDashboardOpen(true);
-    handleMenuClose();
-  }
 
   return (
     <>
@@ -74,33 +57,15 @@ const AppHeader: React.FC<AppHeaderProps> = ({
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         transformOrigin={{ vertical: "top", horizontal: "right" }}
       >
-        <MenuItem
-          onClick={() => {
-            console.log("Opening Profile Dialog");
-            setProfileOpen(true); // ✅ Correctly using the prop
-            handleMenuClose();
-          }}
-        >
+        <MenuItem onClick={() => { setProfileOpen(true); handleMenuClose(); }}>
           Profile
         </MenuItem>
 
-        <MenuItem
-          onClick={() => {
-            console.log("Opening Dashboard Dialog");
-            setDashboardOpen(true); // ✅ Correctly using the prop
-            handleMenuClose();
-          }}
-        >
+        <MenuItem onClick={() => { setDashboardOpen(true); handleMenuClose(); }}>
           Submissions
         </MenuItem>
 
-        <MenuItem
-          onClick={() => {
-            console.log("Opening Settings Dialog");
-            setSettingsOpen(true); // ✅ Correctly using the prop
-            handleMenuClose();
-          }}
-        >
+        <MenuItem onClick={() => { setSettingsOpen(true); handleMenuClose(); }}>
           Settings
         </MenuItem>
 
@@ -113,4 +78,3 @@ const AppHeader: React.FC<AppHeaderProps> = ({
 };
 
 export default AppHeader;
-

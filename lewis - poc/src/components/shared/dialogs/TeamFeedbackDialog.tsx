@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import { X, Copy, Check, PlusCircle, MoreVertical } from "lucide-react";
 //import FeedbackTab from "./FeedbackTab"; // Import the new FeedbackTab component
-import { generateUUID } from '../../utils/uuid';
+import { generateUUID } from '../../../utils/uuid';
 
 interface TeamMember {
   id: string;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
-import CoachSpinner from "../../views/CoachSpinner";
+import CoachSpinner from "../../../views/CoachSpinner";
 interface AIAnalysis {
   clarity: number;
   engagement: number;
