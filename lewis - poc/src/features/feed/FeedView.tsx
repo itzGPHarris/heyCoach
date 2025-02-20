@@ -197,9 +197,7 @@ const FeedView: React.FC = () => {
         bottom: 0, 
         left: 0,
         width: "100%", 
-        backgroundColor: "white", 
         zIndex: 10, 
-        boxShadow: "0px -2px 10px rgba(0, 0, 0, 0.1)" 
       }}>
         <ChatInput 
           onSendMessage={handleUserInput}
