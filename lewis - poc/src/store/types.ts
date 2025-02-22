@@ -1,4 +1,5 @@
 import { Metrics } from "../api/types";
+import { TeamMember } from "../components/competitions/types";
 
 export interface BaseMessage {
     id: string;
@@ -68,3 +69,42 @@ export interface BaseMessage {
     date: string;
     // add other properties as needed
   }
+
+  export interface CompetitionState {
+    competitions: Competition[];
+    submissions: Submission[];
+    drafts: Submission[];
+  }
+
+  interface PrizeInfo {
+    amount: number;
+    currency: string;
+    description?: string;
+  }
+  interface Competition {
+    id: string;
+    title: string;
+    startDate: string;
+    endDate: string;
+    prizeDetails: PrizeInfo;
+    requirements: string[];
+    status: 'upcoming' | 'active' | 'completed';
+  }
+  
+  interface Submission {
+    id: string;
+    competitionId: string;
+    name: string;
+    description: string;
+    video: VideoInfo;
+    website?: string;
+    documents: Document[];
+    teammates: TeamMember[];
+    status: 'draft' | 'submitted' | 'accepted' | 'rejected';
+  }
+  
+  interface VideoInfo {
+    url: string;
+    thumbnail: string;
+    length: number;
+  }  
