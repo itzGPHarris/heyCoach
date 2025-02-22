@@ -2,36 +2,21 @@
 import React, { useEffect, useRef } from "react";
 import { Box } from "@mui/material";
 import MessageComponent from "./components/MessageComponent";
-import DetailedAnalysisDialog from "../../components/shared/dialogs/DetailedAnalysisDialog";
-import ImprovementsDialog from "../../components/shared/dialogs/ImprovementsDialog";
-import TeamFeedbackDialog from "../../components/shared/dialogs/TeamFeedbackDialog";
-import CompetitionDialog from "../../components/shared/dialogs/CompetitionDialog";
-import MediaUploadDialog from "../../components/shared/dialogs/MediaUploadDialog";
-import VideoUploadHandler from "../../components/handlers/VideoUploadHandler";
+import { DialogContainer } from "../../features/feed/dialogs/DialogContainer";
 import ChatInput from "../../components/shared/ChatInput";
 import { EmptyState } from "./components/EmptyState";
 import TeamFeedbackCard from "../../components/shared/teamFeedbackCard";
+import VideoUploadHandler from "../../components/handlers/VideoUploadHandler";
 import useStore from "../../store";
+import { useDialogManager } from "../../features/feed/dialogs/DialogManager";
 import { generateUUID } from '../../utils/uuid';
 
 const FeedView: React.FC = () => {
   const feedRef = useRef<HTMLDivElement | null>(null);
-  const { 
-    messages, 
-    addMessage,
-    showMediaDialog,
-    setShowMediaDialog,
-    showAnalysisDialog,
-    setShowAnalysisDialog,
-    showImprovementsDialog,
-    setShowImprovementsDialog,
-    showTeamFeedbackDialog,
-    setShowTeamFeedbackDialog,
-    showCompetitionDialog,
-    setShowCompetitionDialog
-  } = useStore();
+  const { messages, addMessage } = useStore();
+  const { dialogStates, processCommand, handleCommandAction } = useDialogManager();
 
-  // Mock team feedback data
+  // Mock team feedback data - In production, this would come from your backend
   const teamFeedback = [
     {
       user: "John",
@@ -64,10 +49,50 @@ const FeedView: React.FC = () => {
   }, [messages]);
 
   const handleQuickReply = (reply: string) => {
-    processUserCommand(reply.trim().toLowerCase());
+    console.log('🎯 FeedView - Quick reply clicked:', reply);
+    
+    // Add user's quick reply to the feed
+    addMessage({
+      id: generateUUID(),
+      pitchId: "defaultPitchId",
+      sender: "user",
+      text: reply,
+      timestamp: new Date(),
+      content: reply,
+      fromAI: false
+    });
+
+    // Process the command
+    const command = processCommand(reply);
+    console.log('📦 FeedView - Processed command:', command);
+    
+    if (command) {
+      setTimeout(() => {
+        // Add AI's response
+        addMessage({
+          id: generateUUID(),
+          pitchId: "defaultPitchId",
+          sender: "coach",
+          text: command.message,
+          timestamp: new Date(),
+          content: command.message,
+          quickReplies: command.quickReplies,
+          fromAI: true
+        });
+
+        // Execute any associated action
+        if (command.action) {
+          console.log('🎬 FeedView - Executing action:', command.action);
+          handleCommandAction(command.action);
+        }
+      }, 1000);
+    } else {
+      console.log('⚠️ FeedView - No command found for reply:', reply);
+    }
   };
 
   const handleUserInput = (input: string) => {
+    // Add user's message to the feed
     addMessage({
       id: generateUUID(),
       pitchId: "defaultPitchId",
@@ -77,66 +102,38 @@ const FeedView: React.FC = () => {
       content: input,
       fromAI: false
     });
-    
 
-    setTimeout(() => {
-      processUserCommand(input.trim().toLowerCase());
-    }, 0);
-  };
-
-  const processUserCommand = (input: string) => {
-    const commandMap: Record<string, () => void> = {
-      "see detailed breakdown": () => setShowAnalysisDialog(true),
-      "see analysis": () => setShowAnalysisDialog(true),
-      "upload a new version": () => setShowMediaDialog(true),
-      "upload new version": () => setShowMediaDialog(true),
-      "show specific improvements": () => setShowImprovementsDialog(true),
-      "get team feedback": () => setShowTeamFeedbackDialog(true),
-      "enter a competition": () => setShowCompetitionDialog(true),
-      "new pitch": () => setShowMediaDialog(true),
-    };
-
-    if (commandMap[input]) {
-      commandMap[input]();
-      return;
-    }
-
-    // AI response handling
-    const staticResponses: Record<string, string[]> = {
-      "confidence": [
-        "Confidence comes with practice. Try recording yourself multiple times and reviewing your progress.",
-        "A strong stance and clear voice projection can help you appear more confident.",
-        "Would you like some specific techniques to build confidence in your delivery?"
-      ],
-      "filler words": [
-        "Minimizing 'uh' and 'you know' makes your pitch sound more polished. Try pausing instead of using fillers.",
-        "Recording and reviewing your speech can help you identify and reduce filler words.",
-        "Would you like exercises to help eliminate filler words from your speech?"
-      ],
-    };
-    
-    const findAIResponse = (input: string) => {
-      const lowerMessage = input.toLowerCase();
-      const matchedKeyword = Object.keys(staticResponses).find(keyword => 
-        lowerMessage.includes(keyword)
-      );
-      
-      return matchedKeyword 
-        ? staticResponses[matchedKeyword][Math.floor(Math.random() * staticResponses[matchedKeyword].length)] 
-        : "That's an interesting point! Could you clarify what you need help with?";
-    };
+    // Process the command to get relevant quick replies
+    const command = processCommand(input);
     
     setTimeout(() => {
-      const aiMessage = findAIResponse(input);
-      addMessage({
-        id: generateUUID(),
-        pitchId: "defaultPitchId",
-        sender: "coach",
-        text: aiMessage,
-        timestamp: new Date(),
-        content: aiMessage,
-        fromAI: true,
-      });
+      // Always respond with a coach message and quick replies
+      // If we have a command match, use its response and quick replies
+      // Otherwise use a default response
+      if (command) {
+        addMessage({
+          id: generateUUID(),
+          pitchId: "defaultPitchId",
+          sender: "coach",
+          text: command.message,
+          timestamp: new Date(),
+          content: command.message,
+          quickReplies: command.quickReplies,
+          fromAI: true
+        });
+      } else {
+        // Default response with common actions
+        addMessage({
+          id: generateUUID(),
+          pitchId: "defaultPitchId",
+          sender: "coach",
+          text: "I understand you want to improve your pitch. What would you like help with?",
+          timestamp: new Date(),
+          content: "I understand you want to improve your pitch. What would you like help with?",
+          quickReplies: ["See analysis", "Get feedback", "Compare pitches", "New recording"],
+          fromAI: true
+        });
+      }
     }, 1500);
   };
 
@@ -145,51 +142,61 @@ const FeedView: React.FC = () => {
     VideoUploadHandler({ 
       fileUrl, 
       isPortrait, 
-      setMessages: addMessage,  // Using store's addMessage
+      setMessages: addMessage,
       isVersionUpload: false 
     });
-    setShowMediaDialog(false);
-};
-
-
+    dialogStates.media.setOpen(false);
+  };
 
   return (
     <Box 
-      ref={feedRef} 
       sx={{ 
-        flexGrow: 1, 
-        overflowY: "auto", 
-        display: "flex", 
-        flexDirection: "column", 
-        alignItems: "center", 
-        width: "100%", 
-        maxWidth: 800, 
-        margin: "0 auto", 
-        height: "calc(100vh - 56px - 72px)", 
-        paddingBottom: "72px"
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        position: "relative"
       }}
     >
-      <Box sx={{ maxWidth: "100%", pt: 4, px: 2 }}>
-        <TeamFeedbackCard 
-          feedbackData={teamFeedback}
-          onQuickReply={handleQuickReply}
-          onReaction={(type) => console.log("Reaction:", type)}
-        />
-      </Box>
-
-      {messages.length === 0 ? (
-        <EmptyState />
-      ) : (
-        <Box sx={{ width: "100%", px: 2 }}>
-          {messages.map((message) => (
-            <MessageComponent 
-              key={message.id} 
-              message={message} 
-              onQuickReply={handleQuickReply} 
-            />
-          ))}
+      {/* Main Feed Container */}
+      <Box 
+        ref={feedRef} 
+        sx={{ 
+          flexGrow: 1, 
+          overflowY: "auto", 
+          display: "flex", 
+          flexDirection: "column", 
+          alignItems: "center", 
+          width: "100%", 
+          maxWidth: 800, 
+          margin: "0 auto", 
+          height: "calc(100vh - 56px - 72px)", 
+          paddingBottom: "72px"
+        }}
+      >
+        {/* Team Feedback Section */}
+        <Box sx={{ maxWidth: "100%", pt: 4, px: 2 }}>
+          <TeamFeedbackCard 
+            feedbackData={teamFeedback}
+            onQuickReply={handleQuickReply}
+            onReaction={(type) => console.log("Reaction:", type)}
+          />
         </Box>
-      )}
+
+        {/* Messages Section */}
+        {messages.length === 0 ? (
+          <EmptyState />
+        ) : (
+          <Box sx={{ width: "100%", px: 2 }}>
+            {messages.map((message) => (
+              <MessageComponent 
+                key={message.id} 
+                message={message} 
+                onQuickReply={handleQuickReply} 
+              />
+            ))}
+          </Box>
+        )}
+      </Box>
 
       {/* Fixed Chat Input */}
       <Box sx={{ 
@@ -198,36 +205,20 @@ const FeedView: React.FC = () => {
         left: 0,
         width: "100%", 
         zIndex: 10, 
+        backgroundColor: "background.paper",
+        borderTop: 1,
+        borderColor: "divider"
       }}>
         <ChatInput 
           onSendMessage={handleUserInput}
-          onOpenMediaDialog={() => setShowMediaDialog(true)}
+          onOpenMediaDialog={() => dialogStates.media.setOpen(true)}
         />
       </Box>
 
       {/* Dialogs */}
-      <DetailedAnalysisDialog 
-        open={showAnalysisDialog} 
-        onClose={() => setShowAnalysisDialog(false)} 
-      />
-      <ImprovementsDialog 
-        open={showImprovementsDialog} 
-        onClose={() => setShowImprovementsDialog(false)} 
-        improvementsText="" 
-      />
-      <TeamFeedbackDialog 
-        open={showTeamFeedbackDialog} 
-        onClose={() => setShowTeamFeedbackDialog(false)} 
-      />
-      <CompetitionDialog 
-        open={showCompetitionDialog} 
-        onClose={() => setShowCompetitionDialog(false)} 
-      />
-      <MediaUploadDialog 
-        open={showMediaDialog} 
-        onClose={() => setShowMediaDialog(false)} 
-        onSendVideo={handleSendVideo} 
-        isVersionUpload={false} 
+      <DialogContainer 
+        dialogStates={dialogStates}
+        onSendVideo={handleSendVideo}
       />
     </Box>
   );
