@@ -13,7 +13,9 @@ import { useDialogManager } from "../../features/feed/dialogs/DialogManager";
 import { generateUUID } from '../../utils/uuid';
 import { CommandAction } from '../../utils/constants';
 import { SAMPLE_PITCH_DATA } from '../../utils/constants';
-
+import harperthumb1 from './../../assets/harperthumb1.png';
+import harperthumb2 from './../../assets/harperthumb2.png';
+import harperthumb3 from './../../assets/harperthumb3.png';
 
 interface FeedViewProps {
   onCommand?: (action: CommandAction) => void;
@@ -31,21 +33,21 @@ const FeedView: React.FC<FeedViewProps> = ({ onCommand }) => {
       comment: "Your ending is strong, but the middle felt rushed.",
       avatarUrl: "/api/placeholder/32/32",
       timestamp: "10:30 AM",
-      videoThumbnail: "/api/placeholder/240/160"
+      videoThumbnail: harperthumb1
     },
     {
       user: "Maria",
       comment: "Try making the call-to-action more direct.",
       avatarUrl: "/api/placeholder/32/32",
       timestamp: "11:15 AM",
-      videoThumbnail: "/api/placeholder/240/160"
+      videoThumbnail: harperthumb2
     },
     {
       user: "Alex",
       comment: "Great energy! Maybe slow down just a bit.",
       avatarUrl: "/api/placeholder/32/32",
       timestamp: "11:45 AM",
-      videoThumbnail: "/api/placeholder/240/160"
+      videoThumbnail: harperthumb3
     }
   ];
 
