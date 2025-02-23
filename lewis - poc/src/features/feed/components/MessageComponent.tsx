@@ -1,7 +1,8 @@
 // src/features/feed/components/MessageComponent.tsx
 import React from 'react';
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Typography, Button, Avatar } from '@mui/material';
 import { Message } from '../../../store/types';
+import { Sparkles } from 'lucide-react';
 
 interface MessageComponentProps {
   message: Message;
@@ -18,18 +19,36 @@ const MessageComponent: React.FC<MessageComponentProps> = ({ message, onQuickRep
     <Box
       sx={{
         display: 'flex',
-        flexDirection: isCoach ? 'row' : 'row-reverse',
-        alignItems: 'flex-start',
-        gap: 2,
-        mb: 2,
+        flexDirection: 'row',
+        alignItems: 'flex-end',
+        gap: 1,
+        mb: 4,
         maxWidth: '100%'
       }}
     >
+      {/* Avatar Section */}
+      <Avatar
+        sx={{
+          bgcolor: isCoach ? 'primary.main' : '#0090f2',
+          width: 40,
+          height: 40,
+          fontSize: isCoach ? 'inherit' : '1rem',
+          fontWeight: isCoach ? 'inherit' : 900
+        }}
+      >
+        {isCoach ? (
+          <Sparkles size={18} />
+        ) : (
+          "HL"
+        )}
+      </Avatar>
+
+      {/* Message Content Section */}
       <Box
         sx={{
-          maxWidth: '70%',
-          bgcolor: isCoach ? 'primary.light' : 'grey.100',
-          borderRadius: 2,
+          maxWidth: '85%',
+          bgcolor: isCoach ? '#F9FAFB' : '#002b49',
+          borderRadius: 24,
           p: 2,
           position: 'relative'
         }}
@@ -53,7 +72,7 @@ const MessageComponent: React.FC<MessageComponentProps> = ({ message, onQuickRep
           <Typography
             variant="body1"
             sx={{
-              color: isCoach ? 'primary.contrastText' : 'text.primary',
+              color: isCoach ? '#333' : '#fff',
               whiteSpace: 'pre-wrap'
             }}
           >
@@ -72,7 +91,7 @@ const MessageComponent: React.FC<MessageComponentProps> = ({ message, onQuickRep
                 onClick={() => onQuickReply?.(reply)}
                 sx={{
                   bgcolor: 'white',
-                  color: 'primary.main',
+                  color: '#0090f2',
                   '&:hover': {
                     bgcolor: 'primary.light',
                     color: 'white'
@@ -91,7 +110,7 @@ const MessageComponent: React.FC<MessageComponentProps> = ({ message, onQuickRep
           sx={{
             position: 'absolute',
             bottom: -20,
-            [isCoach ? 'left' : 'right']: 8,
+            left: 8,
             color: 'text.secondary'
           }}
         >

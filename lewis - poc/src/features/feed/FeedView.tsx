@@ -12,6 +12,7 @@ import useStore from "../../store";
 import { useDialogManager } from "../../features/feed/dialogs/DialogManager";
 import { generateUUID } from '../../utils/uuid';
 import { CommandAction } from '../../utils/constants';
+import { SAMPLE_PITCH_DATA } from '../../utils/constants';
 
 
 interface FeedViewProps {
@@ -181,7 +182,7 @@ const FeedView: React.FC<FeedViewProps> = ({ onCommand }) => {
         }}
       >
         {/* Team Feedback Section */}
-        <Box sx={{ maxWidth: "100%", pt: 4, px: 2 }}>
+        <Box sx={{ maxWidth: "100%", pt: 1, px: 2 }}>
           <TeamFeedbackCard 
             feedbackData={teamFeedback}
             onQuickReply={handleQuickReply}

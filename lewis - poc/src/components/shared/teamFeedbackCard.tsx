@@ -40,11 +40,11 @@ const TeamFeedbackCard = ({ feedbackData, onQuickReply, onReaction }: TeamFeedba
       <Box sx={{ mb: 2, mt:2, p: 3, borderRadius: 2, bgcolor: 'background.paper',  boxShadow: '0px 0px 30px rgba(0, 0, 0, 0.1)',
  }}>
         {/* Default View */}
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: .75, mt: -6 }}>
-          {/* 1. Coach Avatar */}
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: .75, mt: 1 }}>
+          {/* 1. Coach Avatar 
           <div style={{ width: '48px', height: '48px' }}>
             <CoachSpinner />
-          </div>
+          </div>*/}
           <Typography sx={{ color: 'text.secondary', textAlign: 'center' }}>
               You have new feedback from your team!
             </Typography>
