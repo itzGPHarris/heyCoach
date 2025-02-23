@@ -19,14 +19,16 @@ import {
   EmojiEvents as TrophyIcon,
   CalendarToday as CalendarIcon,
   Group as GroupIcon,
-  Gavel as RulesIcon} from '@mui/icons-material';
+  Gavel as RulesIcon,
+  CheckCircle as EligibilityIcon
+} from '@mui/icons-material';
+import MuxPlayer from "@mux/mux-player-react";
 import type { Competition } from './types';
 
 interface CompetitionPreviewProps {
   competition: Competition;
   onBack: () => void;
   onClose: () => void;
-  onEnterCompetition: (id: string) => void;
   onSubmitPitch: (competition: Competition) => void;
   onViewLeaderboard: (id: string) => void;
 }
@@ -38,7 +40,6 @@ const CompetitionPreview: React.FC<CompetitionPreviewProps> = ({
   onSubmitPitch,
   onViewLeaderboard
 }) => {
-
   const {
     id,
     title,
@@ -46,6 +47,7 @@ const CompetitionPreview: React.FC<CompetitionPreviewProps> = ({
     dates,
     prizes,
     rules,
+    eligibility,
     maxTeamSize,
     status
   } = competition;
@@ -70,14 +72,27 @@ const CompetitionPreview: React.FC<CompetitionPreviewProps> = ({
 
       <DialogContent>
         <Stack spacing={3}>
-          {/* Competition Header */}
+          {/* Hero Section */}
           <Box>
-            <Typography variant="h5" gutterBottom>
+            <Typography variant="h5" fontWeight="bold" gutterBottom>
               {title}
             </Typography>
-            <Typography color="text.secondary">
+            <Typography variant="body1" color="text.secondary" gutterBottom>
               {description}
             </Typography>
+
+            {/* MUX Hero Video */}
+            <Box sx={{ mt: 2, mb: 4 }}>
+              <MuxPlayer
+                streamType="on-demand"
+                playbackId="ulXSeoy4rgSxgL02hqIlr58BZ66aiXqflANbiakPKLiM"
+                style={{
+                  width: "100%",
+                  borderRadius: "8px",
+                  aspectRatio: "16 / 9",
+                }}
+              />
+            </Box>
           </Box>
 
           {/* Key Dates */}
@@ -169,29 +184,29 @@ const CompetitionPreview: React.FC<CompetitionPreviewProps> = ({
             </List>
           </Box>
 
-          {/* Action Button */}
+          {/* Action Buttons */}
           <Box sx={{ mt: 4 }}>
-          <Stack spacing={2}>
-            <Button
-              variant="contained"
-              fullWidth
-              size="large"
-              onClick={() => onSubmitPitch(competition)}
-              disabled={status !== 'ongoing'}
-            >
-              Submit My Pitch
-            </Button>
-            <Button
-              variant="outlined"
-              fullWidth
-              size="large"
-              onClick={() => onViewLeaderboard(competition.id)}
-            >
-              View Leaderboard
-            </Button>
+            <Stack spacing={2}>
+              <Button
+                variant="contained"
+                fullWidth
+                size="large"
+                onClick={() => onSubmitPitch(competition)}
+                disabled={status !== 'ongoing'}
+              >
+                Submit My Pitch
+              </Button>
+              <Button
+                variant="outlined"
+                fullWidth
+                size="large"
+                onClick={() => onViewLeaderboard(id)}
+              >
+                View Leaderboard
+              </Button>
+            </Stack>
+          </Box>
         </Stack>
-        </Box>
-       </Stack>
       </DialogContent>
     </>
   );

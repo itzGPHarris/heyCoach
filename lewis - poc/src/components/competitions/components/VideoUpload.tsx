@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+// src/components/Competitions/components/VideoUpload.tsx
 import React, { useState } from 'react';
 import {
   Card,
@@ -19,14 +20,6 @@ import {
   Close as CloseIcon
 } from '@mui/icons-material';
 
-interface VideoUploadProps {
-  videoFile: File | null;
-  videoPreview?: string;
-  onVideoUpload: (file: File) => void;
-  onVideoRemove: () => void;
-  error?: string;
-}
-
 // Sample favorite pitches data
 const FAVORITE_PITCHES = [
   {
@@ -46,6 +39,14 @@ const FAVORITE_PITCHES = [
     coachRecommended: false
   }
 ];
+
+interface VideoUploadProps {
+  videoFile: File | null;
+  videoPreview?: string;
+  onVideoUpload: (file: File) => void;
+  onVideoRemove: () => void;
+  error?: string;
+}
 
 const VideoUpload: React.FC<VideoUploadProps> = ({
   videoFile,
@@ -107,13 +108,8 @@ const VideoUpload: React.FC<VideoUploadProps> = ({
                 >
                   <VideoIcon sx={{ fontSize: 40, color: 'text.secondary', mb: 1 }} />
                   <Typography color="text.secondary">
-                    Upload your pitch video
+                    Upload a new pitch video
                   </Typography>
-                  {error && (
-                    <Typography color="error" variant="caption" sx={{ mt: 1 }}>
-                      {error}
-                    </Typography>
-                  )}
                 </Box>
               </label>
 
@@ -123,7 +119,7 @@ const VideoUpload: React.FC<VideoUploadProps> = ({
                 onClick={() => setShowFavorites(true)}
                 fullWidth
               >
-                Select a Favorite Pitch
+                Select a Previous Version
               </Button>
             </Stack>
           )}
@@ -147,7 +143,7 @@ const VideoUpload: React.FC<VideoUploadProps> = ({
                 <ArrowBackIcon />
               </IconButton>
               <Typography variant="h6">
-                Select a Favorite Pitch
+                Select a Previous Version
               </Typography>
             </Box>
             <IconButton 

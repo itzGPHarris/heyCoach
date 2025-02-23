@@ -16,7 +16,7 @@ import type { Competition } from './types';
 import CompetitionCard from './CompetitionCard';
 import CompetitionPreview from './CompetitionPreview';
 import SubmissionForm from './SubmissionForm';
-
+import SubmissionDashboard from './SubmissionDashboard';
 
 // Slide transition for dialogs
 const SlideTransition = React.forwardRef((props: any, ref) => (
@@ -32,9 +32,10 @@ const CompetitionHub: React.FC<CompetitionHubProps> = ({
   open,
   onClose
 }) => {
-  // Dialog states
+  // State for managing different views
   const [previewCompetition, setPreviewCompetition] = useState<Competition | null>(null);
   const [showSubmissionForm, setShowSubmissionForm] = useState(false);
+  const [showSubmissionDashboard, setShowSubmissionDashboard] = useState(false);
 
   // Sample competitions data
   const competitions = [
@@ -60,10 +61,9 @@ const CompetitionHub: React.FC<CompetitionHubProps> = ({
       ],
       maxTeamSize: 4
     }
-    // Add more competitions as needed
   ];
 
-  // Handlers
+  // Handler functions
   const handleViewCompetition = (competition: Competition) => {
     setPreviewCompetition(competition);
   };
@@ -75,7 +75,6 @@ const CompetitionHub: React.FC<CompetitionHubProps> = ({
 
   const handleViewLeaderboard = (competitionId: string) => {
     console.log('Viewing leaderboard for:', competitionId);
-    // Implement leaderboard view
   };
 
   const handleBackFromPreview = () => {
@@ -86,9 +85,32 @@ const CompetitionHub: React.FC<CompetitionHubProps> = ({
     setShowSubmissionForm(false);
   };
 
+  const handleBackFromDashboard = () => {
+    setShowSubmissionDashboard(false);
+    // If we came from submission form, go back there
+    if (showSubmissionForm) {
+      setShowSubmissionDashboard(false);
+    } else {
+      // Otherwise go back to main view
+      setPreviewCompetition(null);
+    }
+  };
+
+  const handleViewSubmissions = () => {
+    setShowSubmissionDashboard(true);
+  };
+
+  const handleSubmissionComplete = async (data: any) => {
+    console.log('Submission data:', data);
+    // Here you would normally save the submission
+    // For now, we'll just simulate success
+    return Promise.resolve();
+  };
+
   const handleCloseAll = () => {
     setPreviewCompetition(null);
     setShowSubmissionForm(false);
+    setShowSubmissionDashboard(false);
     onClose();
   };
 
@@ -96,7 +118,7 @@ const CompetitionHub: React.FC<CompetitionHubProps> = ({
     <>
       {/* Main Competition Hub Dialog */}
       <Dialog
-        open={open && !previewCompetition && !showSubmissionForm}
+        open={open && !previewCompetition && !showSubmissionForm && !showSubmissionDashboard}
         onClose={onClose}
         maxWidth="md"
         fullWidth
@@ -135,7 +157,7 @@ const CompetitionHub: React.FC<CompetitionHubProps> = ({
 
       {/* Competition Preview Dialog */}
       <Dialog
-        open={!!previewCompetition && !showSubmissionForm}
+        open={!!previewCompetition && !showSubmissionForm && !showSubmissionDashboard}
         TransitionComponent={SlideTransition}
         onClose={handleCloseAll}
         maxWidth="md"
@@ -163,7 +185,7 @@ const CompetitionHub: React.FC<CompetitionHubProps> = ({
 
       {/* Submission Form Dialog */}
       <Dialog
-        open={showSubmissionForm}
+        open={showSubmissionForm && !showSubmissionDashboard}
         TransitionComponent={SlideTransition}
         onClose={handleCloseAll}
         maxWidth="md"
@@ -182,16 +204,34 @@ const CompetitionHub: React.FC<CompetitionHubProps> = ({
             competition={previewCompetition}
             onBack={handleBackFromSubmission}
             onClose={handleCloseAll}
-            onSubmit={async (submission) => {
-              console.log('Submitting:', submission);
-              handleCloseAll();
-            }}
-            onViewSubmissions={() => {
-              console.log('Viewing submissions');
-              // Implement view submissions logic
-            }}
+            onSubmit={handleSubmissionComplete}
+            onViewSubmissions={handleViewSubmissions}
           />
         )}
+      </Dialog>
+
+      {/* Submission Dashboard Dialog */}
+      <Dialog
+        open={showSubmissionDashboard}
+        TransitionComponent={SlideTransition}
+        onClose={handleCloseAll}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{
+          sx: { 
+            height: '100vh',
+            maxHeight: '100vh',
+            margin: 0,
+            borderRadius: 0
+          }
+        }}
+      >
+        <SubmissionDashboard
+          open={showSubmissionDashboard}
+          onClose={handleCloseAll}
+          onBack={handleBackFromDashboard}
+          onCreateNew={() => setShowSubmissionForm(true)}
+        />
       </Dialog>
     </>
   );

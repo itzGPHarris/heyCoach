@@ -1,3 +1,4 @@
+// src/components/Competitions/components/TeamSection.tsx
 import React, { useState } from 'react';
 import {
   Card,
@@ -26,7 +27,7 @@ import {
 import type { TeamMember } from '../types';
 
 // Sample team members data
-const AVAILABLE_TEAM_MEMBERS = [
+const AVAILABLE_TEAM_MEMBERS: TeamMember[] = [
   {
     id: '1',
     name: 'Sarah Chen',
@@ -74,6 +75,11 @@ const TeamSection: React.FC<TeamSectionProps> = ({
   const availableMembers = AVAILABLE_TEAM_MEMBERS.filter(
     member => !members.find(m => m.id === member.id)
   );
+
+  const handleAddMember = (member: TeamMember) => {
+    onAddMember(member);
+    setShowTeamSelect(false);
+  };
 
   return (
     <>
@@ -152,10 +158,7 @@ const TeamSection: React.FC<TeamSectionProps> = ({
                 disablePadding
               >
                 <ListItemButton
-                  onClick={() => {
-                    onAddMember(member);
-                    setShowTeamSelect(false);
-                  }}
+                  onClick={() => handleAddMember(member)}
                 >
                   <ListItemAvatar>
                     <Avatar src={member.avatar}>
@@ -169,6 +172,14 @@ const TeamSection: React.FC<TeamSectionProps> = ({
                 </ListItemButton>
               </ListItem>
             ))}
+            {availableMembers.length === 0 && (
+              <ListItem>
+                <ListItemText 
+                  primary="No more team members available"
+                  secondary="All team members have been added"
+                />
+              </ListItem>
+            )}
           </List>
         </DialogContent>
       </Dialog>

@@ -129,6 +129,7 @@ export interface SubmissionCardProps {
 export interface SubmissionDashboardProps {
   open: boolean;
   onClose: () => void;
+  onBack: () => void;
   onCreateNew: () => void;
 }
 
