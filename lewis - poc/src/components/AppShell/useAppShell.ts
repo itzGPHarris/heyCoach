@@ -2,7 +2,7 @@
 import { useState, useCallback } from 'react';
 import useStore from '../../store';
 import VideoUploadHandler from '../handlers/VideoUploadHandler';
-
+import { CommandAction } from '../../utils/constants';
 
 export const useAppShell = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -42,6 +42,33 @@ export const useAppShell = () => {
     setShowMediaDialog(false);
   }, [addMessage, setShowMediaDialog]);
 
+  // Handle coach commands
+  const handleCommand = useCallback((action: CommandAction) => {
+    switch (action) {
+      case 'openMediaDialog':
+        setShowMediaDialog(true);
+        break;
+      case 'openCompetitionHub':
+        setShowCompetitionDialog(true);
+        break;
+      case 'openDashboard':
+        setDashboardOpen(true);
+        break;
+      case 'openProfile':
+        setProfileOpen(true);
+        break;
+      case 'openPitchVersions':
+        setVersionsDialogOpen(true);
+        break;
+      // Add other command handlers as needed
+    }
+  }, [
+    setShowMediaDialog, 
+    setShowCompetitionDialog, 
+    setDashboardOpen, 
+    setProfileOpen, 
+    setVersionsDialogOpen
+  ]);
 
   return {
     dialogs: {
@@ -74,6 +101,7 @@ export const useAppShell = () => {
     handleSendVideo,
     handleProfileClick,
     handleMenuClose,
+    handleCommand,  // Added command handler
     anchorEl
   };
 };

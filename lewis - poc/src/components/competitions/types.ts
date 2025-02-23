@@ -28,6 +28,10 @@ export interface CompetitionHubProps {
     open: boolean;
     isOpen: boolean;
     onClose: () => void;
+    onCreateSubmission: (competition: Competition) => void;
+    onViewSubmissions: () => void;
+
+
   }
 
 
@@ -38,6 +42,8 @@ export interface CompetitionHubProps {
     onEnter: (id: string) => void;
     onViewLeaderboard: (id: string) => void;
     onViewSubmission?: (id: string) => void;
+    
+    
   }
   
 // Submission Types
@@ -127,6 +133,7 @@ export interface SubmissionDashboardProps {
 }
 
 export interface SubmissionFormProps {
+  
   open: boolean;
   onClose: () => void;
   competition: Competition;

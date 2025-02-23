@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // src/features/feed/FeedView.tsx
 import React, { useEffect, useRef } from "react";
 import { Box } from "@mui/material";
@@ -10,8 +11,14 @@ import VideoUploadHandler from "../../components/handlers/VideoUploadHandler";
 import useStore from "../../store";
 import { useDialogManager } from "../../features/feed/dialogs/DialogManager";
 import { generateUUID } from '../../utils/uuid';
+import { CommandAction } from '../../utils/constants';
 
-const FeedView: React.FC = () => {
+
+interface FeedViewProps {
+  onCommand?: (action: CommandAction) => void;
+}
+
+const FeedView: React.FC<FeedViewProps> = ({ onCommand }) => {
   const feedRef = useRef<HTMLDivElement | null>(null);
   const { messages, addMessage } = useStore();
   const { dialogStates, processCommand, handleCommandAction } = useDialogManager();

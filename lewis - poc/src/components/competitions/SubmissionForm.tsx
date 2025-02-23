@@ -1,15 +1,26 @@
 import React, { useState } from 'react';
-import { Dialog, DialogTitle, DialogContent, Typography, Button, Box, Stack } from '@mui/material';
-import { Close as CloseIcon } from '@mui/icons-material';
-import { VideoUpload, BasicInfo, TeamSection, ActionButtons } from './components';
-import type { TeamMember } from './types';
+import {
+  DialogTitle,
+  DialogContent,
+  Typography,
+  Button,
+  Box,
+  IconButton,
+  Stack
+} from '@mui/material';
+import {
+  Close as CloseIcon,
+  ArrowBack as ArrowBackIcon
+} from '@mui/icons-material';
+import { VideoUpload, BasicInfo, TeamSection } from './components';
+import type { Competition, TeamMember } from './types';
 
 interface SubmissionFormProps {
-  open: boolean;
+  competition: Competition;
+  onBack: () => void;
   onClose: () => void;
-  competitionName: string;
   onSubmit: (data: SubmissionData) => Promise<void>;
-  onSaveDraft: (data: SubmissionData) => Promise<void>;
+  onViewSubmissions: () => void;
 }
 
 interface SubmissionData {
@@ -22,12 +33,13 @@ interface SubmissionData {
 }
 
 const SubmissionForm: React.FC<SubmissionFormProps> = ({
-  open,
+  competition,
+  onBack,
   onClose,
-  competitionName,
   onSubmit,
-  onSaveDraft
+  onViewSubmissions
 }) => {
+  // Form state
   const [formData, setFormData] = useState<SubmissionData>({
     title: '',
     description: '',
@@ -36,7 +48,9 @@ const SubmissionForm: React.FC<SubmissionFormProps> = ({
     team: []
   });
 
+  // UI state
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [errors, setErrors] = useState<{
     title?: string;
     description?: string;
@@ -60,7 +74,7 @@ const SubmissionForm: React.FC<SubmissionFormProps> = ({
     try {
       setIsSubmitting(true);
       await onSubmit(formData);
-      onClose();
+      setIsSubmitted(true);
     } catch (error) {
       console.error('Submission error:', error);
     } finally {
@@ -88,28 +102,41 @@ const SubmissionForm: React.FC<SubmissionFormProps> = ({
     }));
   };
 
+  const handleAddTeamMember = (member: TeamMember) => {
+    setFormData(prev => ({
+      ...prev,
+      team: [...prev.team, member]
+    }));
+  };
+
+  const handleRemoveTeamMember = (id: string) => {
+    setFormData(prev => ({
+      ...prev,
+      team: prev.team.filter(member => member.id !== id)
+    }));
+  };
+
   return (
-    <Dialog 
-      open={open} 
-      onClose={onClose}
-      maxWidth="md"
-      fullWidth
-    >
+    <>
       <DialogTitle>
         <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Typography variant="h6">{competitionName} Submission</Typography>
-          <Button
-            startIcon={<CloseIcon />}
-            onClick={onClose}
-            size="small"
-          >
-            Cancel
-          </Button>
+          <Box display="flex" alignItems="center" gap={1}>
+            <IconButton onClick={onBack} size="small">
+              <ArrowBackIcon />
+            </IconButton>
+            <Typography variant="h6">
+              Submit to {competition.title}
+            </Typography>
+          </Box>
+          <IconButton onClick={onClose} size="small">
+            <CloseIcon />
+          </IconButton>
         </Box>
       </DialogTitle>
 
       <DialogContent>
         <Stack spacing={3} sx={{ mt: 2 }}>
+          {/* Video Upload Section */}
           <VideoUpload
             videoFile={formData.video}
             videoPreview={formData.videoPreview}
@@ -118,6 +145,7 @@ const SubmissionForm: React.FC<SubmissionFormProps> = ({
             error={errors.video}
           />
 
+          {/* Basic Info Section */}
           <BasicInfo
             title={formData.title}
             description={formData.description}
@@ -139,28 +167,66 @@ const SubmissionForm: React.FC<SubmissionFormProps> = ({
             }}
           />
 
+          {/* Team Section */}
           <TeamSection
             members={formData.team}
-            onAddMember={() => {
-              // Will implement team member selection dialog
-            }}
-            onRemoveMember={(id) => {
-              setFormData(prev => ({
-                ...prev,
-                team: prev.team.filter(member => member.id !== id)
-              }));
-            }}
+            onAddMember={handleAddTeamMember}
+            onRemoveMember={handleRemoveTeamMember}
           />
 
-          <ActionButtons
-            onSaveDraft={() => onSaveDraft(formData)}
-            onSubmit={handleSubmit}
-            isSubmitting={isSubmitting}
-            disabled={!formData.video || !formData.title || !formData.description}
-          />
+          {/* Action Buttons */}
+          <Box sx={{ mt: 4 }}>
+            <Stack spacing={2}>
+              {isSubmitted ? (
+                <>
+                  <Button
+                    variant="contained"
+                    fullWidth
+                    color="success"
+                    disabled
+                  >
+                    Pitch Submitted Successfully
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    fullWidth
+                    onClick={onViewSubmissions}
+                  >
+                    View All Submissions
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    fullWidth
+                    onClick={onBack}
+                  >
+                    Back to Competition
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    variant="contained"
+                    fullWidth
+                    onClick={handleSubmit}
+                    disabled={isSubmitting || !formData.video || !formData.title || !formData.description}
+                  >
+                    {isSubmitting ? 'Submitting...' : 'Submit Pitch'}
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    fullWidth
+                    onClick={onBack}
+                    disabled={isSubmitting}
+                  >
+                    Back to Competition
+                  </Button>
+                </>
+              )}
+            </Stack>
+          </Box>
         </Stack>
       </DialogContent>
-    </Dialog>
+    </>
   );
 };
 

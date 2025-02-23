@@ -2,9 +2,11 @@ import React from 'react';
 import DashboardView from '../shared/dialogs/DashboardView';
 import ProfileView from '../shared/dialogs/ProfileView';
 import SettingsDialog from '../shared/dialogs/SettingsDialog';
-import CompetitionsDialog from '../shared/dialogs/CompetitionDialog';
+//import CompetitionsDialog from '../shared/dialogs/CompetitionDialog';
 import PitchVersionsDialog from '../shared/dialogs/PitchVersionsDialog';
 import MediaUploadDialog from '../shared/dialogs/MediaUploadDialog';
+import CompetitionDialogs from '../competitions/CompetitionDialogs';
+
 
 interface DialogsProps {
   dialogStates: {
@@ -17,7 +19,6 @@ interface DialogsProps {
   };
   onSendVideo: (fileUrl: string, isPortrait: boolean) => void;
 }
-
 export const Dialogs: React.FC<DialogsProps> = ({ dialogStates, onSendVideo }) => (
   <>
     <DashboardView 
@@ -32,11 +33,11 @@ export const Dialogs: React.FC<DialogsProps> = ({ dialogStates, onSendVideo }) =
       open={dialogStates.settings.isOpen} 
       onClose={() => dialogStates.settings.setOpen(false)} 
     />
-    <CompetitionsDialog 
-      open={dialogStates.competition.isOpen} 
-      onClose={() => dialogStates.competition.setOpen(false)} 
-    />
-    <PitchVersionsDialog 
+
+      <CompetitionDialogs
+        open={dialogStates.competition.isOpen}
+        onClose={() => dialogStates.competition.setOpen(false)}
+      />    <PitchVersionsDialog 
       open={dialogStates.versions.isOpen} 
       onClose={() => dialogStates.versions.setOpen(false)} 
     />

@@ -34,7 +34,7 @@ export const COACH_COMMANDS = {
   },
   COMPETITIONS: {
     triggers: ['competition', 'enter competition', 'find competitions'],
-    action: 'openCompetitions',
+    action: 'openCompetitionHub', // Updated action name
     responses: [
       "I can help you find pitch competitions. Would you like to see upcoming events or practice for a specific competition?"
     ],
@@ -72,9 +72,10 @@ export type CommandAction =
   | 'openDashboard'
   | 'openTeamFeedback'
   | 'openImprovements'
-  | 'openCompetitions'
+  | 'openCompetitionHub'  // This replaces 'openCompetitions'
   | 'openPitchVersions'
   | 'openAnalysis'
+  | 'openCompetitionHub'  // Updated action
   | 'openProfile';
 
 export type CommandKey = keyof typeof COACH_COMMANDS;

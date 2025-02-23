@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-// CompetitionCard.tsx
-
 import React from 'react';
 import {
   Card,
@@ -16,44 +14,30 @@ import {
   CalendarToday as CalendarIcon,
   Group as GroupIcon
 } from '@mui/icons-material';
-import type { CompetitionCardProps } from './types';
+import type { Competition } from './types';
+
+interface CompetitionCardProps {
+  competition: Competition;
+  onView: (competition: Competition) => void;
+  onEnter?: (competition: Competition) => void;
+}
 
 const CompetitionCard: React.FC<CompetitionCardProps> = ({
-    competition,
-    hasSubmitted,
-    onPreview,
-    onEnter,
-    onViewLeaderboard,
-    onViewSubmission
-  }) => {
+  competition,
+  onView,
   
+}) => {
   const {
-    id,
     title,
     dates,
     prizes,
-    status,
-    maxTeamSize = 4
+    maxTeamSize = 4,
+    status
   } = competition;
-
-  const isActive = status === 'ongoing';
-
-  const getStatusColor = () => {
-    switch (status) {
-      case 'ongoing':
-        return 'primary';
-      case 'upcoming':
-        return 'warning';
-      case 'past':
-        return 'default';
-      default:
-        return 'default';
-    }
-  };
 
   return (
     <Card variant="outlined">
-        {/* Header */}
+      <CardContent>
         <Box display="flex" justifyContent="space-between" alignItems="flex-start">
           <Box display="flex" gap={2}>
             <Box 
@@ -81,20 +65,13 @@ const CompetitionCard: React.FC<CompetitionCardProps> = ({
           </Box>
           <Chip 
             label={status.charAt(0).toUpperCase() + status.slice(1)}
-            color={getStatusColor()}
+            color={status === 'ongoing' ? 'primary' : 'default'}
             size="small"
           />
         </Box>
 
-        {/* Competition Details */}
         <Box mt={2}>
           <Stack spacing={1}>
-            <Box display="flex" alignItems="center" gap={1}>
-              <CalendarIcon fontSize="small" color="action" />
-              <Typography variant="body2">
-                Submission deadline: {dates.submissionDeadline}
-              </Typography>
-            </Box>
             <Box display="flex" alignItems="center" gap={1}>
               <TrophyIcon fontSize="small" color="action" />
               <Typography variant="body2">
@@ -110,67 +87,18 @@ const CompetitionCard: React.FC<CompetitionCardProps> = ({
           </Stack>
         </Box>
 
-             {/* Updated Action Buttons */}
-      <Box display="flex" gap={1} mt={3}>
-        <Button
-          variant="outlined"
-          onClick={() => onPreview(competition)}
-          sx={{ minWidth: 'auto' }}
-        >
-          Preview
-        </Button>
-        <Box flexGrow={1} display="flex" gap={1}>
-          {isActive ? (
-            <>
-              <Button 
-                variant="contained" 
-                fullWidth
-                onClick={() => onEnter(id)}
-              >
-                Enter competition
-              </Button>
-              <Button 
-                variant="outlined" 
-                fullWidth
-                onClick={() => onViewLeaderboard(id)}
-              >
-                View leaderboard
-              </Button>
-              {hasSubmitted && (
-                <Button 
-                  variant="outlined"
-                  onClick={() => onViewSubmission?.(id)}
-                >
-                  My submission
-                </Button>
-
-              )}
-            </>
-          ) : (
-            <>
-              <Button 
-                variant="outlined" 
-                fullWidth
-                onClick={() => onViewLeaderboard(id)}
-              >
-                View results
-              </Button>
-              {hasSubmitted && (
-                <Button 
-                  variant="outlined" 
-                  fullWidth
-                  onClick={() => onViewSubmission?.(id)}
-                >
-                  My submissions
-                </Button>
-              )}
-            </>
-          )}
-          </Box>
+        <Box mt={3}>
+          <Button
+            variant="contained"
+            fullWidth
+            onClick={() => onView(competition)}
+          >
+            View Competition
+          </Button>
         </Box>
-      </Card>
-    );
-  }; 
-
+      </CardContent>
+    </Card>
+  );
+};
 
 export default CompetitionCard;

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react';
 import {
   Dialog,
@@ -5,33 +7,37 @@ import {
   DialogContent,
   Typography,
   Box,
-  Tabs,
-  Tab,
-  Stack,
   IconButton,
-  TextField,
+  Stack,
+  Slide
 } from '@mui/material';
-import {
-  Share as ShareIcon,
-  Close as CloseIcon,
-  Search as SearchIcon
-} from '@mui/icons-material';
+import { Close as CloseIcon } from '@mui/icons-material';
+import type { Competition } from './types';
 import CompetitionCard from './CompetitionCard';
 import CompetitionPreview from './CompetitionPreview';
-import type { Competition, CompetitionHubProps } from './types';
+import SubmissionForm from './SubmissionForm';
 
+
+// Slide transition for dialogs
+const SlideTransition = React.forwardRef((props: any, ref) => (
+  <Slide direction="left" ref={ref} {...props} />
+));
+
+interface CompetitionHubProps {
+  open: boolean;
+  onClose: () => void;
+}
 
 const CompetitionHub: React.FC<CompetitionHubProps> = ({
   open,
   onClose
 }) => {
-  // Tab and filtering state
-  const [activeTab, setActiveTab] = useState(0);
-  const [searchQuery, setSearchQuery] = useState('');
+  // Dialog states
   const [previewCompetition, setPreviewCompetition] = useState<Competition | null>(null);
+  const [showSubmissionForm, setShowSubmissionForm] = useState(false);
 
-  // Sample data - would come from your data store
-  const competitions: Competition[] = [
+  // Sample competitions data
+  const competitions = [
     {
       id: '1',
       title: 'Mentor Madness 2024',
@@ -46,138 +52,147 @@ const CompetitionHub: React.FC<CompetitionHubProps> = ({
         firstPlace: '$15,000',
         runnerUp: '$10,000'
       },
-      status: 'ongoing',
+      status: 'ongoing' as const,
       rules: [
         'Submit a 1-3 minute video pitch',
         'Original ideas only',
         'Clear business model required'
       ],
-      maxTeamSize: 4,
-      eligibility: [
-        'Open to all startups less than 2 years old',
-        'Must have a working prototype',
-        'International participants welcome'
-      ]
+      maxTeamSize: 4
     }
-    // Add more sample competitions as needed
+    // Add more competitions as needed
   ];
 
-  // Event handlers
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setActiveTab(newValue);
-  };
-
-  const handlePreview = (competition: Competition) => {
+  // Handlers
+  const handleViewCompetition = (competition: Competition) => {
     setPreviewCompetition(competition);
   };
 
-  const handleClosePreview = () => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleSubmitPitch = (competition: Competition) => {
+    setShowSubmissionForm(true);
+  };
+
+  const handleViewLeaderboard = (competitionId: string) => {
+    console.log('Viewing leaderboard for:', competitionId);
+    // Implement leaderboard view
+  };
+
+  const handleBackFromPreview = () => {
     setPreviewCompetition(null);
   };
 
-  const handleEnterCompetition = (id: string) => {
-    console.log('Entering competition:', id);
-    // Implementation
+  const handleBackFromSubmission = () => {
+    setShowSubmissionForm(false);
   };
 
-  const handleViewLeaderboard = (id: string) => {
-    console.log('Viewing leaderboard:', id);
-    // Implementation
+  const handleCloseAll = () => {
+    setPreviewCompetition(null);
+    setShowSubmissionForm(false);
+    onClose();
   };
-
-  const handleViewSubmission = (id: string) => {
-    console.log('Viewing submission:', id);
-    // Implementation
-  };
-
-  // Filter competitions based on search and tab
-  const filteredCompetitions = competitions.filter(comp => {
-    const matchesSearch = comp.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         comp.description.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesTab = activeTab === 0 ? true : // Featured
-                      activeTab === 1 ? comp.status === 'ongoing' : // Active
-                      comp.status === 'past'; // Past
-    
-    return matchesSearch && matchesTab;
-  });
 
   return (
     <>
-      <Dialog 
-        open={open} 
+      {/* Main Competition Hub Dialog */}
+      <Dialog
+        open={open && !previewCompetition && !showSubmissionForm}
         onClose={onClose}
         maxWidth="md"
         fullWidth
+        PaperProps={{
+          sx: { 
+            height: '100vh',
+            maxHeight: '100vh',
+            margin: 0,
+            borderRadius: 0
+          }
+        }}
       >
         <DialogTitle>
           <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Typography variant="h6">My Competitions</Typography>
-            <Box>
-              <IconButton size="small" onClick={() => {}}>
-                <ShareIcon />
-              </IconButton>
-              <IconButton size="small" onClick={onClose} sx={{ ml: 1 }}>
-                <CloseIcon />
-              </IconButton>
-            </Box>
+            <Typography variant="h6">
+              Competitions
+            </Typography>
+            <IconButton onClick={onClose} size="small">
+              <CloseIcon />
+            </IconButton>
           </Box>
         </DialogTitle>
 
-        <DialogContent>
-          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <Tabs 
-              value={activeTab} 
-              onChange={handleTabChange}
-              aria-label="competition tabs"
-            >
-              <Tab label="Featured" />
-              <Tab label="Active" />
-              <Tab label="Past" />
-            </Tabs>
-          </Box>
-
-          <Box sx={{ mt: 2, mb: 3 }}>
-            <TextField
-              fullWidth
-              placeholder="Search competitions..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              InputProps={{
-                startAdornment: <SearchIcon color="action" sx={{ mr: 1 }} />
-              }}
-              size="small"
-            />
-          </Box>
-
-          <Stack spacing={2} sx={{ maxHeight: '60vh', overflow: 'auto' }}>
-            {filteredCompetitions.map((competition) => (
+        <DialogContent sx={{ p: 3 }}>
+          <Stack spacing={3}>
+            {competitions.map((competition) => (
               <CompetitionCard
                 key={competition.id}
                 competition={competition}
-                onPreview={handlePreview}
-                onEnter={handleEnterCompetition}
-                onViewLeaderboard={handleViewLeaderboard}
-                onViewSubmission={handleViewSubmission}
+                onView={handleViewCompetition}
               />
             ))}
-            {filteredCompetitions.length === 0 && (
-              <Box textAlign="center" py={4}>
-                <Typography color="text.secondary">
-                  No competitions found matching your criteria
-                </Typography>
-              </Box>
-            )}
           </Stack>
         </DialogContent>
       </Dialog>
 
-      <CompetitionPreview
-        competition={previewCompetition}
-        open={!!previewCompetition}
-        onClose={handleClosePreview}
-        onEnterCompetition={handleEnterCompetition}
-      />
+      {/* Competition Preview Dialog */}
+      <Dialog
+        open={!!previewCompetition && !showSubmissionForm}
+        TransitionComponent={SlideTransition}
+        onClose={handleCloseAll}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{
+          sx: { 
+            height: '100vh',
+            maxHeight: '100vh',
+            margin: 0,
+            borderRadius: 0
+          }
+        }}
+      >
+        {previewCompetition && (
+          <CompetitionPreview
+            competition={previewCompetition}
+            onBack={handleBackFromPreview}
+            onClose={handleCloseAll}
+            onSubmitPitch={handleSubmitPitch}
+            onViewLeaderboard={handleViewLeaderboard} onEnterCompetition={function (id: string): void {
+              throw new Error('Function not implemented.');
+            } }          />
+        )}
+      </Dialog>
+
+      {/* Submission Form Dialog */}
+      <Dialog
+        open={showSubmissionForm}
+        TransitionComponent={SlideTransition}
+        onClose={handleCloseAll}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{
+          sx: { 
+            height: '100vh',
+            maxHeight: '100vh',
+            margin: 0,
+            borderRadius: 0
+          }
+        }}
+      >
+        {previewCompetition && (
+          <SubmissionForm
+            competition={previewCompetition}
+            onBack={handleBackFromSubmission}
+            onClose={handleCloseAll}
+            onSubmit={async (submission) => {
+              console.log('Submitting:', submission);
+              handleCloseAll();
+            }}
+            onViewSubmissions={() => {
+              console.log('Viewing submissions');
+              // Implement view submissions logic
+            }}
+          />
+        )}
+      </Dialog>
     </>
   );
 };

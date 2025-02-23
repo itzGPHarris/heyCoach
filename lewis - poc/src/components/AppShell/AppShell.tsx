@@ -1,3 +1,4 @@
+// src/components/AppShell/AppShell.tsx
 import React from "react";
 import { CssBaseline, Box } from "@mui/material";
 import { ThemeProvider } from "../../contexts/ThemeContext";
@@ -12,6 +13,7 @@ function AppShell() {
     handleSendVideo,
     handleProfileClick,
     handleMenuClose,
+    handleCommand,  // Added command handler
     anchorEl
   } = useAppShell();
 
@@ -38,13 +40,14 @@ function AppShell() {
           marginTop: "56px", 
           paddingBottom: "70px" 
         }}>
-          <FeedView />
+          <FeedView onCommand={handleCommand} />
         </Box>
 
         <Dialogs 
           dialogStates={dialogs} 
           onSendVideo={handleSendVideo} 
         />
+
 
       </Box>
     </ThemeProvider>
