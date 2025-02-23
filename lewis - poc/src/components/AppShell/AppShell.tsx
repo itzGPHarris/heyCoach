@@ -1,13 +1,17 @@
 // src/components/AppShell/AppShell.tsx
 import React from "react";
 import { CssBaseline, Box } from "@mui/material";
-import { ThemeProvider } from "../../contexts/ThemeContext";
+//import { ThemeProvider } from "../../contexts/ThemeContext";
+import { getTheme } from '../../styles/theme';
+import { ThemeProvider } from '@mui/material/styles';
 import { useAppShell } from "./useAppShell";
 import FeedView from "../../features/feed/FeedView";
 import AppHeader from "../shared/AppHeader";
 import { Dialogs } from "./Dialogs";
 
 function AppShell() {
+    const theme = getTheme('light');
+  
   const {
     dialogs,
     handleSendVideo,
@@ -18,7 +22,7 @@ function AppShell() {
   } = useAppShell();
 
   return (
-    <ThemeProvider>
+    <ThemeProvider theme={{theme}}>
       <CssBaseline />
       <Box sx={{ height: "100vh", display: "flex", flexDirection: "column" }}>
         <AppHeader 

@@ -1,16 +1,17 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // src/App.tsx
+import { CssBaseline } from '@mui/material';
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import AppShell from './components/AppShell/AppShell';
-//import AICoach from './components/AICoach/_AICoach';
-//import useStore from './store';
-import { ThemeProvider } from './contexts/ThemeContext';
+import { getTheme } from './styles/theme';
+import { ThemeProvider } from '@mui/material/styles';
 
 const App: React.FC = () => {
-  //const showAICoach = useStore(state => state.showAICoach);
+  const theme = getTheme('light');
 
   return (
-    <ThemeProvider>
+    <ThemeProvider theme={{theme}}>
       <Router>
         <Routes>
           <Route path="/*" element={<AppShell />} />
