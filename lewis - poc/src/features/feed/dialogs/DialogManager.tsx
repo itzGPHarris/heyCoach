@@ -64,7 +64,7 @@ export const useDialogManager = () => {
         setSubmissionFormOpen(open);
       } 
     },
-
+  
   };
 
   const processCommand = useCallback((input: string): CommandResponse | null => {

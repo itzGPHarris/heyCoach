@@ -2,17 +2,17 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React from 'react';
 import { Dialog } from '@mui/material';
+import useStore from '../../store';
 import ProfileView from '../shared/dialogs/ProfileView';
 import SettingsDialog from '../shared/dialogs/SettingsDialog';
 import PitchVersionsDialog from '../shared/dialogs/PitchVersionsDialog';
 import MediaUploadDialog from '../shared/dialogs/MediaUploadDialog';
 import CompetitionDialogs from '../competitions/CompetitionDialogs';
 import SubmissionDashboard from '../competitions/SubmissionDashboard';
-import SubmissionForm from '../competitions/SubmissionForm'; // Import the SubmissionForm
+import SubmissionForm from '../competitions/SubmissionForm';
 
 interface DialogsProps {
   dialogStates: {
-    submissionForm: { isOpen: boolean; setOpen: (open: boolean) => void };
     submissionDashboard: { isOpen: boolean; setOpen: (open: boolean) => void };
     dashboard: { isOpen: boolean; setOpen: (open: boolean) => void };
     profile: { isOpen: boolean; setOpen: (open: boolean) => void };
@@ -25,13 +25,13 @@ interface DialogsProps {
 }
 
 export const Dialogs: React.FC<DialogsProps> = ({ dialogStates, onSendVideo }) => {
-  // Sample competition object - replace with actual data from your state
-  console.log('Dialog States:', dialogStates);
-  const submissionFormState = dialogStates.submissionForm || { 
-    isOpen: false, 
-    setOpen: () => console.warn('Submission form dialog state not initialized') 
-  };
+  // Use Zustand store for submission form state
+  const { 
+    submissionFormOpen, 
+    setSubmissionFormOpen 
+  } = useStore();
 
+  // Sample competition object
   const sampleCompetition = {
     id: '1',
     title: 'Startup Pitch Competition',
@@ -55,29 +55,33 @@ export const Dialogs: React.FC<DialogsProps> = ({ dialogStates, onSendVideo }) =
       submissionDeadline: new Date().toISOString(),
     },
     status: 'upcoming' as 'upcoming' | 'ongoing' | 'past',
-    rules: ['All submissions must be original', 'Entries must be submitted before the deadline'], // ✅ Fixed
+    rules: ['All submissions must be original', 'Entries must be submitted before the deadline'],
   };
-    
-  
-  
 
   return (
     <>
-      <SubmissionDashboard
-        open={dialogStates.submissionDashboard.isOpen}
-        onClose={() => dialogStates.submissionDashboard.setOpen(false)}
+      <SubmissionDashboard 
+        open={dialogStates.submissionDashboard.isOpen} 
+        onClose={() => dialogStates.submissionDashboard.setOpen(false)} 
         onCreateNew={() => {
-          dialogStates.submissionDashboard.setOpen(false);
-          dialogStates.submissionForm.setOpen(true);
-        }}
-        onBack={() => dialogStates.submissionDashboard.setOpen(false)}
-        submissionDashboardOpen={dialogStates.submissionDashboard.isOpen}
-        setSubmissionDashboardOpen={dialogStates.submissionDashboard.setOpen}
+          try {
+            // Close submission dashboard
+            dialogStates.submissionDashboard.setOpen(false);
+            
+            // Open submission form using Zustand store method
+            setSubmissionFormOpen(true);
+          } catch (error) {
+            console.error('Error in onCreateNew:', error);
+          }
+        }} 
+        onBack={() => dialogStates.submissionDashboard.setOpen(false)} 
+        submissionDashboardOpen={dialogStates.submissionDashboard.isOpen} 
+        setSubmissionDashboardOpen={dialogStates.submissionDashboard.setOpen} 
       />
 
-<Dialog
-        open={submissionFormState.isOpen}
-        onClose={() => submissionFormState.setOpen(false)}
+      <Dialog
+        open={submissionFormOpen}
+        onClose={() => setSubmissionFormOpen(false)}
         maxWidth="md"
         fullWidth
         fullScreen
@@ -93,26 +97,37 @@ export const Dialogs: React.FC<DialogsProps> = ({ dialogStates, onSendVideo }) =
         <SubmissionForm 
           competition={sampleCompetition}
           onBack={() => {
-            submissionFormState.setOpen(false);
+            setSubmissionFormOpen(false);
             dialogStates.submissionDashboard.setOpen(true);
           }}
-          onClose={() => submissionFormState.setOpen(false)}
+          onClose={() => setSubmissionFormOpen(false)}
           onSubmit={async (data) => {
             console.log('Submitting:', data);
             // Implement submission logic
           }}
           onViewSubmissions={() => {
-            submissionFormState.setOpen(false);
+            setSubmissionFormOpen(false);
             dialogStates.submissionDashboard.setOpen(true);
           }}
         />
       </Dialog>
 
-
-      <ProfileView open={dialogStates.profile.isOpen} onClose={() => dialogStates.profile.setOpen(false)} />
-      <SettingsDialog open={dialogStates.settings.isOpen} onClose={() => dialogStates.settings.setOpen(false)} />
-      <CompetitionDialogs open={dialogStates.competition.isOpen} onClose={() => dialogStates.competition.setOpen(false)} />
-      <PitchVersionsDialog open={dialogStates.versions.isOpen} onClose={() => dialogStates.versions.setOpen(false)} />
+      <ProfileView 
+        open={dialogStates.profile.isOpen} 
+        onClose={() => dialogStates.profile.setOpen(false)} 
+      />
+      <SettingsDialog 
+        open={dialogStates.settings.isOpen} 
+        onClose={() => dialogStates.settings.setOpen(false)} 
+      />
+      <CompetitionDialogs 
+        open={dialogStates.competition.isOpen} 
+        onClose={() => dialogStates.competition.setOpen(false)} 
+      />
+      <PitchVersionsDialog 
+        open={dialogStates.versions.isOpen} 
+        onClose={() => dialogStates.versions.setOpen(false)} 
+      />
       <MediaUploadDialog
         open={dialogStates.media.isOpen}
         onClose={() => dialogStates.media.setOpen(false)}

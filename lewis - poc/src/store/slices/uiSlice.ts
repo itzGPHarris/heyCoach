@@ -1,9 +1,8 @@
 import { StateCreator } from "zustand";
 import { ViewType } from "../types";
 
-// src/store/slices/uiSlice.ts
-// src/store/slices/uiSlice.ts
 export interface UIState {
+  // Existing states
   activeTab: ViewType;
   showAICoach: boolean;
   dashboardOpen: boolean;
@@ -18,11 +17,13 @@ export interface UIState {
   isLoading: boolean;
   error: string | null;
   submissionDashboardOpen: boolean;
-
   
+  // Add this new state
+  submissionFormOpen: boolean;
 }
 
 export interface UIActions {
+  // Existing actions
   setActiveTab: (tab: ViewType) => void;
   toggleAICoach: () => void;
   setDashboardOpen: (open: boolean) => void;
@@ -37,7 +38,9 @@ export interface UIActions {
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   setSubmissionDashboardOpen: (open: boolean) => void;
-
+  
+  // Add this new action
+  setSubmissionFormOpen: (open: boolean) => void;
 }
 
 export type UISlice = UIState & UIActions;
@@ -58,11 +61,17 @@ const createUISlice: StateCreator<UISlice> = (set) => ({
   isLoading: false,
   error: null,
   submissionDashboardOpen: false,
-
+  
+  // Add initial state for submissionFormOpen
+  submissionFormOpen: false,
 
   // Actions
   setSubmissionDashboardOpen: (open) => set({ submissionDashboardOpen: open }),
+  
+  // Add action for submissionFormOpen
+  setSubmissionFormOpen: (open) => set({ submissionFormOpen: open }),
 
+  // Rest of the existing actions remain the same
   setActiveTab: (tab) => set({ activeTab: tab }),
   toggleAICoach: () => set((state) => ({ showAICoach: !state.showAICoach })),
   setDashboardOpen: (open) => set({ dashboardOpen: open }),
