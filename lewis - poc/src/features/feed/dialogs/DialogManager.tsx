@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // src/features/dialogs/DialogManager.tsx
 import { useState, useCallback, useEffect } from 'react';
 import { COACH_COMMANDS, CommandAction } from '../../../utils/constants';
@@ -13,9 +14,12 @@ interface DialogStates {
   teamFeedback: DialogState;
   competitionHub: DialogState;  // Updated to competitionHub
   versions: DialogState;
-  dashboard: DialogState;
   profile: DialogState;
   media: DialogState;
+  submissionDashboard: DialogState;
+  submissionForm: DialogState;
+
+
 }
 
 interface CommandResponse {
@@ -30,9 +34,12 @@ export const useDialogManager = () => {
   const [teamFeedbackOpen, setTeamFeedbackOpen] = useState(false);
   const [competitionHubOpen, setCompetitionHubOpen] = useState(false);
   const [versionsOpen, setVersionsOpen] = useState(false);
-  const [dashboardOpen, setDashboardOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [mediaOpen, setMediaOpen] = useState(false);
+  const [submissionDashboardOpen, setSubmissionDashboardOpen] = useState(false);
+  const [submissionFormOpen, setSubmissionFormOpen] = useState(false);
+
+
 
   const dialogStates: DialogStates = {
     analysis: { isOpen: analysisOpen, setOpen: setAnalysisOpen },
@@ -40,9 +47,24 @@ export const useDialogManager = () => {
     teamFeedback: { isOpen: teamFeedbackOpen, setOpen: setTeamFeedbackOpen },
     competitionHub: { isOpen: competitionHubOpen, setOpen: setCompetitionHubOpen },
     versions: { isOpen: versionsOpen, setOpen: setVersionsOpen },
-    dashboard: { isOpen: dashboardOpen, setOpen: setDashboardOpen },
     profile: { isOpen: profileOpen, setOpen: setProfileOpen },
-    media: { isOpen: mediaOpen, setOpen: setMediaOpen }
+    media: { isOpen: mediaOpen, setOpen: setMediaOpen },
+    submissionDashboard: { 
+      isOpen: submissionDashboardOpen, 
+      setOpen: (open) => {
+        console.log(`🟢 SubmissionDashboard is now: ${open}`);
+        setSubmissionDashboardOpen(open);
+      } 
+    },
+    
+    submissionForm: { 
+      isOpen: submissionFormOpen, 
+      setOpen: (open) => {
+        console.log(`🟢 SubmissionForm is now: ${open}`);
+        setSubmissionFormOpen(open);
+      } 
+    },
+
   };
 
   const processCommand = useCallback((input: string): CommandResponse | null => {
@@ -72,10 +94,11 @@ export const useDialogManager = () => {
         console.log('Opening media dialog');
         setMediaOpen(true);
       },
-      openDashboard: () => {
-        console.log('Opening dashboard');
-        setDashboardOpen(true);
+      openSubmissionForm: () => {
+        console.log('Opening submission form');
+        setSubmissionFormOpen(true);
       },
+  
       openTeamFeedback: () => {
         console.log('Opening team feedback');
         setTeamFeedbackOpen(true);
@@ -99,6 +122,13 @@ export const useDialogManager = () => {
       openProfile: () => {
         console.log('Opening profile');
         setProfileOpen(true);
+      },
+      openSubmissionDashboard: () => {
+        console.log('Opening submission dashboard');
+        setSubmissionDashboardOpen(true);
+      },
+      openDashboard: function (): void {
+        throw new Error('Function not implemented.');
       }
     };
 
@@ -120,9 +150,12 @@ export const useDialogManager = () => {
       teamFeedback: teamFeedbackOpen,
       competitionHub: competitionHubOpen,
       versions: versionsOpen,
-      dashboard: dashboardOpen,
       profile: profileOpen,
-      media: mediaOpen
+      media: mediaOpen,
+      submissionDashboard: submissionDashboardOpen,
+      submissionForm: submissionFormOpen
+
+
     });
   }, [
     analysisOpen,
@@ -130,9 +163,12 @@ export const useDialogManager = () => {
     teamFeedbackOpen,
     competitionHubOpen,
     versionsOpen,
-    dashboardOpen,
     profileOpen,
-    mediaOpen
+    mediaOpen,
+    submissionDashboardOpen,
+    submissionFormOpen
+
+
   ]);
 
   return {

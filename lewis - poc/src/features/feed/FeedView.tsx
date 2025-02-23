@@ -211,10 +211,7 @@ const FeedView: React.FC<FeedViewProps> = ({ onCommand }) => {
         bottom: 0, 
         left: 0,
         width: "100%", 
-        zIndex: 10, 
-        backgroundColor: "background.paper",
-        borderTop: 1,
-        borderColor: "divider"
+        zIndex: 10
       }}>
         <ChatInput 
           onSendMessage={handleUserInput}

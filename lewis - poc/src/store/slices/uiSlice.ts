@@ -17,6 +17,9 @@ export interface UIState {
   isVersionsDialogOpen: boolean;
   isLoading: boolean;
   error: string | null;
+  submissionDashboardOpen: boolean;
+
+  
 }
 
 export interface UIActions {
@@ -33,6 +36,8 @@ export interface UIActions {
   setVersionsDialogOpen: (open: boolean) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
+  setSubmissionDashboardOpen: (open: boolean) => void;
+
 }
 
 export type UISlice = UIState & UIActions;
@@ -52,8 +57,12 @@ const createUISlice: StateCreator<UISlice> = (set) => ({
   isVersionsDialogOpen: false,
   isLoading: false,
   error: null,
+  submissionDashboardOpen: false,
+
 
   // Actions
+  setSubmissionDashboardOpen: (open) => set({ submissionDashboardOpen: open }),
+
   setActiveTab: (tab) => set({ activeTab: tab }),
   toggleAICoach: () => set((state) => ({ showAICoach: !state.showAICoach })),
   setDashboardOpen: (open) => set({ dashboardOpen: open }),

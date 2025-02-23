@@ -1,5 +1,5 @@
 // SubmissionDashboard.tsx
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -7,8 +7,10 @@ import {
   Typography,
   Button,
   Box,
-  TextField,
-  Stack, IconButton
+  Stack, 
+  IconButton,
+  useMediaQuery,
+  useTheme
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -22,7 +24,11 @@ const SubmissionDashboard: React.FC<SubmissionDashboardProps> = ({
   onClose,
   onCreateNew
 }) => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+
+  // Commented out search functionality
+ // const [searchQuery] = useState('');
 
   // Sample data - would come from your data store
   const submissions: Submission[] = [
@@ -32,7 +38,18 @@ const SubmissionDashboard: React.FC<SubmissionDashboardProps> = ({
       competitionName: 'Mentor Madness 2024',
       date: 'Feb 20, 2024',
       status: 'submitted',
-      teamSize: 4
+      teamSize: 4,
+      competitionId: '',
+      description: '',
+      createdAt: '',
+      updatedAt: '',
+      video: {
+        url: '',
+        thumbnailUrl: undefined,
+        duration: undefined
+      },
+      documents: [],
+      team: []
     },
     {
       id: '2',
@@ -40,7 +57,18 @@ const SubmissionDashboard: React.FC<SubmissionDashboardProps> = ({
       competitionName: 'Startup Weekend',
       date: 'Feb 15, 2024',
       status: 'draft',
-      teamSize: 3
+      teamSize: 3,
+      competitionId: '',
+      description: '',
+      createdAt: '',
+      updatedAt: '',
+      video: {
+        url: '',
+        thumbnailUrl: undefined,
+        duration: undefined
+      },
+      documents: [],
+      team: []
     }
   ];
 
@@ -60,13 +88,28 @@ const SubmissionDashboard: React.FC<SubmissionDashboardProps> = ({
     console.log('Delete submission:', id);
   };
 
-  const filteredSubmissions = submissions.filter(sub =>
-    sub.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    sub.competitionName.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Commented out filter functionality
+  const filteredSubmissions = submissions; // submissions.filter(sub =>
+  //   sub.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //   sub.competitionName.toLowerCase().includes(searchQuery.toLowerCase())
+  // );
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog 
+      open={open} 
+      onClose={onClose} 
+      maxWidth="md" 
+      fullWidth
+      fullScreen={fullScreen}
+      PaperProps={{
+        sx: {
+          height: '100%',
+          maxHeight: '100%',
+          margin: 0,
+          borderRadius: 0
+        }
+      }}
+    >
       <DialogTitle>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Typography variant="h6">Submissions Dashboard</Typography>
@@ -74,7 +117,7 @@ const SubmissionDashboard: React.FC<SubmissionDashboardProps> = ({
             <Button
               variant="contained"
               startIcon={<AddIcon />}
-              onClick={onCreateNew}
+              onClick={onCreateNew}  // This will now open the Submission Form
             >
               Create New
             </Button>
@@ -85,8 +128,16 @@ const SubmissionDashboard: React.FC<SubmissionDashboardProps> = ({
         </Box>
       </DialogTitle>
 
-      <DialogContent>
-        <Box sx={{ mt: 2 }}>
+      <DialogContent 
+        sx={{ 
+          flex: 1, 
+          display: 'flex', 
+          flexDirection: 'column',
+          overflow: 'hidden'
+        }}
+      >
+        {/* Commented out search functionality */}
+        {/* <Box sx={{ mt: 2 }}>
           <TextField
             fullWidth
             placeholder="Search submissions..."
@@ -94,20 +145,27 @@ const SubmissionDashboard: React.FC<SubmissionDashboardProps> = ({
             onChange={(e) => setSearchQuery(e.target.value)}
             sx={{ mb: 2 }}
           />
+        </Box> */}
 
-          <Stack spacing={2} sx={{ maxHeight: 'calc(100vh - 250px)', overflow: 'auto' }}>
-            {filteredSubmissions.map(submission => (
-              <SubmissionCard
-                key={submission.id}
-                submission={submission}
-                onPreview={handlePreview}
-                onView={handleView}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-              />
-            ))}
-          </Stack>
-        </Box>
+        <Stack 
+          spacing={2} 
+          sx={{ 
+            flex: 1, 
+            overflowY: 'auto', 
+            paddingRight: 1 
+          }}
+        >
+          {filteredSubmissions.map(submission => (
+            <SubmissionCard
+              key={submission.id}
+              submission={submission}
+              onPreview={handlePreview}
+              onView={handleView}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
+          ))}
+        </Stack>
       </DialogContent>
     </Dialog>
   );

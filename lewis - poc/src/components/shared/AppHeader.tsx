@@ -6,7 +6,7 @@ import GroupsIcon from "@mui/icons-material/Groups";
 import harperAvatar from "../../assets/harper.png";
 
 interface AppHeaderProps {
-  setDashboardOpen: (open: boolean) => void;
+  setSubmissionDashboardOpen: (open: boolean) => void;
   setProfileOpen: (open: boolean) => void;
   setSettingsOpen: (open: boolean) => void;
   anchorEl: HTMLElement | null;
@@ -15,7 +15,7 @@ interface AppHeaderProps {
 }
 
 const AppHeader: React.FC<AppHeaderProps> = ({
-  setDashboardOpen,
+  setSubmissionDashboardOpen,
   setProfileOpen,
   setSettingsOpen,
   anchorEl,
@@ -61,9 +61,14 @@ const AppHeader: React.FC<AppHeaderProps> = ({
           Profile
         </MenuItem>
 
-        <MenuItem onClick={() => { setDashboardOpen(true); handleMenuClose(); }}>
-          Submissions
-        </MenuItem>
+        <MenuItem onClick={() => { 
+    console.log("🟢 Opening SubmissionDashboard"); 
+    setSubmissionDashboardOpen(true);
+    handleMenuClose(); 
+}}>
+  Submissions
+</MenuItem>
+
 
         <MenuItem onClick={() => { setSettingsOpen(true); handleMenuClose(); }}>
           Settings

@@ -34,7 +34,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({ open, onClose }) => {
               <Paper elevation={2}>
                 <Card>
                   <CardContent>
-                    <Typography variant="h6">Pitch Performance</Typography>
+                    <Typography variant="h6">Pitch Performance xxx</Typography>
                     <Typography>Metrics coming soon...</Typography>
                   </CardContent>
                 </Card>

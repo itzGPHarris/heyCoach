@@ -6,11 +6,10 @@ import ImprovementsDialog from '../../../components/shared/dialogs/ImprovementsD
 import TeamFeedbackDialog from '../../../components/shared/dialogs/TeamFeedbackDialog';
 import CompetitionHub from '../../../components/competitions/CompetitionHub';
 import PitchVersionsDialog from '../../../components/shared/dialogs/PitchVersionsDialog';
-import DashboardView from '../../../components/shared/dialogs/DashboardView';
+import SubmissionDashboard from '../../../components/competitions/SubmissionDashboard';
 import ProfileView from '../../../components/shared/dialogs/ProfileView';
 import MediaUploadDialog from '../../../components/shared/dialogs/MediaUploadDialog';
 import { DialogStates } from './DialogManager';
-import { Competition } from '../../../components/competitions/types';
 
 interface DialogContainerProps {
   dialogStates: DialogStates;
@@ -38,16 +37,23 @@ export const DialogContainer: React.FC<DialogContainerProps> = ({
       />
       <CompetitionHub
         open={dialogStates.competitionHub.isOpen}
-          onClose={() => dialogStates.competitionHub.setOpen(false)}
-        />
+        onClose={() => dialogStates.competitionHub.setOpen(false)}
+      />
       <PitchVersionsDialog
         open={dialogStates.versions.isOpen}
         onClose={() => dialogStates.versions.setOpen(false)}
       />
-      <DashboardView
-        open={dialogStates.dashboard.isOpen}
-        onClose={() => dialogStates.dashboard.setOpen(false)}
-      />
+          <SubmissionDashboard 
+        open={dialogStates.submissionDashboard.isOpen}
+        onClose={() => dialogStates.submissionDashboard.setOpen(false)}
+        onCreateNew={() => {
+          dialogStates.submissionDashboard.setOpen(false);
+          dialogStates.competitionHub.setOpen(true);
+        } }
+        onBack={() => dialogStates.submissionDashboard.setOpen(false)} submissionDashboardOpen={false} setSubmissionDashboardOpen={function (open: boolean): void {
+          throw new Error('Function not implemented.');
+        } }    />
+   
       <ProfileView
         open={dialogStates.profile.isOpen}
         onClose={() => dialogStates.profile.setOpen(false)}

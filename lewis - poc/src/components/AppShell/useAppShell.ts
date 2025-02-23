@@ -15,12 +15,15 @@ export const useAppShell = () => {
     setShowMediaDialog,
     setShowCompetitionDialog,
     setVersionsDialogOpen,
-    dashboardOpen,
+    //dashboardOpen,
     profileOpen,
     settingsOpen,
     showMediaDialog,
     showCompetitionDialog,
-    isVersionsDialogOpen
+    isVersionsDialogOpen,
+    submissionDashboardOpen,
+    setSubmissionDashboardOpen
+
   } = useStore();
 
   const handleProfileClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
@@ -52,6 +55,8 @@ export const useAppShell = () => {
         setShowCompetitionDialog(true);
         break;
       case 'openDashboard':
+        // When opening dashboard from commands, ensure competition dialog is closed
+        setShowCompetitionDialog(false);
         setDashboardOpen(true);
         break;
       case 'openProfile':
@@ -70,11 +75,26 @@ export const useAppShell = () => {
     setVersionsDialogOpen
   ]);
 
+  // Handle navigation between competition and submission views
+  const handleCompetitionNavigation = useCallback((view: 'competition' | 'submissions') => {
+    if (view === 'competition') {
+      setSubmissionDashboardOpen(false);
+      setShowCompetitionDialog(true);
+    } else {
+      setShowCompetitionDialog(false);
+      setSubmissionDashboardOpen(true);
+    }
+  }, [setDashboardOpen, setShowCompetitionDialog]);
+
   return {
     dialogs: {
+      submissionDashboard: { 
+        isOpen: submissionDashboardOpen, 
+        setOpen: setSubmissionDashboardOpen 
+      },
       dashboard: { 
-        isOpen: dashboardOpen, 
-        setOpen: setDashboardOpen 
+        isOpen: submissionDashboardOpen, 
+        setOpen: setSubmissionDashboardOpen 
       },
       profile: { 
         isOpen: profileOpen, 
@@ -101,7 +121,8 @@ export const useAppShell = () => {
     handleSendVideo,
     handleProfileClick,
     handleMenuClose,
-    handleCommand,  // Added command handler
+    handleCommand,
+    handleCompetitionNavigation,  // Added for better navigation control
     anchorEl
   };
 };

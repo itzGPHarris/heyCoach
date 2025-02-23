@@ -17,7 +17,7 @@ export interface Competition {
     otherPrizes?: string[];
   };
   status: 'upcoming' | 'ongoing' | 'past';
-  rules: string[];
+  rules: string | string[]; // ✅ Now allows both single strings and arrays
   eligibility?: string[];
   maxTeamSize?: number;
   featuredImage?: string;
@@ -131,6 +131,10 @@ export interface SubmissionDashboardProps {
   onClose: () => void;
   onBack: () => void;
   onCreateNew: () => void;
+  submissionDashboardOpen: boolean; // Added property
+
+  setSubmissionDashboardOpen: (open: boolean) => void; // Added property
+
 }
 
 export interface SubmissionFormProps {

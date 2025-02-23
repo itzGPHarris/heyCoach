@@ -75,8 +75,11 @@ export type CommandAction =
   | 'openCompetitionHub'  // This replaces 'openCompetitions'
   | 'openPitchVersions'
   | 'openAnalysis'
-  | 'openCompetitionHub'  // Updated action
+  | 'openCompetitionHub' 
+  | 'openSubmissionDashboard' // Updated action
+  | 'openSubmissionForm'
   | 'openProfile';
+  
 
 export type CommandKey = keyof typeof COACH_COMMANDS;
 

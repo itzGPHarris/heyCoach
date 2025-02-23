@@ -22,8 +22,8 @@ function AppShell() {
       <CssBaseline />
       <Box sx={{ height: "100vh", display: "flex", flexDirection: "column" }}>
         <AppHeader 
-          setDashboardOpen={dialogs.dashboard.setOpen}
-          setProfileOpen={dialogs.profile.setOpen}
+  setSubmissionDashboardOpen={dialogs.submissionDashboard.setOpen}  // ✅ Ensure correct mapping
+  setProfileOpen={dialogs.profile.setOpen}
           setSettingsOpen={dialogs.settings.setOpen}
           anchorEl={anchorEl}
           handleProfileClick={handleProfileClick}
