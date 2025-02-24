@@ -164,14 +164,21 @@ const CompetitionPreview: React.FC<CompetitionPreviewProps> = ({
               Rules & Requirements
             </Typography>
             <List dense disablePadding>
-              {rules.map((rule, index) => (
+              {Array.isArray(rules) ? rules.map((rule, index) => (
                 <ListItem key={index} disableGutters>
                   <ListItemIcon sx={{ minWidth: 36 }}>
                     <RulesIcon color="action" />
                   </ListItemIcon>
                   <ListItemText primary={rule} />
                 </ListItem>
-              ))}
+              )) : (
+                <ListItem disableGutters>
+                  <ListItemIcon sx={{ minWidth: 36 }}>
+                    <RulesIcon color="action" />
+                  </ListItemIcon>
+                  <ListItemText primary={rules} />
+                </ListItem>
+              )}
               <ListItem disableGutters>
                 <ListItemIcon sx={{ minWidth: 36 }}>
                   <GroupIcon color="action" />

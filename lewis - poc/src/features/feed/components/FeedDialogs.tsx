@@ -3,7 +3,7 @@ import DetailedAnalysisDialog from '../../../components/shared/dialogs/DetailedA
 import ImprovementsDialog from '../../../components/shared/dialogs/ImprovementsDialog';
 import TeamFeedbackDialog from '../../../components/shared/dialogs/TeamFeedbackDialog';
 import CompetitionDialog from '../../../components/shared/dialogs/CompetitionDialog';
-import MediaUploadDialog from '../../../components/shared/dialogs/MediaUploadDialog';
+//import MediaUploadDialog from '../../../components/shared/dialogs/MediaUploadDialog';
 
 interface FeedDialogsProps {
   dialogs: {
@@ -15,12 +15,13 @@ interface FeedDialogsProps {
   };
   onSendVideo: (fileUrl: string, isPortrait: boolean) => void;
   isVersionUpload: boolean;
+  mediaAnchorEl?: HTMLElement | null;
 }
 
 export const FeedDialogs: React.FC<FeedDialogsProps> = ({
   dialogs,
-  onSendVideo,
-  isVersionUpload
+ // onSendVideo,
+  //isVersionUpload
 }) => {
   return (
     <>
@@ -41,12 +42,12 @@ export const FeedDialogs: React.FC<FeedDialogsProps> = ({
         open={dialogs.competition.isOpen}
         onClose={() => dialogs.competition.setOpen(false)}
       />
-      <MediaUploadDialog
+     {/* <MediaUploadDialog
         open={dialogs.media.isOpen}
         onClose={() => dialogs.media.setOpen(false)}
         onSendVideo={onSendVideo}
         isVersionUpload={isVersionUpload}
-      />
+      />*/}
     </>
   );
 };

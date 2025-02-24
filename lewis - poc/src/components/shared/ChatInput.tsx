@@ -5,12 +5,12 @@ import { CirclePlus, ArrowUp } from "lucide-react";
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
-  onOpenMediaDialog: () => void;
+  onOpenMediaMenu: () => void;
 }
 
 const ChatInput: React.FC<ChatInputProps> = ({ 
   onSendMessage, 
-  onOpenMediaDialog 
+  onOpenMediaMenu
 }) => {
   const [input, setInput] = useState("");
 
@@ -30,21 +30,22 @@ const ChatInput: React.FC<ChatInputProps> = ({
   return (
     <Box sx={{ 
       display: "flex", 
-      alignItems: "flex-end", // Changed from center to flex-end to align with growing TextField
+      alignItems: "flex-end",
       backgroundColor: "#0090f2", 
       padding: 2, 
       borderRadius: "16px 16px 0 0",
       width: "100%",
       maxWidth: "600px",
       margin: "0 auto",
-      minHeight: "76px", // Added to maintain minimum height
+      minHeight: "76px",
     }}>
       <IconButton 
-        onClick={onOpenMediaDialog} 
+        onClick={onOpenMediaMenu}
         sx={{ 
           color: "#fff",
-          mb: 0.5 // Added margin bottom to align with text field
+          mb: 0.5
         }}
+        data-testid="media-button"
       >
         <CirclePlus size={36} />
       </IconButton>
@@ -63,8 +64,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
           borderRadius: "12px",
           "& fieldset": { border: "none" },
           "& .MuiInputBase-root": {
-            maxHeight: "120px", // Limit maximum height
-            overflowY: "auto"   // Enable scrolling for very long content
+            maxHeight: "120px",
+            overflowY: "auto"
           }
         }}
       />
@@ -73,7 +74,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
         onClick={handleSend}
         sx={{ 
           color: "#fff",
-          mb: 0.5 // Added margin bottom to align with text field
+          mb: 0.5
         }}
       >
         <ArrowUp size={32} />

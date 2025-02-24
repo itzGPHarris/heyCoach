@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // src/components/shared/dialogs/MediaUploadDialog.tsx
 import React from "react";
-import { Dialog, DialogContent, Typography, Button, Divider } from "@mui/material";
+import { Box, Typography, Button, Divider, Paper, Fade } from "@mui/material";
 import { useVideoUpload } from "../../../hooks/useVideoUpload";
 
 interface MediaUploadDialogProps {
@@ -10,13 +10,14 @@ interface MediaUploadDialogProps {
   onSendVideo: (fileUrl: string, isPortrait: boolean) => void;
   dialogStyles?: object;
   isVersionUpload: boolean;
+  anchorEl?: HTMLElement | null;
 }
 
 const MediaUploadDialog: React.FC<MediaUploadDialogProps> = ({ 
   open, 
   onClose, 
   onSendVideo,
-  isVersionUpload 
+  isVersionUpload
 }) => {
   const { handleVideoUpload } = useVideoUpload();
 
@@ -33,53 +34,52 @@ const MediaUploadDialog: React.FC<MediaUploadDialogProps> = ({
     }
   };
 
+  // Simple menu popup directly positioned above the ChatInput's plus button
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      BackdropProps={{
-        sx: {
-          backgroundColor: 'rgba(0, 0, 0, 0.05)',
-        },
-      }}
-      sx={{  
-        "& .MuiDialog-paper": {
-          width: 180, 
-          borderRadius: '8px 8px 0 0', 
-          position: "absolute", 
-          bottom: 58, 
-          left: -10, 
-          backgroundColor: 'rgba(255, 255, 255, 0.05)', 
-          boxShadow: "none" 
-        } 
-      }}
-    >
-      <DialogContent sx={{ 
-        display: "flex", 
-        flexDirection: "column", 
-        gap: 0, 
-        p: 2, 
-        bgcolor: "white" 
-      }}>
-        <Button 
-          variant="contained" 
-          sx={{ bgcolor: "#0090f2", cursor: "pointer", textAlign: "left" }} 
-          component="label"
-        >
-          <input 
-            type="file" 
-            accept="video/*" 
-            hidden 
-            onChange={handleFileUpload}
-          />
-          <Typography variant="body2">Upload video</Typography>
-        </Button>
-        <Button disabled><Typography variant="body2">Record video</Typography></Button>
-        <Button disabled><Typography variant="body2">Upload PDF</Typography></Button>
-        <Divider sx={{padding:.75}} />
-        <Button disabled><Typography variant="body2">Choose a coach</Typography></Button>
-      </DialogContent>
-    </Dialog>
+    <Fade in={open}>
+      <Paper
+        elevation={3}
+        sx={{
+          display: open ? 'block' : 'none',
+          position: "absolute",
+          bottom: "75px", // Position right above the ChatInput
+          left: "16px",  // Align with the plus button
+          width: 180,
+          borderRadius: 2,
+          zIndex: 1400,
+          overflow: "hidden",
+          boxShadow: '0px 5px 15px rgba(0, 0, 0, 0.2)',
+          transformOrigin: 'bottom left' // Animation starts from bottom left
+        }}
+        onClick={(e) => e.stopPropagation()} // Prevent clicks inside from closing
+      >
+        <Box sx={{ 
+          display: "flex", 
+          flexDirection: "column", 
+          gap: 0.5, 
+          p: 1.5, 
+          bgcolor: "white" 
+        }}>
+          <Button 
+            variant="contained" 
+            sx={{ bgcolor: "#0090f2", cursor: "pointer", textAlign: "left" }} 
+            component="label"
+          >
+            <input 
+              type="file" 
+              accept="video/*" 
+              hidden 
+              onChange={handleFileUpload}
+            />
+            <Typography variant="body2">Upload video</Typography>
+          </Button>
+          <Button disabled><Typography variant="body2">Record video</Typography></Button>
+          <Button disabled><Typography variant="body2">Upload PDF</Typography></Button>
+          <Divider sx={{my: 0.75}} />
+          <Button disabled><Typography variant="body2">Choose a coach</Typography></Button>
+        </Box>
+      </Paper>
+    </Fade>
   );
 };
 

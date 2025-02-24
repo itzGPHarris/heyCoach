@@ -98,33 +98,24 @@ const SubmissionDashboard: React.FC<SubmissionDashboardProps> = ({
     <Dialog 
       open={open} 
       onClose={onClose} 
-      maxWidth="md" 
-      fullWidth
       fullScreen={fullScreen}
       PaperProps={{
-        sx: {
-          height: '100%',
-          maxHeight: '100%',
-          margin: 0,
-          borderRadius: 0
-        }
+       sx: { 
+            maxWidth:"800px",
+            width: '100%',
+            height: '95vh',
+            maxHeight: '95vh',
+            margin: 2,
+            borderRadius: 0
+            }
       }}
     >
       <DialogTitle>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Typography variant="h6">Submissions Dashboard</Typography>
-          <Box display="flex" gap={1}>
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={onCreateNew}  // This will now open the Submission Form
-            >
-              Create New
-            </Button>
-            <IconButton size="small" onClick={onClose}>
+          <IconButton size="small" onClick={onClose}>
               <CloseIcon />
             </IconButton>
-          </Box>
         </Box>
       </DialogTitle>
 
@@ -165,7 +156,19 @@ const SubmissionDashboard: React.FC<SubmissionDashboardProps> = ({
               onDelete={handleDelete}
             />
           ))}
+           <Box display="flex" gap={1}>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={onCreateNew}  // This will now open the Submission Form
+              sx={{ width: '100%' }} 
+            >
+              Create New
+            </Button>
+            
+          </Box>
         </Stack>
+       
       </DialogContent>
     </Dialog>
   );

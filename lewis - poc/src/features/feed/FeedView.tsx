@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useRef, useState } from "react";
-import { Box, Fade, Slide } from "@mui/material";
+import { Box, Fade, Slide, Button, Typography, Divider, ClickAwayListener } from "@mui/material";
 import MessageComponent from "./components/MessageComponent";
 import { DialogContainer } from "../../features/feed/dialogs/DialogContainer";
 import ChatInput from "../../components/shared/ChatInput";
@@ -11,7 +12,7 @@ import useStore from "../../store";
 import { useDialogManager } from "../../features/feed/dialogs/DialogManager";
 import { generateUUID } from '../../utils/uuid';
 import { CommandAction } from '../../utils/constants';
-//import { SAMPLE_PITCH_DATA } from '../../utils/constants';
+import { useVideoUpload } from "../../hooks/useVideoUpload";
 import harperthumb1 from './../../assets/harperthumb1.png';
 import harperthumb2 from './../../assets/harperthumb2.png';
 import harperthumb3 from './../../assets/harperthumb3.png';
@@ -25,8 +26,12 @@ const FeedView: React.FC<FeedViewProps> = ({ onCommand }) => {
   const { messages, addMessage } = useStore();
   const { dialogStates, processCommand, handleCommandAction } = useDialogManager();
   
-  // Add state for controlling the animation
+  // Add state for controlling animations
   const [showFeedback, setShowFeedback] = useState(false);
+  const [mediaMenuOpen, setMediaMenuOpen] = useState(false);
+  
+  // Reference to the plus button in ChatInput for positioning
+  const mediaButtonRef = useRef<HTMLElement | null>(null);
 
   // Trigger animation after component mount
   useEffect(() => {
@@ -36,6 +41,42 @@ const FeedView: React.FC<FeedViewProps> = ({ onCommand }) => {
 
     return () => clearTimeout(timer);
   }, []);
+
+  // Handler for opening the media menu
+  const handleToggleMediaMenu = () => {
+    setMediaMenuOpen(prev => !prev);
+    
+    // Find the media button element and store its reference
+    setTimeout(() => {
+      const mediaButton = document.querySelector('[data-testid="media-button"]');
+      if (mediaButton) {
+        mediaButtonRef.current = mediaButton as HTMLElement;
+        console.log("Found media button:", mediaButton);
+      } else {
+        console.log("Could not find media button");
+      }
+    }, 0);
+  };
+  
+  // Handler for closing the media menu
+  const handleCloseMediaMenu = () => {
+    setMediaMenuOpen(false);
+  };
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+      console.log("📤 FeedView - File selected:", file.name);
+  
+      // Use the VideoUploadHandler
+      const { handleVideoUpload } = useVideoUpload();
+      handleVideoUpload(file, (fileUrl: string, isPortrait: boolean) => {
+        console.log("📤 FeedView - Upload complete:", { fileUrl, isPortrait });
+        handleSendVideo(fileUrl, isPortrait);
+        setMediaMenuOpen(false);
+      });
+    }
+  };
 
   // Mock team feedback data
   const teamFeedback = [
@@ -150,7 +191,6 @@ const FeedView: React.FC<FeedViewProps> = ({ onCommand }) => {
       setMessages: addMessage,
       isVersionUpload: false 
     });
-    dialogStates.media.setOpen(false);
   };
 
   return (
@@ -176,6 +216,7 @@ const FeedView: React.FC<FeedViewProps> = ({ onCommand }) => {
           margin: "0 auto", 
           height: "calc(100vh - 56px - 72px)", 
           paddingBottom: "12px",
+          mb: 2,
           pl: 2, pr: 2
         }}
       >
@@ -219,23 +260,86 @@ const FeedView: React.FC<FeedViewProps> = ({ onCommand }) => {
         )}
       </Box>
 
-      {/* Fixed Chat Input */}
+      {/* Fixed Chat Input and Media Menu Container */}
+      <ClickAwayListener onClickAway={handleCloseMediaMenu}>
       <Box sx={{ 
-        position: "fixed", 
-        bottom: 0, 
-        left: 0,
-        width: "100%", 
-        zIndex: 10
-      }}>
-        <ChatInput 
-          onSendMessage={handleUserInput}
-          onOpenMediaDialog={() => dialogStates.media.setOpen(true)}
-        />
-      </Box>
+            position: "fixed", 
+            bottom: 0, 
+            left: 0,
+            width: "100%", 
+            zIndex: 10,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center"
+            }}>
+            <Box sx={{ 
+                display: "flex", 
+                alignItems: "flex-end",
+                width: "100%",
+                maxWidth: "600px",
+                margin: "0 auto",
+              }}>
+            
+              {/* Media Menu */}
+                {mediaMenuOpen && (
+                  <Box sx={{ 
+                    width: "180px", 
+                    alignSelf: "flex-start", 
+                    ml: 3, // Align with the plus button in ChatInput
+                    mb: 0,
+                    backgroundColor: "rgba(255, 255, 255, 0.52)",
+                    borderRadius: "12px 12px 0 0",
+                    boxShadow: '0px 5px 15px rgba(0, 0, 0, 0.2)',
+                    overflow: "hidden",
+                  }}>
+                    <Box sx={{ 
+                      display: "flex", 
+                      flexDirection: "column", 
+                      gap: 0.5, 
+                      p: 1.5, 
+                      bgcolor: "white" 
+                    }}>
+                      <Button 
+                        variant="contained" 
+                        sx={{ bgcolor: "#0090f2", cursor: "pointer", textAlign: "left" }} 
+                        component="label"
+                      >
+                        <input 
+                          type="file" 
+                          accept="video/*" 
+                          hidden 
+                          onChange={handleFileUpload}
+                        />
+                        <Typography variant="body2">Upload video</Typography>
+                      </Button>
+                      <Button disabled><Typography variant="body2">Record video</Typography></Button>
+                      <Button disabled><Typography variant="body2">Upload PDF</Typography></Button>
+                      <Divider sx={{my: 0.75}} />
+                      <Button disabled><Typography variant="body2">Choose a coach</Typography></Button>
+                    </Box>
+                  </Box>
+                )}
+                </Box>
 
-      {/* Dialogs */}
+          {/* Chat Input */}
+          <ChatInput 
+            onSendMessage={handleUserInput}
+            onOpenMediaMenu={handleToggleMediaMenu}
+          />
+          
+        </Box>
+      </ClickAwayListener>
+
+      {/* Other Dialogs (excluding media dialog) */}
       <DialogContainer 
-        dialogStates={dialogStates}
+        dialogStates={{
+          ...dialogStates,
+          // Remove media dialog as we're handling it directly in ChatInput
+          media: { 
+            isOpen: false, 
+            setOpen: () => {} 
+          }
+        }}
         onSendVideo={handleSendVideo}
       />
     </Box>

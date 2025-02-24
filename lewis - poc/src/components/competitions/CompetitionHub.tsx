@@ -17,6 +17,7 @@ import CompetitionCard from './CompetitionCard';
 import CompetitionPreview from './CompetitionPreview';
 import SubmissionForm from './SubmissionForm';
 import SubmissionDashboard from './SubmissionDashboard';
+import { width } from '@mui/system';
 
 // Slide transition for dialogs
 const SlideTransition = React.forwardRef((props: any, ref) => (
@@ -120,14 +121,16 @@ const CompetitionHub: React.FC<CompetitionHubProps> = ({
       <Dialog
         open={open && !previewCompetition && !showSubmissionForm && !showSubmissionDashboard}
         onClose={onClose}
-        maxWidth="md"
-        fullWidth
         PaperProps={{
           sx: { 
-            height: '100vh',
-            maxHeight: '100vh',
+            height: '95vh',
+            maxHeight: '98vh',
+            maxWidth: '600',
+            width: '100%',
             margin: 0,
-            borderRadius: 0
+            borderRadius: 0,
+            ml:2, mr:2, mt:2, mb:2  
+
           }
         }}
       >
@@ -160,13 +163,14 @@ const CompetitionHub: React.FC<CompetitionHubProps> = ({
         open={!!previewCompetition && !showSubmissionForm && !showSubmissionDashboard}
         TransitionComponent={SlideTransition}
         onClose={handleCloseAll}
-        maxWidth="md"
-        fullWidth
+        
         PaperProps={{
           sx: { 
-            height: '100vh',
-            maxHeight: '100vh',
-            margin: 0,
+            maxWidth:"800px",
+            width: '100%',
+            height: '95vh',
+            maxHeight: '95vh',
+            margin: 2,
             borderRadius: 0
           }
         }}
@@ -177,9 +181,8 @@ const CompetitionHub: React.FC<CompetitionHubProps> = ({
             onBack={handleBackFromPreview}
             onClose={handleCloseAll}
             onSubmitPitch={handleSubmitPitch}
-            onViewLeaderboard={handleViewLeaderboard} onEnterCompetition={function (id: string): void {
-              throw new Error('Function not implemented.');
-            } }          />
+              onViewLeaderboard={handleViewLeaderboard}
+            />
         )}
       </Dialog>
 
@@ -231,6 +234,8 @@ const CompetitionHub: React.FC<CompetitionHubProps> = ({
           onClose={handleCloseAll}
           onBack={handleBackFromDashboard}
           onCreateNew={() => setShowSubmissionForm(true)}
+          submissionDashboardOpen={showSubmissionDashboard}
+          setSubmissionDashboardOpen={setShowSubmissionDashboard}
         />
       </Dialog>
     </>

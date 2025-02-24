@@ -86,13 +86,14 @@ export const Dialogs: React.FC<DialogsProps> = ({ dialogStates, onSendVideo }) =
         fullWidth
         fullScreen
         PaperProps={{
-          sx: {
-            height: '100%',
-            maxHeight: '100%',
-            margin: 0,
-            borderRadius: 0,
-          },
-        }}
+        sx: { 
+            maxWidth:"800px",
+            width: '100%',
+            height: '95vh',
+            maxHeight: '95vh',
+            margin: 2,
+            borderRadius: 0
+          }        }}
       >
         <SubmissionForm 
           competition={sampleCompetition}
