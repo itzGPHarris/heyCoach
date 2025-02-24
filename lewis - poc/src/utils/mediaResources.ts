@@ -3,6 +3,8 @@ import harperThumb1 from './../assets/harperthumb1.png';
 import harperThumb2 from './../assets/harperthumb2.png';
 import harperThumb3 from './../assets/harperthumb3.png';
 import weeklyChallengeIcon from './../assets/earth.svg';
+import CoachAvatar from '../../assets/coachAvatar-simple.svg'
+
 
 // MUX Video playback IDs
 export const MUX_VIDEOS = {
@@ -27,6 +29,12 @@ export const MUX_VIDEOS = {
     HARPER_PITCH_3: harperThumb3,
   } as const;
   
+  // Mock video thumbnails for prototype
+  export const COACH_AVATARS = {
+    COACH_SIMPLE: CoachAvatar,
+  } as const;
+  
+
   // Mock user avatars for prototype
   export const USER_AVATARS = {
     HARPER: PLACEHOLDER_PATHS.AVATAR_MD,

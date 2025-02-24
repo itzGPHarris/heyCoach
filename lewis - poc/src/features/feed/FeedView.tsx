@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-// src/features/feed/FeedView.tsx
-import React, { useEffect, useRef } from "react";
-import { Box } from "@mui/material";
+import React, { useEffect, useRef, useState } from "react";
+import { Box, Fade, Slide } from "@mui/material";
 import MessageComponent from "./components/MessageComponent";
 import { DialogContainer } from "../../features/feed/dialogs/DialogContainer";
 import ChatInput from "../../components/shared/ChatInput";
@@ -12,7 +11,7 @@ import useStore from "../../store";
 import { useDialogManager } from "../../features/feed/dialogs/DialogManager";
 import { generateUUID } from '../../utils/uuid';
 import { CommandAction } from '../../utils/constants';
-import { SAMPLE_PITCH_DATA } from '../../utils/constants';
+//import { SAMPLE_PITCH_DATA } from '../../utils/constants';
 import harperthumb1 from './../../assets/harperthumb1.png';
 import harperthumb2 from './../../assets/harperthumb2.png';
 import harperthumb3 from './../../assets/harperthumb3.png';
@@ -25,11 +24,23 @@ const FeedView: React.FC<FeedViewProps> = ({ onCommand }) => {
   const feedRef = useRef<HTMLDivElement | null>(null);
   const { messages, addMessage } = useStore();
   const { dialogStates, processCommand, handleCommandAction } = useDialogManager();
+  
+  // Add state for controlling the animation
+  const [showFeedback, setShowFeedback] = useState(false);
 
-  // Mock team feedback data - In production, this would come from your backend
+  // Trigger animation after component mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowFeedback(true);
+    }, 300); // Small delay for better visual effect
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Mock team feedback data
   const teamFeedback = [
     {
-      user: "John",
+      user: "Dewey Brown",
       comment: "Your ending is strong, but the middle felt rushed.",
       avatarUrl: "/api/placeholder/32/32",
       timestamp: "10:30 AM",
@@ -43,7 +54,7 @@ const FeedView: React.FC<FeedViewProps> = ({ onCommand }) => {
       videoThumbnail: harperthumb2
     },
     {
-      user: "Alex",
+      user: "Kevin Keeker",
       comment: "Great energy! Maybe slow down just a bit.",
       avatarUrl: "/api/placeholder/32/32",
       timestamp: "11:45 AM",
@@ -51,17 +62,10 @@ const FeedView: React.FC<FeedViewProps> = ({ onCommand }) => {
     }
   ];
 
-  useEffect(() => {
-    const feed = feedRef.current;
-    if (feed) {
-      feed.scrollTo({ top: feed.scrollHeight, behavior: "smooth" });
-    }
-  }, [messages]);
-
+  // ... (keeping all your existing handlers)
   const handleQuickReply = (reply: string) => {
     console.log('🎯 FeedView - Quick reply clicked:', reply);
     
-    // Add user's quick reply to the feed
     addMessage({
       id: generateUUID(),
       pitchId: "defaultPitchId",
@@ -72,13 +76,11 @@ const FeedView: React.FC<FeedViewProps> = ({ onCommand }) => {
       fromAI: false
     });
 
-    // Process the command
     const command = processCommand(reply);
     console.log('📦 FeedView - Processed command:', command);
     
     if (command) {
       setTimeout(() => {
-        // Add AI's response
         addMessage({
           id: generateUUID(),
           pitchId: "defaultPitchId",
@@ -90,7 +92,6 @@ const FeedView: React.FC<FeedViewProps> = ({ onCommand }) => {
           fromAI: true
         });
 
-        // Execute any associated action
         if (command.action) {
           console.log('🎬 FeedView - Executing action:', command.action);
           handleCommandAction(command.action);
@@ -102,7 +103,6 @@ const FeedView: React.FC<FeedViewProps> = ({ onCommand }) => {
   };
 
   const handleUserInput = (input: string) => {
-    // Add user's message to the feed
     addMessage({
       id: generateUUID(),
       pitchId: "defaultPitchId",
@@ -113,13 +113,9 @@ const FeedView: React.FC<FeedViewProps> = ({ onCommand }) => {
       fromAI: false
     });
 
-    // Process the command to get relevant quick replies
     const command = processCommand(input);
     
     setTimeout(() => {
-      // Always respond with a coach message and quick replies
-      // If we have a command match, use its response and quick replies
-      // Otherwise use a default response
       if (command) {
         addMessage({
           id: generateUUID(),
@@ -132,7 +128,6 @@ const FeedView: React.FC<FeedViewProps> = ({ onCommand }) => {
           fromAI: true
         });
       } else {
-        // Default response with common actions
         addMessage({
           id: generateUUID(),
           pitchId: "defaultPitchId",
@@ -180,16 +175,32 @@ const FeedView: React.FC<FeedViewProps> = ({ onCommand }) => {
           maxWidth: 800, 
           margin: "0 auto", 
           height: "calc(100vh - 56px - 72px)", 
-          paddingBottom: "72px"
+          paddingBottom: "12px",
+          pl: 2, pr: 2
         }}
       >
-        {/* Team Feedback Section */}
-        <Box sx={{ maxWidth: "100%", pt: 1, px: 2 }}>
-          <TeamFeedbackCard 
-            feedbackData={teamFeedback}
-            onQuickReply={handleQuickReply}
-            onReaction={(type) => console.log("Reaction:", type)}
-          />
+        {/* Team Feedback Section with Animation */}
+        <Box sx={{ maxWidth: "100%", mt:-2, px: 1, borderRadius: 32 }}>
+          <Slide 
+            direction="down" 
+            in={showFeedback} 
+            timeout={700}
+          >
+            <Box>
+              <Fade
+                in={showFeedback}
+                timeout={1000}
+              >
+                <Box>
+                  <TeamFeedbackCard 
+                    feedbackData={teamFeedback}
+                    onQuickReply={handleQuickReply}
+                    onReaction={(type) => console.log("Reaction:", type)}
+                  />
+                </Box>
+              </Fade>
+            </Box>
+          </Slide>
         </Box>
 
         {/* Messages Section */}

@@ -61,7 +61,7 @@ const MessageBubble: React.FC<MessageProps> = ({
         {isStandardMessage && (
           <Box
             sx={{
-              p: 2,
+              p: 2.5,
               backgroundColor: isCoach ? "grey.100" : "#030303",
               color: isCoach ? "text.primary" : "common.white",
               borderRadius: "16px",

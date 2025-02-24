@@ -144,7 +144,7 @@ export const useDialogManager = () => {
   }, []);
 
   useEffect(() => {
-    console.log('Dialog states updated:', {
+      console.log('Dialog states updated:', {
       analysis: analysisOpen,
       improvements: improvementsOpen,
       teamFeedback: teamFeedbackOpen,

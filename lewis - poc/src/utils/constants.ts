@@ -6,7 +6,7 @@ export const COACH_COMMANDS = {
     responses: [
       "I can help you find pitch versions. Would you like to compare previous pitches or view your history?"
     ],
-    quickReplies: ["Compare pitches", "View history"]
+    quickReplies: ["Compare pitches"]
   },
   PITCH_ANALYSIS: {
     triggers: ['analysis', 'see analysis', 'detailed breakdown'],
@@ -30,7 +30,7 @@ export const COACH_COMMANDS = {
     responses: [
       "Let's check what feedback your team has provided. Would you like to see recent comments or request new feedback?"
     ],
-    quickReplies: ["Recent feedback", "Request feedback"]
+    quickReplies: ["Recent feedback"]
   },
   COMPETITIONS: {
     triggers: ['competition', 'enter competition', 'find competitions'],
@@ -38,7 +38,7 @@ export const COACH_COMMANDS = {
     responses: [
       "I can help you find pitch competitions. Would you like to see upcoming events or practice for a specific competition?"
     ],
-    quickReplies: ["Show events", "Competition prep"]
+    quickReplies: ["View competitions"]
   },
   DASHBOARD: {
     triggers: ['dashboard', 'submissions', 'my pitches'],
@@ -46,7 +46,7 @@ export const COACH_COMMANDS = {
     responses: [
       "I'll show you your pitch dashboard. Would you like to see your submissions or overall progress?"
     ],
-    quickReplies: ["View submissions", "Show progress"]
+    quickReplies: ["View submissions"]
   },
   PROFILE: {
     triggers: ['my profile', 'view profile', 'profile'],
@@ -54,10 +54,10 @@ export const COACH_COMMANDS = {
     responses: [
       "I'll open your profile settings. Would you like to update your information or manage your preferences?"
     ],
-    quickReplies: ["Update info", "Manage preferences"]
+    quickReplies: ["Update info"]
   },
   NEW_PITCH: {
-    triggers: ['new pitch', 'upload new pitch', 'record pitch'],
+    triggers: ['new pitch', 'upload new pitch', 'record pitch', 'upload video', 'record now'],
     action: 'openMediaDialog',
     responses: [
       "I'd be happy to help you record a new pitch! Would you like to upload a video or record one now?"

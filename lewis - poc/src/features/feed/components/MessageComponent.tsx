@@ -2,8 +2,7 @@
 import React from 'react';
 import { Box, Typography, Button, Avatar } from '@mui/material';
 import { Message } from '../../../store/types';
-import { Sparkles } from 'lucide-react';
-
+import coachAvatar from '../../../assets/coachAvatar-simple.svg';
 interface MessageComponentProps {
   message: Message;
   onQuickReply?: (reply: string) => void;
@@ -12,7 +11,6 @@ interface MessageComponentProps {
 const MessageComponent: React.FC<MessageComponentProps> = ({ message, onQuickReply }) => {
   const isCoach = message.sender === 'coach';
   
-  // Helper to check if the content is a video URL
   const isVideoUrl = (content: string) => content.startsWith('blob:');
 
   return (
@@ -21,23 +19,28 @@ const MessageComponent: React.FC<MessageComponentProps> = ({ message, onQuickRep
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'flex-end',
-        gap: 1,
-        mb: 4,
+        gap: 1.5,
+        mb: 6,
         maxWidth: '100%'
       }}
     >
       {/* Avatar Section */}
       <Avatar
         sx={{
-          bgcolor: isCoach ? 'primary.main' : '#0090f2',
+          bgcolor: isCoach ? 'transparent' : '#0090f2',
           width: 40,
           height: 40,
           fontSize: isCoach ? 'inherit' : '1rem',
-          fontWeight: isCoach ? 'inherit' : 900
+          fontWeight: isCoach ? 'inherit' : 900,
+          p: isCoach ? 0 : undefined, // Remove padding for coach avatar
+          '& svg': {
+            width: '100%',
+            height: '100%'
+          }
         }}
       >
         {isCoach ? (
-          <Sparkles size={18} />
+          <img src={coachAvatar} alt="Coach Avatar" />
         ) : (
           "HL"
         )}
@@ -46,15 +49,25 @@ const MessageComponent: React.FC<MessageComponentProps> = ({ message, onQuickRep
       {/* Message Content Section */}
       <Box
         sx={{
+          position: 'relative',
           maxWidth: '85%',
-          bgcolor: isCoach ? '#F9FAFB' : '#002b49',
-          borderRadius: 24,
+          bgcolor: isCoach ? '#efefef' : '#002b49',
+          borderRadius: 48,
           p: 2,
-          position: 'relative'
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            left: -10,
+            bottom: 8,
+            width: 0,
+            height: 0,
+            borderStyle: 'solid',
+            borderWidth: '6px 14px 6px 0',
+            borderColor: `transparent ${isCoach ? '#efefef' : '#002b49'} transparent transparent`,
+          }
         }}
       >
         {isVideoUrl(message.content) ? (
-          // Video container
           <Box sx={{ width: '100%', maxWidth: '560px', marginBottom: 2 }}>
             <video
               controls
@@ -68,7 +81,6 @@ const MessageComponent: React.FC<MessageComponentProps> = ({ message, onQuickRep
             </video>
           </Box>
         ) : (
-          // Text content
           <Typography
             variant="body1"
             sx={{
@@ -90,10 +102,11 @@ const MessageComponent: React.FC<MessageComponentProps> = ({ message, onQuickRep
                 size="small"
                 onClick={() => onQuickReply?.(reply)}
                 sx={{
-                  bgcolor: 'white',
-                  color: '#0090f2',
+                  borderRadius: 12,
+                  bgcolor: '#0090f2',
+                  color: '#fff',
                   '&:hover': {
-                    bgcolor: 'primary.light',
+                    bgcolor: '#002b49',
                     color: 'white'
                   }
                 }}
