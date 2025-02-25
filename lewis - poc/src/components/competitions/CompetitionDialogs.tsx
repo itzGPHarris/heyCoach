@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import CompetitionHub from './CompetitionHub';
 import SubmissionDashboard from './SubmissionDashboard';
 import SubmissionForm from './SubmissionForm';
-import { Competition } from './types';
+import { Competition, SubmissionData } from './types';
 
 interface CompetitionDialogsProps {
   open: boolean;
@@ -14,56 +14,81 @@ const CompetitionDialogs: React.FC<CompetitionDialogsProps> = ({
   open,
   onClose
 }) => {
+  // State management
   const [showSubmissionDashboard, setShowSubmissionDashboard] = useState(false);
   const [showSubmissionForm, setShowSubmissionForm] = useState(false);
   const [selectedCompetition, setSelectedCompetition] = useState<Competition | null>(null);
 
-  const handleCreateSubmission = (competition: Competition) => {
+  // Handler functions
+  const handleViewCompetition = (competition: Competition) => {
+    setSelectedCompetition(competition);
+    // Additional logic if needed
+  };
+
+  const handleSubmitPitch = (competition: Competition) => {
     setSelectedCompetition(competition);
     setShowSubmissionForm(true);
   };
 
-  const handleViewSubmissions = () => {
-    setShowSubmissionDashboard(true);
+
+  const handleBackFromSubmissions = () => {
+    setShowSubmissionDashboard(false);
   };
 
-  return (
-    <>
-      <CompetitionHub
-              open={open}
-              onClose={onClose}
-              onCreateSubmission={handleCreateSubmission}
-              onViewSubmissions={handleViewSubmissions} isOpen={false}      />
+  // Conditionally render based on states
+  const renderContent = () => {
+    if (open) {
+      return (
+        <CompetitionHub
+          open={open}
+          onClose={onClose}
+          onView={handleViewCompetition}
+          onSubmitPitch={handleSubmitPitch}
+          onViewLeaderboard={(id) => console.log("View leaderboard for:", id)}
+        />
+      );
+    }
 
-      <SubmissionDashboard
-        open={showSubmissionDashboard}
-        onClose={() => setShowSubmissionDashboard(false)}
-        onCreateNew={() => setShowSubmissionForm(true)}
-      />
+    if (showSubmissionDashboard) {
+      return (
+        <SubmissionDashboard
+          open={showSubmissionDashboard}
+          onClose={() => setShowSubmissionDashboard(false)}
+          onCreateNew={() => setShowSubmissionForm(true)}
+          onBack={handleBackFromSubmissions}
+          submissionDashboardOpen={showSubmissionDashboard}
+          setSubmissionDashboardOpen={setShowSubmissionDashboard}
+        />
+      );
+    }
 
-      {selectedCompetition && (
+    if (showSubmissionForm && selectedCompetition) {
+      return (
         <SubmissionForm
-                  open={showSubmissionForm}
-                  onClose={() => {
-                      setShowSubmissionForm(false);
-                      setSelectedCompetition(null);
-                  } }
-                  competition={selectedCompetition}
-                  onSubmit={async (submission) => {
-                      // Handle submission
-                      console.log('Submitting:', submission);
-                      setShowSubmissionForm(false);
-                      setSelectedCompetition(null);
-                  } }
-                  onSaveDraft={async (submission) => {
-                      // Handle draft save
-                      console.log('Saving draft:', submission);
-                      setShowSubmissionForm(false);
-                      setSelectedCompetition(null);
-                  } } competitionName={''}        />
-      )}
-    </>
-  );
+          competition={selectedCompetition}
+          onBack={() => setShowSubmissionForm(false)}
+          onClose={() => {
+            setShowSubmissionForm(false);
+            setSelectedCompetition(null);
+          } }
+          onSubmit={async (data: SubmissionData) => {
+            console.log('Submitting:', data);
+            setShowSubmissionForm(false);
+            setSelectedCompetition(null);
+            // Show submission dashboard after successful submission
+            setShowSubmissionDashboard(true);
+          } }
+          onViewSubmissions={() => {
+            setShowSubmissionForm(false);
+            setShowSubmissionDashboard(true);
+          } } existingSubmission={null}        />
+      );
+    }
+
+    return null;
+  };
+
+  return renderContent();
 };
 
 export default CompetitionDialogs;

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Metrics } from "../api/types";
 import { TeamMember } from "../components/competitions/types";
 
@@ -91,20 +92,55 @@ export interface BaseMessage {
     status: 'upcoming' | 'active' | 'completed';
   }
   
-  interface Submission {
-    id: string;
-    competitionId: string;
-    name: string;
-    description: string;
-    video: VideoInfo;
-    website?: string;
-    documents: Document[];
-    teammates: TeamMember[];
-    status: 'draft' | 'submitted' | 'accepted' | 'rejected';
-  }
+  
   
   interface VideoInfo {
     url: string;
     thumbnail: string;
     length: number;
   }  
+
+  // Submission types
+export interface Submission {
+  id: string;
+  name: string;
+  competitionId: string;
+  competitionName: string;
+  description: string;
+  date: string;
+  status: 'draft' | 'submitted' | 'accepted' | 'rejected';
+  teamSize: number;
+  createdAt: string;
+  updatedAt: string;
+  video: {
+    url: string;
+    thumbnailUrl?: string;
+    duration?: number;
+  };
+  documents: Document[];
+  team: TeamMember[];
+}
+
+export interface Document {
+  id?: string;
+  name: string;
+  url: string;
+  type: 'pdf' | 'doc' | 'ppt' | 'other';
+  size?: number;
+  uploadedAt?: string;
+}
+
+
+// Submission form data
+export interface SubmissionData {
+  title: string;
+  description: string;
+  video: File | null;
+  videoPreview?: string;
+  website?: string;
+  team: TeamMember[];
+  categories?: string[];
+  links?: {
+    [key: string]: string;
+  };
+}

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // src/features/dialogs/DialogManager.tsx
 import { useState, useCallback, useEffect } from 'react';
@@ -9,6 +10,8 @@ interface DialogState {
 }
 
 interface DialogStates {
+  submissionDetail: any;
+  submissionSuccess: any;
   analysis: DialogState;
   improvements: DialogState;
   teamFeedback: DialogState;
@@ -38,6 +41,8 @@ export const useDialogManager = () => {
   const [mediaOpen, setMediaOpen] = useState(false);
   const [submissionDashboardOpen, setSubmissionDashboardOpen] = useState(false);
   const [submissionFormOpen, setSubmissionFormOpen] = useState(false);
+  const [submissionDetailOpen, setSubmissionDetailOpen] = useState(false);
+  const [submissionSuccessOpen, setSubmissionSuccessOpen] = useState(false);
 
 
 
@@ -49,22 +54,36 @@ export const useDialogManager = () => {
     versions: { isOpen: versionsOpen, setOpen: setVersionsOpen },
     profile: { isOpen: profileOpen, setOpen: setProfileOpen },
     media: { isOpen: mediaOpen, setOpen: setMediaOpen },
-    submissionDashboard: { 
-      isOpen: submissionDashboardOpen, 
+    submissionDashboard: {
+      isOpen: submissionDashboardOpen,
       setOpen: (open) => {
         console.log(`🟢 SubmissionDashboard is now: ${open}`);
         setSubmissionDashboardOpen(open);
+      }
+    },
+    submissionDetail: { 
+      isOpen: submissionDetailOpen, 
+      setOpen: (open: boolean | ((prevState: boolean) => boolean)) => {
+        console.log(`🟢 SubmissionDetail is now: ${open}`);
+        setSubmissionDetailOpen(open);
       } 
     },
-    
-    submissionForm: { 
-      isOpen: submissionFormOpen, 
+    submissionSuccess: { 
+      isOpen: submissionSuccessOpen, 
+      setOpen: (open: boolean | ((prevState: boolean) => boolean)) => {
+        console.log(`🟢 SubmissionSuccess is now: ${open}`);
+        setSubmissionSuccessOpen(open);
+      } 
+    },
+
+
+    submissionForm: {
+      isOpen: submissionFormOpen,
       setOpen: (open) => {
         console.log(`🟢 SubmissionForm is now: ${open}`);
         setSubmissionFormOpen(open);
-      } 
+      }
     },
-  
   };
 
   const processCommand = useCallback((input: string): CommandResponse | null => {
@@ -98,7 +117,7 @@ export const useDialogManager = () => {
         console.log('Opening submission form');
         setSubmissionFormOpen(true);
       },
-  
+
       openTeamFeedback: () => {
         console.log('Opening team feedback');
         setTeamFeedbackOpen(true);
@@ -128,6 +147,9 @@ export const useDialogManager = () => {
         setSubmissionDashboardOpen(true);
       },
       openDashboard: function (): void {
+        throw new Error('Function not implemented.');
+      },
+      openSubmissionDetail: function (): void {
         throw new Error('Function not implemented.');
       }
     };

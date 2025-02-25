@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/prefer-as-const */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React from 'react';
@@ -10,6 +11,8 @@ import MediaUploadDialog from '../shared/dialogs/MediaUploadDialog';
 import CompetitionDialogs from '../competitions/CompetitionDialogs';
 import SubmissionDashboard from '../competitions/SubmissionDashboard';
 import SubmissionForm from '../competitions/SubmissionForm';
+import CompetitionSubmissionFlow from '../competitions/CompetitionSubmissionFlow';
+
 
 interface DialogsProps {
   dialogStates: {
@@ -20,15 +23,22 @@ interface DialogsProps {
     media: { isOpen: boolean; setOpen: (open: boolean) => void };
     competition: { isOpen: boolean; setOpen: (open: boolean) => void };
     versions: { isOpen: boolean; setOpen: (open: boolean) => void };
+    // Add these if needed for submissionDetail and submissionSuccess
+    submissionDetail?: { isOpen: boolean; setOpen: (open: boolean) => void };
+    submissionSuccess?: { isOpen: boolean; setOpen: (open: boolean) => void };
   };
   onSendVideo: (fileUrl: string, isPortrait: boolean) => void;
+  // Remove any Competition-related properties that shouldn't be here
 }
 
+
 export const Dialogs: React.FC<DialogsProps> = ({ dialogStates, onSendVideo }) => {
-  // Use Zustand store for submission form state
+  // Use Zustand store
   const { 
     submissionFormOpen, 
-    setSubmissionFormOpen 
+    setSubmissionFormOpen,
+    selectedSubmission,
+    setSelectedSubmission
   } = useStore();
 
   // Sample competition object
@@ -36,80 +46,103 @@ export const Dialogs: React.FC<DialogsProps> = ({ dialogStates, onSendVideo }) =
     id: '1',
     title: 'Startup Pitch Competition',
     description: 'Submit your startup pitch for a chance to win funding and mentorship',
-    startDate: new Date(),
-    endDate: new Date(),
-    maxTeamSize: 5,
-    minTeamSize: 1,
-    categories: ['Technology', 'Healthcare', 'Finance'],
-    submissionCount: 10,
-    judges: ['John Doe', 'Jane Smith', 'Alex Johnson'],
+    startDate: '2024-03-01',
+    endDate: '2024-04-01',
+    status: 'ongoing' as 'upcoming' | 'ongoing' | 'past',
+    organizerName: 'Techstars',
+    organizerId: 'org-123',
+    
+    // Add the missing properties
+    dates: {
+      start: '2024-03-01',
+      end: '2024-04-01',
+      submissionDeadline: '2024-03-25'
+    },
     prizes: {
       grandPrize: '$50,000 Investment and Mentorship',
       firstPlace: '$25,000 Investment',
       runnerUp: '$10,000 Investment',
-      otherPrizes: ['Mentorship Opportunities', 'Networking Event Access'],
+      otherPrizes: ['Mentorship Program', 'Office Space for 6 months']
     },
-    dates: {
-      start: new Date().toISOString(),
-      end: new Date().toISOString(),
-      submissionDeadline: new Date().toISOString(),
-    },
-    status: 'upcoming' as 'upcoming' | 'ongoing' | 'past',
-    rules: ['All submissions must be original', 'Entries must be submitted before the deadline'],
+    rules: [
+      'All submissions must be original',
+      'Entries must be submitted before the deadline'
+    ]
   };
+  
+
+  // Sample submissions
+  const sampleSubmissions = [
+    {
+      id: '1',
+      name: 'Radiant Hue Pitch',
+      competitionId: '1',
+      competitionName: 'Mentor Madness 2024',
+      description: 'Radiant Hue is a makeup brand that changes the narrative. We\'re dedicated to providing clean beauty products.',
+      date: '2024-03-24',
+      status: 'submitted' as 'submitted',
+      teamSize: 4,
+      createdAt: '2024-03-20T12:00:00Z',
+      updatedAt: '2024-03-24T10:00:00Z',
+      video: {
+        url: 'https://example.com/videos/radiant-hue.mp4',
+        thumbnailUrl: '/path/to/thumbnail.jpg',
+        duration: 120
+      },
+      documents: [],
+      team: [
+        { id: 't1', name: 'Harper Lewis', role: 'Founder', email: 'harper@radianthue.com' },
+        { id: 't2', name: 'Alex Johnson', role: 'CTO', email: 'alex@radianthue.com' }
+      ]
+    },
+    {
+      id: '2',
+      name: 'Product Demo v2',
+      competitionId: '1',
+      competitionName: 'Startup Weekend',
+      description: 'Updated demo of our product featuring the latest improvements and user feedback.',
+      date: 'Feb 15, 2024',
+      status: 'draft' as 'draft',
+      teamSize: 3,
+      createdAt: '2024-02-10T15:30:00Z',
+      updatedAt: '2024-02-15T09:45:00Z',
+      video: {
+        url: 'https://example.com/videos/product-demo-v2.mp4',
+        thumbnailUrl: '/path/to/thumbnail2.jpg',
+        duration: 180
+      },
+      documents: [],
+      team: [
+        { id: 't5', name: 'Jamie Wilson', role: 'CEO', email: 'jamie@example.com' },
+        { id: 't6', name: 'Casey White', role: 'Developer', email: 'casey@example.com' }
+      ]
+    }
+  ];
+  
 
   return (
     <>
-      <SubmissionDashboard 
-        open={dialogStates.submissionDashboard.isOpen} 
-        onClose={() => dialogStates.submissionDashboard.setOpen(false)} 
-        onCreateNew={() => {
-          try {
-            // Close submission dashboard
-            dialogStates.submissionDashboard.setOpen(false);
-            
-            // Open submission form using Zustand store method
-            setSubmissionFormOpen(true);
-          } catch (error) {
-            console.error('Error in onCreateNew:', error);
-          }
-        }} 
-        onBack={() => dialogStates.submissionDashboard.setOpen(false)} 
-        submissionDashboardOpen={dialogStates.submissionDashboard.isOpen} 
-        setSubmissionDashboardOpen={dialogStates.submissionDashboard.setOpen} 
-      />
-
+      {/* Use the CompetitionSubmissionFlow to handle all submission-related views */}
       <Dialog
-        open={submissionFormOpen}
-        onClose={() => setSubmissionFormOpen(false)}
-        maxWidth="md"
+        open={dialogStates.submissionDashboard.isOpen}
+        onClose={() => dialogStates.submissionDashboard.setOpen(false)}
+        maxWidth="lg"
         fullWidth
-        fullScreen
         PaperProps={{
-        sx: { 
-            maxWidth:"800px",
-            width: '100%',
+          sx: { 
             height: '95vh',
             maxHeight: '95vh',
             margin: 2,
-            borderRadius: 0
-          }        }}
+            borderRadius: 2,
+            backgroundColor: 'transparent',
+            boxShadow: 'none'
+          }        
+        }}
       >
-        <SubmissionForm 
+        <CompetitionSubmissionFlow
           competition={sampleCompetition}
-          onBack={() => {
-            setSubmissionFormOpen(false);
-            dialogStates.submissionDashboard.setOpen(true);
-          }}
-          onClose={() => setSubmissionFormOpen(false)}
-          onSubmit={async (data) => {
-            console.log('Submitting:', data);
-            // Implement submission logic
-          }}
-          onViewSubmissions={() => {
-            setSubmissionFormOpen(false);
-            dialogStates.submissionDashboard.setOpen(true);
-          }}
+          existingSubmissions={sampleSubmissions}
+          onClose={() => dialogStates.submissionDashboard.setOpen(false)}
         />
       </Dialog>
 

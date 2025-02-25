@@ -13,7 +13,7 @@ import {
   ArrowBack as ArrowBackIcon
 } from '@mui/icons-material';
 import { VideoUpload, BasicInfo, TeamSection } from './components';
-import type { Competition, TeamMember } from './types';
+import type { Competition, Submission, TeamMember } from './types';
 
 interface SubmissionFormProps {
   competition: Competition;
@@ -21,6 +21,9 @@ interface SubmissionFormProps {
   onClose: () => void;
   onSubmit: (data: SubmissionData) => Promise<void>;
   onViewSubmissions: () => void;
+  existingSubmission: Submission | null;
+
+
 }
 
 interface SubmissionData {

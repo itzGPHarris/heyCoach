@@ -34,3 +34,54 @@ export interface ChatMessage {
   pitchId?: string; // Added pitchId property
 
 }
+// Submission types
+export interface Submission {
+  id: string;
+  name: string;
+  competitionId: string;
+  competitionName: string;
+  description: string;
+  date: string;
+  status: 'draft' | 'submitted' | 'accepted' | 'rejected';
+  teamSize: number;
+  createdAt: string;
+  updatedAt: string;
+  video: {
+    url: string;
+    thumbnailUrl?: string;
+    duration?: number;
+  };
+  documents: Document[];
+  team: TeamMember[];
+}
+
+export interface Document {
+  id?: string;
+  name: string;
+  url: string;
+  type: 'pdf' | 'doc' | 'ppt' | 'other';
+  size?: number;
+  uploadedAt?: string;
+}
+
+export interface TeamMember {
+  id: string;
+  name: string;
+  email?: string;
+  role?: string;
+  avatarUrl?: string;
+}
+
+// Submission form data
+export interface SubmissionData {
+  title: string;
+  description: string;
+  video: File | null;
+  videoPreview?: string;
+  website?: string;
+  team: TeamMember[];
+  categories?: string[];
+  links?: {
+    [key: string]: string;
+  };
+}

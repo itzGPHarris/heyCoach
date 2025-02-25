@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // SubmissionDashboard.tsx
 import React from 'react';
 import {
@@ -16,7 +17,8 @@ import {
   Add as AddIcon,
   Close as CloseIcon
 } from '@mui/icons-material';
-import SubmissionCard from './SubmissionCard';
+import EnhancedSubmissionCard from './EnhancedSubmissionCard';
+
 import type { SubmissionDashboardProps, Submission } from './types';
 
 const SubmissionDashboard: React.FC<SubmissionDashboardProps> = ({
@@ -72,8 +74,12 @@ const SubmissionDashboard: React.FC<SubmissionDashboardProps> = ({
     }
   ];
 
-  const handlePreview = (id: string) => {
+  const handlePlay = (id: string) => {
     console.log('Preview submission:', id);
+  };
+
+  const handleSelect = (id: string) => {
+    console.log('Select submission:', id);
   };
 
   const handleView = (id: string) => {
@@ -90,6 +96,12 @@ const SubmissionDashboard: React.FC<SubmissionDashboardProps> = ({
 
   // Commented out filter functionality
   const filteredSubmissions = submissions; // submissions.filter(sub =>
+  function handleUnpublish(id: string): void {
+    throw new Error('Function not implemented.');
+  }
+
+  
+
   //   sub.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
   //   sub.competitionName.toLowerCase().includes(searchQuery.toLowerCase())
   // );
@@ -147,14 +159,16 @@ const SubmissionDashboard: React.FC<SubmissionDashboardProps> = ({
           }}
         >
           {filteredSubmissions.map(submission => (
-            <SubmissionCard
-              key={submission.id}
-              submission={submission}
-              onPreview={handlePreview}
-              onView={handleView}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-            />
+            <EnhancedSubmissionCard
+            key={submission.id}
+            submission={submission}
+            onPlay={handlePlay}
+            onEdit={handleEdit}
+            onUnpublish={handleUnpublish}
+            onSelect={handleSelect}
+          />
+          
+          
           ))}
            <Box display="flex" gap={1}>
             <Button

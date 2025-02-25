@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react';
 import {
-  Dialog,
+  Dialog, Grid, useMediaQuery, useTheme,
   DialogTitle,
   DialogContent,
   Typography,
@@ -12,11 +12,14 @@ import {
   Slide
 } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
-import type { Competition } from './types';
+import useStore from '../../store';
+import { Competition } from './types';
 import CompetitionCard from './CompetitionCard';
 import CompetitionPreview from './CompetitionPreview';
 import SubmissionForm from './SubmissionForm';
 import SubmissionDashboard from './SubmissionDashboard';
+import ModernSubmissionForm from './ModernSubmissionForm';
+
 import { width } from '@mui/system';
 
 // Slide transition for dialogs
@@ -27,218 +30,205 @@ const SlideTransition = React.forwardRef((props: any, ref) => (
 interface CompetitionHubProps {
   open: boolean;
   onClose: () => void;
+  onClick?: (competition: Competition) => void;
+  onView?: (competition: Competition) => void;
+  onSubmitPitch?: (competition: Competition) => void;
+  onViewLeaderboard?: (id: string) => void;
 }
+
+
 
 const CompetitionHub: React.FC<CompetitionHubProps> = ({
   open,
-  onClose
+  onClose,
+  onClick,
+  onView,
+  onSubmitPitch,
+  onViewLeaderboard
+
 }) => {
-  // State for managing different views
-  const [previewCompetition, setPreviewCompetition] = useState<Competition | null>(null);
-  const [showSubmissionForm, setShowSubmissionForm] = useState(false);
-  const [showSubmissionDashboard, setShowSubmissionDashboard] = useState(false);
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+  
+  // Local state to manage views
+  const [viewState, setViewState] = useState<'list' | 'preview' | 'submit'>('list');
+  const [selectedCompetition, setSelectedCompetition] = useState<Competition | null>(null);
+  
+  // Access any store state/actions if needed
+  const { setSubmissionDashboardOpen } = useStore();
 
   // Sample competitions data
   const competitions = [
     {
       id: '1',
-      title: 'Mentor Madness 2024',
-      description: 'The most exciting business competition on the Internet!',
+      title: 'Startup Pitch Competition',
+      description: 'Submit your startup pitch for a chance to win funding and mentorship',
+      startDate: '2024-03-01',
+      endDate: '2024-04-01',
+      status: 'ongoing' as 'upcoming' | 'active' | 'ended' | 'ongoing',
+      organizerName: 'Techstars',
+      organizerId: 'org-123',
       dates: {
-        start: 'June 17th, 2024',
-        end: 'July 5th, 2024',
-        submissionDeadline: 'July 5th, 2024'
+        start: 'March 1, 2024',
+        end: 'April 1, 2024',
+        submissionDeadline: 'March 25, 2024'
       },
       prizes: {
-        grandPrize: '$25,000',
-        firstPlace: '$15,000',
-        runnerUp: '$10,000'
+        grandPrize: '$50,000 Investment and Mentorship',
+        firstPlace: '$25,000 Investment',
+        runnerUp: '$10,000 Investment',
+        otherPrizes: ['Mentorship Opportunities', 'Networking Event Access'],
       },
-      status: 'ongoing' as const,
       rules: [
-        'Submit a 1-3 minute video pitch',
-        'Original ideas only',
-        'Clear business model required'
+        'All submissions must be original',
+        'Entries must be submitted before the deadline',
+        'Teams must have at least one founder present during judging'
       ],
-      maxTeamSize: 4
+      maxTeamSize: 5,
+      eligibility: ['Open to startups less than 3 years old']
+    },
+    {
+      id: '2',
+      title: 'AI Innovation Challenge',
+      description: 'Showcase your AI solutions for real-world problems',
+      startDate: '2024-04-15',
+      endDate: '2024-05-15',
+      status: 'upcoming' as 'upcoming' | 'active' | 'ended' | 'ongoing',
+      organizerName: 'AI Alliance',
+      organizerId: 'org-456',
+      dates: {
+        start: 'April 15, 2024',
+        end: 'May 15, 2024',
+        submissionDeadline: 'May 10, 2024'
+      },
+      prizes: {
+        grandPrize: '$75,000 Investment',
+        firstPlace: '$40,000 Investment',
+        runnerUp: '$15,000 Investment',
+        otherPrizes: ['AI Computing Credits', 'Expert Mentorship'],
+      },
+      rules: [
+        'Solutions must use AI/ML technologies',
+        'Open source contributions are encouraged',
+        'Demo video required with submission'
+      ],
+      maxTeamSize: 4,
+      eligibility: ['Open to all']
     }
   ];
 
-  // Handler functions
-  const handleViewCompetition = (competition: Competition) => {
-    setPreviewCompetition(competition);
+  // Handle clicking on a competition card
+  const handleCompetitionClick = (competition: Competition) => {
+    setSelectedCompetition(competition);
+    setViewState('preview');
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // Handle submitting a pitch
   const handleSubmitPitch = (competition: Competition) => {
-    setShowSubmissionForm(true);
+    setSelectedCompetition(competition);
+    setViewState('submit');
   };
 
-  const handleViewLeaderboard = (competitionId: string) => {
-    console.log('Viewing leaderboard for:', competitionId);
+  // Handle viewing leaderboard
+  const handleViewLeaderboard = (id: string) => {
+    console.log('View leaderboard for competition:', id);
+    // Implement leaderboard view logic
   };
 
-  const handleBackFromPreview = () => {
-    setPreviewCompetition(null);
-  };
-
-  const handleBackFromSubmission = () => {
-    setShowSubmissionForm(false);
-  };
-
-  const handleBackFromDashboard = () => {
-    setShowSubmissionDashboard(false);
-    // If we came from submission form, go back there
-    if (showSubmissionForm) {
-      setShowSubmissionDashboard(false);
-    } else {
-      // Otherwise go back to main view
-      setPreviewCompetition(null);
+  // Handle back button
+  const handleBack = () => {
+    if (viewState === 'preview') {
+      setViewState('list');
+    } else if (viewState === 'submit') {
+      setViewState('preview');
     }
   };
 
-  const handleViewSubmissions = () => {
-    setShowSubmissionDashboard(true);
+  // Handle closing ModernSubmissionForm
+  const handleFormClose = () => {
+    setViewState('preview');
   };
 
-  const handleSubmissionComplete = async (data: any) => {
+  // Handle successful submission
+  const handleSubmit = async (data: any) => {
     console.log('Submission data:', data);
-    // Here you would normally save the submission
-    // For now, we'll just simulate success
-    return Promise.resolve();
-  };
-
-  const handleCloseAll = () => {
-    setPreviewCompetition(null);
-    setShowSubmissionForm(false);
-    setShowSubmissionDashboard(false);
-    onClose();
+    
+    // Close the form and show success view
+    setViewState('list');
+    
+    // Open submission dashboard
+    setTimeout(() => {
+      onClose();
+      setSubmissionDashboardOpen(true);
+    }, 500);
   };
 
   return (
-    <>
-      {/* Main Competition Hub Dialog */}
-      <Dialog
-        open={open && !previewCompetition && !showSubmissionForm && !showSubmissionDashboard}
-        onClose={onClose}
-        PaperProps={{
-          sx: { 
-            height: '95vh',
-            maxHeight: '98vh',
-            maxWidth: '600',
-            width: '100%',
-            margin: 0,
-            borderRadius: 0,
-            ml:2, mr:2, mt:2, mb:2  
-
-          }
-        }}
-      >
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullScreen={fullScreen}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{
+        sx: {
+          height: '95vh',
+          maxHeight: '95vh', ml:2, mr:2
+        }
+      }}
+    >
+      {viewState === 'list' && (
+        <>
         <DialogTitle>
-          <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Typography variant="h6">
+                <Box display="flex" justifyContent="space-between" alignItems="center">
+                  <Typography variant="h6">Competition Dashboard</Typography>
+                  <IconButton size="small" onClick={onClose}>
+                      <CloseIcon />
+                    </IconButton>
+                </Box>
+              </DialogTitle>
+          <DialogContent>
+            <Typography variant="h5" gutterBottom>
               Competitions
             </Typography>
-            <IconButton onClick={onClose} size="small">
-              <CloseIcon />
-            </IconButton>
-          </Box>
-        </DialogTitle>
-
-        <DialogContent sx={{ p: 3 }}>
-          <Stack spacing={3}>
-            {competitions.map((competition) => (
-              <CompetitionCard
-                key={competition.id}
-                competition={competition}
-                onView={handleViewCompetition}
-              />
-            ))}
-          </Stack>
-        </DialogContent>
-      </Dialog>
-
-      {/* Competition Preview Dialog */}
-      <Dialog
-        open={!!previewCompetition && !showSubmissionForm && !showSubmissionDashboard}
-        TransitionComponent={SlideTransition}
-        onClose={handleCloseAll}
-        
-        PaperProps={{
-          sx: { 
-            maxWidth:"800px",
-            width: '100%',
-            height: '95vh',
-            maxHeight: '95vh',
-            margin: 2,
-            borderRadius: 0
-          }
-        }}
-      >
-        {previewCompetition && (
-          <CompetitionPreview
-            competition={previewCompetition}
-            onBack={handleBackFromPreview}
-            onClose={handleCloseAll}
-            onSubmitPitch={handleSubmitPitch}
-              onViewLeaderboard={handleViewLeaderboard}
-            />
-        )}
-      </Dialog>
-
-      {/* Submission Form Dialog */}
-      <Dialog
-        open={showSubmissionForm && !showSubmissionDashboard}
-        TransitionComponent={SlideTransition}
-        onClose={handleCloseAll}
-        maxWidth="md"
-        fullWidth
-        PaperProps={{
-          sx: { 
-            height: '100vh',
-            maxHeight: '100vh',
-            margin: 0,
-            borderRadius: 0
-          }
-        }}
-      >
-        {previewCompetition && (
-          <SubmissionForm
-            competition={previewCompetition}
-            onBack={handleBackFromSubmission}
-            onClose={handleCloseAll}
-            onSubmit={handleSubmissionComplete}
-            onViewSubmissions={handleViewSubmissions}
-          />
-        )}
-      </Dialog>
-
-      {/* Submission Dashboard Dialog */}
-      <Dialog
-        open={showSubmissionDashboard}
-        TransitionComponent={SlideTransition}
-        onClose={handleCloseAll}
-        maxWidth="md"
-        fullWidth
-        PaperProps={{
-          sx: { 
-            height: '100vh',
-            maxHeight: '100vh',
-            margin: 0,
-            borderRadius: 0
-          }
-        }}
-      >
-        <SubmissionDashboard
-          open={showSubmissionDashboard}
-          onClose={handleCloseAll}
-          onBack={handleBackFromDashboard}
-          onCreateNew={() => setShowSubmissionForm(true)}
-          submissionDashboardOpen={showSubmissionDashboard}
-          setSubmissionDashboardOpen={setShowSubmissionDashboard}
+            <Typography variant="body1" color="text.secondary" paragraph>
+              Join these pitch competitions to showcase your ideas and win prizes
+            </Typography>
+            
+            <Grid container spacing={3}>
+              {competitions.map((competition) => (
+                <Grid item xs={12} sm={6} key={competition.id}>
+                  <CompetitionCard
+                    competition={competition}
+                    onClick={() => handleCompetitionClick(competition)}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+          </DialogContent>
+        </>
+      )}
+      
+      {viewState === 'preview' && selectedCompetition && (
+        <CompetitionPreview
+          competition={selectedCompetition}
+          onBack={handleBack}
+          onClose={onClose}
+          onSubmitPitch={handleSubmitPitch}
+          onViewLeaderboard={handleViewLeaderboard}
         />
-      </Dialog>
-    </>
+      )}
+      
+      {viewState === 'submit' && selectedCompetition && (
+        <ModernSubmissionForm
+          open={true}
+          competition={selectedCompetition}
+          onBack={handleBack}
+          onClose={handleFormClose}
+          onSubmit={handleSubmit}
+        />
+      )}
+    </Dialog>
   );
 };
 

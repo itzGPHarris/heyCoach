@@ -34,21 +34,40 @@ export const COACH_COMMANDS = {
   },
   COMPETITIONS: {
     triggers: ['competition', 'enter competition', 'find competitions'],
-    action: 'openCompetitionHub', // Updated action name
+    action: 'openCompetitionHub',
     responses: [
       "I can help you find pitch competitions. Would you like to see upcoming events or practice for a specific competition?"
     ],
     quickReplies: ["View competitions"]
   },
   DASHBOARD: {
-    triggers: ['dashboard', 'submissions', 'my pitches'],
-    action: 'openDashboard',
+    triggers: ['dashboard', 'my pitches'],
+    // Use 'openSubmissionDashboard' to ensure consistency
+    action: 'openSubmissionDashboard',
     responses: [
-      "I'll show you your pitch dashboard. Would you like to see your submissions or overall progress?"
+      "I'll show you your submissions dashboard. Would you like to see your existing submissions or create a new one?"
     ],
-    quickReplies: ["View submissions"]
+    quickReplies: ["View submissions", "Create new submission"]
   },
-  PROFILE: {
+  SUBMISSIONS: {
+    triggers: ['submissions', 'my submissions', 'view submissions', 'competition submissions'],
+    action: 'openSubmissionDashboard',
+    responses: [
+      "I'll open your submissions dashboard. You can view your existing submissions or create a new one."
+    ],
+    quickReplies: ["Create new submission", "View past submissions"]
+  },
+  // Make sure this command exists and is properly configured
+  NEW_SUBMISSION: {
+    triggers: ['new submission', 'create submission', 'submit pitch', 'enter competition'],
+    // This should immediately take them to the submission form
+    action: 'openSubmissionForm',
+    responses: [
+      "Let's create a new submission for a competition. Would you like to use an existing pitch or record a new one?"
+    ],
+    quickReplies: ["Use existing pitch", "Record new pitch"]
+  },
+    PROFILE: {
     triggers: ['my profile', 'view profile', 'profile'],
     action: 'openProfile',
     responses: [
@@ -72,12 +91,12 @@ export type CommandAction =
   | 'openDashboard'
   | 'openTeamFeedback'
   | 'openImprovements'
-  | 'openCompetitionHub'  // This replaces 'openCompetitions'
+  | 'openCompetitionHub'
   | 'openPitchVersions'
   | 'openAnalysis'
-  | 'openCompetitionHub' 
-  | 'openSubmissionDashboard' // Updated action
+  | 'openSubmissionDashboard'
   | 'openSubmissionForm'
+  | 'openSubmissionDetail'
   | 'openProfile';
   
 
@@ -208,5 +227,87 @@ export const SAMPLE_PITCH_DATA = {
   }
 } as const;
 
-// Export types for use in other components
+// Export types for pitch data
 export type { PitchMetrics, PitchAnalysis, PitchFeedback, PitchVersion, PitchData };
+
+// Competition types
+export interface Competition {
+  id: string;
+  title: string;
+  description?: string;
+  startDate: string;
+  endDate: string;
+  status: 'upcoming' | 'active' | 'ended';
+  organizerName: string;
+  organizerId: string;
+  requirements?: CompetitionRequirement[];
+  prizes?: Prize[];
+  headerImage?: string;
+}
+
+export interface CompetitionRequirement {
+  id: string;
+  name: string;
+  description: string;
+  required: boolean;
+}
+
+export interface Prize {
+  id: string;
+  rank: number;
+  name: string;
+  description?: string;
+  value?: number;
+}
+
+// Submission types
+export interface Submission {
+  id: string;
+  name: string;
+  competitionId: string;
+  competitionName: string;
+  description: string;
+  date: string;
+  status: 'draft' | 'submitted' | 'accepted' | 'rejected';
+  teamSize: number;
+  createdAt: string;
+  updatedAt: string;
+  video: {
+    url: string;
+    thumbnailUrl?: string;
+    duration?: number;
+  };
+  documents: Document[];
+  team: TeamMember[];
+}
+
+export interface Document {
+  id?: string;
+  name: string;
+  url: string;
+  type: 'pdf' | 'doc' | 'ppt' | 'other';
+  size?: number;
+  uploadedAt?: string;
+}
+
+export interface TeamMember {
+  id: string;
+  name: string;
+  email?: string;
+  role?: string;
+  avatarUrl?: string;
+}
+
+// Submission form data
+export interface SubmissionData {
+  title: string;
+  description: string;
+  video: File | null;
+  videoPreview?: string;
+  website?: string;
+  team: TeamMember[];
+  categories?: string[];
+  links?: {
+    [key: string]: string;
+  };
+}

@@ -1,33 +1,46 @@
-// src/components/AppShell/AppShell.tsx
+// In your AppShell.tsx, update how you're creating the dialogs object:
+
 import React from "react";
 import { CssBaseline, Box } from "@mui/material";
-//import { ThemeProvider } from "../../contexts/ThemeContext";
-import { getTheme } from '../../styles/theme';
 import { ThemeProvider } from '@mui/material/styles';
+import { getTheme } from '../../styles/theme';
 import { useAppShell } from "./useAppShell";
 import FeedView from "../../features/feed/FeedView";
 import AppHeader from "../shared/AppHeader";
 import { Dialogs } from "./Dialogs";
 
 function AppShell() {
-    const theme = getTheme('light');
+  const theme = getTheme('light');
   
   const {
     dialogs,
     handleSendVideo,
     handleProfileClick,
     handleMenuClose,
-    handleCommand,  // Added command handler
+    handleCommand,
     anchorEl
   } = useAppShell();
+
+  // Make sure the dialog state is correctly structured
+  const dialogStates = {
+    submissionDashboard: dialogs.submissionDashboard,
+    dashboard: dialogs.dashboard,
+    profile: dialogs.profile,
+    settings: dialogs.settings,
+    media: dialogs.media,
+    competition: dialogs.competition,
+    versions: dialogs.versions,
+    // Add these if they exist in your dialogs object
+    // ...(dialogs.submissionSuccess && { submissionSuccess: dialogs.submissionSuccess })
+  };
 
   return (
     <ThemeProvider theme={{theme}}>
       <CssBaseline />
       <Box sx={{ height: "100vh", display: "flex", flexDirection: "column" }}>
         <AppHeader 
-  setSubmissionDashboardOpen={dialogs.submissionDashboard.setOpen}  // ✅ Ensure correct mapping
-  setProfileOpen={dialogs.profile.setOpen}
+          setSubmissionDashboardOpen={dialogs.submissionDashboard.setOpen}
+          setProfileOpen={dialogs.profile.setOpen}
           setSettingsOpen={dialogs.settings.setOpen}
           anchorEl={anchorEl}
           handleProfileClick={handleProfileClick}
@@ -47,12 +60,11 @@ function AppShell() {
           <FeedView onCommand={handleCommand} />
         </Box>
 
+        {/* Pass the corrected dialogStates object */}
         <Dialogs 
-          dialogStates={dialogs} 
+          dialogStates={dialogStates} 
           onSendVideo={handleSendVideo} 
         />
-
-
       </Box>
     </ThemeProvider>
   );
