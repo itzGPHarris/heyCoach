@@ -11,6 +11,6 @@
     "moduleResolution": "node",
     "esModuleInterop": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "my-auth-app/src/theme.ts", "my-auth-app/mocks", "my-auth-app/src/UnifiedEntry.stories.tsx", "my-auth-app/src/UnifiedEntry.tsx", "my-auth-app/src/preview.tsx"],
   "exclude": ["node_modules", "dist", "src/**/__tests__/*"]
 }
