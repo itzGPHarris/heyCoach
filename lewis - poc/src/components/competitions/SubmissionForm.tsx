@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from 'react';
 import {
   DialogTitle,
   DialogContent,
   Typography,
   Button,
-  Box,
+  Box, Dialog,
   IconButton,
   Stack
 } from '@mui/material';
@@ -22,6 +23,7 @@ interface SubmissionFormProps {
   onSubmit: (data: SubmissionData) => Promise<void>;
   onViewSubmissions: () => void;
   existingSubmission: Submission | null;
+  open: boolean;
 
 
 }
@@ -37,11 +39,14 @@ interface SubmissionData {
 
 const SubmissionForm: React.FC<SubmissionFormProps> = ({
   competition,
+  open = true, // Add default value here
   onBack,
   onClose,
   onSubmit,
-  onViewSubmissions
+  onViewSubmissions,
+  existingSubmission,
 }) => {
+
   // Form state
   const [formData, setFormData] = useState<SubmissionData>({
     title: '',
@@ -120,7 +125,19 @@ const SubmissionForm: React.FC<SubmissionFormProps> = ({
   };
 
   return (
-    <>
+    <Dialog
+          open={open}
+          onClose={onClose}
+          PaperProps={{
+            sx: {
+              maxWidth: "800px",
+              width: '100%',
+              maxHeight: '95vh',
+              margin: 2,
+              borderRadius: 2
+            }
+          }}
+        >
       <DialogTitle>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Box display="flex" alignItems="center" gap={1}>
@@ -221,7 +238,7 @@ const SubmissionForm: React.FC<SubmissionFormProps> = ({
                     onClick={onBack}
                     disabled={isSubmitting}
                   >
-                    Back to Competition
+                    Back 
                   </Button>
                 </>
               )}
@@ -229,7 +246,7 @@ const SubmissionForm: React.FC<SubmissionFormProps> = ({
           </Box>
         </Stack>
       </DialogContent>
-    </>
+    </Dialog>
   );
 };
 

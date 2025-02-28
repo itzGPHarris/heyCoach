@@ -81,7 +81,7 @@ const CompetitionDialogs: React.FC<CompetitionDialogsProps> = ({
           onViewSubmissions={() => {
             setShowSubmissionForm(false);
             setShowSubmissionDashboard(true);
-          } } existingSubmission={null}        />
+          } } existingSubmission={null} open={false}        />
       );
     }
 
