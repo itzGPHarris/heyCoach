@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // src/components/AuthLayout.tsx
 import React, { ReactNode } from 'react';
-import { Box, Container, Paper, useTheme, useMediaQuery } from '@mui/material';
+import { Box, Container, Paper, useTheme, useMediaQuery, Typography } from '@mui/material';
 import SiteHeader from './SiteHeader';
 import coachLogo from '../assets/coachlogo.svg';
 
@@ -56,7 +56,9 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
             margin: '0 auto'
           }} 
         />
-      
+      <Typography variant="h4" align="center" sx={{ mt: 2, mb: 4 }}>
+        {companyName}
+      </Typography>
       <Container 
         component="main" 
         maxWidth="sm" 

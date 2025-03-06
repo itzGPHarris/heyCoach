@@ -9,8 +9,8 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Auth0Provider
-        domain="Ylewis-poc.us.auth0.com" // Replace with your Auth0 domain
-        clientId="6Xak7qG7zqJxoWcMq9FR4HVzAhKCsgVC" // Replace with your Auth0 client ID
+        domain="auth.longjump.ai" // Replace with your Auth0 domain
+        clientId="RmeDho0bPrg7KxUYOOMhNGobKHyftuY0" // Replace with your Auth0 client ID
         authorizationParams={{
           redirect_uri: window.location.origin
         }}

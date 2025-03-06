@@ -173,7 +173,7 @@ const CombinedAuth: React.FC<CombinedAuthProps> = ({
             sx={{ fontWeight: 600 }}
           />
           <Tab 
-            label="Sign Up" 
+            label="Create Account" 
             id="auth-tab-1" 
             aria-controls="auth-tabpanel-1"
             sx={{ fontWeight: 600 }}

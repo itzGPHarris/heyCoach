@@ -56,7 +56,7 @@ const meta: Meta<typeof CombinedAuth> = {
   // Set default args
   args: {
     initialMode: 'signin',
-    companyName: 'Lewis Unified Sign In - POC',
+    companyName: 'Auth0 POC',
     logoSrc: logoUrl,
     backgroundImageUrl: '',
     isLoading: false,
@@ -105,7 +105,7 @@ export const SwitchingModes: Story = {
     const canvas = within(canvasElement);
     
     // Click the Sign Up tab
-    await userEvent.click(canvas.getByRole('tab', { name: /sign up/i }));
+    await userEvent.click(canvas.getByRole('tab', { name: /Create account/i }));
     
     // Verify first name field appears
     await expect(canvas.getByLabelText(/first name/i)).toBeInTheDocument();
