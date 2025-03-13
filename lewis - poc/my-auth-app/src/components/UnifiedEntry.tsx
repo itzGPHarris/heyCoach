@@ -42,7 +42,7 @@ const UnifiedEntry: React.FC<UnifiedEntryProps> = ({
   const [email, setEmail] = useState<string>(initialEmail);
   const [isLoading, setIsLoading] = useState<boolean>(initialState === 'loading');
   const [error, setError] = useState<string>('');
-  const [isExistingUser, setIsExistingUser] = useState<boolean | null>(null);
+  //const [isExistingUser, setIsExistingUser] = useState<boolean>(false);
   
   const { loginWithRedirect } = useAuth0();
 
@@ -58,8 +58,7 @@ const UnifiedEntry: React.FC<UnifiedEntryProps> = ({
       // For Storybook testing, we'll use a simple rule:
       // If email contains "existing", treat as existing user
       const exists = email.includes('existing');
-      setIsExistingUser(exists);
-      
+      //setIsExistingUser(exists);
       if (exists) {
         // Existing user flow - would redirect to Okta
         // For now, we'll just use Auth0 login
@@ -206,5 +205,4 @@ const UnifiedEntry: React.FC<UnifiedEntryProps> = ({
     </AuthLayout>
   );
 };
-
 export default UnifiedEntry;

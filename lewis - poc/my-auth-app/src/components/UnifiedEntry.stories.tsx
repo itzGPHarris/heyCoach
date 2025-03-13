@@ -76,7 +76,7 @@ export const Branded: Story = {
 
 // Email submission story with play function
 export const EmailSubmission: Story = {
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const canvas = within(canvasElement);
     
     // Fill in email
@@ -92,7 +92,7 @@ export const EmailSubmission: Story = {
 
 // Existing user flow
 export const ExistingUserFlow: Story = {
-  play: async ({ canvasElement }) => {
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const canvas = within(canvasElement);
     
     // Fill in email with "existing" to trigger existing user path
@@ -169,6 +169,7 @@ export const DarkMode: Story = {
         text: {
           primary: '#ffffff',
           secondary: 'rgba(255, 255, 255, 0.7)',
+          disabled: 'rgba(255, 255, 255, 0.5)',
         }
       };
       

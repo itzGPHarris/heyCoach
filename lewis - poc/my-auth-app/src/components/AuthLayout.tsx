@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // src/components/AuthLayout.tsx
 import React, { ReactNode } from 'react';
-import { Box, Container, Paper, useTheme, useMediaQuery, Typography } from '@mui/material';
+import { Box, Container, Paper, useTheme, Typography } from '@mui/material';
 import SiteHeader from './SiteHeader';
 import coachLogo from '../assets/coachlogo.svg';
 
@@ -25,7 +25,6 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
   //heroHeight = 200
 }) => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   
   return (
     <Box
