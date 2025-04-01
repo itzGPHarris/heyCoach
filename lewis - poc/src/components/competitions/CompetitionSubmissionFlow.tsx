@@ -131,6 +131,7 @@ const CompetitionSubmissionFlow: React.FC<CompetitionSubmissionFlowProps> = ({
             onClose={onClose}
             onSubmit={handleSubmit}
             onViewSubmissions={() => setActiveView('dashboard')}
+            open={true}
           />
         )}
 

@@ -1,11 +1,11 @@
-// In your AppShell.tsx, update how you're creating the dialogs object:
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// src/components/AppShell/AppShell.tsx
 import React from "react";
 import { CssBaseline, Box } from "@mui/material";
 import { ThemeProvider } from '@mui/material/styles';
 import { getTheme } from '../../styles/theme';
 import { useAppShell } from "./useAppShell";
-import FeedView from "../../features/feed/FeedView";
+import SimplifiedFeedView from "../../features/feed/simplifiedFeedview"; // Import the simplified view
 import AppHeader from "../shared/AppHeader";
 import { Dialogs } from "./Dialogs";
 
@@ -30,12 +30,10 @@ function AppShell() {
     media: dialogs.media,
     competition: dialogs.competition,
     versions: dialogs.versions,
-    // Add these if they exist in your dialogs object
-    // ...(dialogs.submissionSuccess && { submissionSuccess: dialogs.submissionSuccess })
   };
 
   return (
-    <ThemeProvider theme={{theme}}>
+    <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box sx={{ height: "100vh", display: "flex", flexDirection: "column" }}>
         <AppHeader 
@@ -49,18 +47,19 @@ function AppShell() {
 
         <Box sx={{ 
           flexGrow: 1, 
-          overflow: "hidden", 
+          overflow: "auto", // Changed from "hidden" to "auto" for better scrolling
           backgroundColor: "background.default", 
           position: "relative", 
           display: "flex", 
           flexDirection: "column", 
-          marginTop: "56px", 
-          paddingBottom: "70px" 
+          marginTop: "56px"
+          // Removed paddingBottom to allow SimplifiedFeedView to control its own padding
         }}>
-          <FeedView onCommand={handleCommand} />
-        </Box>
+          {/* Use the SimplifiedFeedView for testing */}
+          <SimplifiedFeedView onCommand={(action: string) => handleCommand(action as any)} />
+          </Box>
 
-        {/* Pass the corrected dialogStates object */}
+        {/* Keep the dialogs for now, but we'll eventually refactor this */}
         <Dialogs 
           dialogStates={dialogStates} 
           onSendVideo={handleSendVideo} 
