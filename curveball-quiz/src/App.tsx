@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { ThemeProvider, CssBaseline, Box, CircularProgress, Typography } from '@mui/material';
-import theme from './styles/theme';
-import Game from './components/Game';
+import theme from '../styles/theme';
+import Game from '../components/Game';
 import AppShell from './AppShell';
-import { initializeQuestionDatabase } from './data/questions';
+import { initializeQuestionDatabase } from '../data/questions';
 
 const App: React.FC = () => {
   const [loading, setLoading] = useState(true);

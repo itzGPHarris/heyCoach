@@ -5,9 +5,7 @@ import {
   Paper, 
   Typography, 
   Stack,
-  useTheme,
   Divider,
-  Badge
 } from '@mui/material';
 import { Question } from '../types';
 import { useTimer } from '../hooks/useTimer';
@@ -28,19 +26,16 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
   timerDuration,
   remainingPasses
 }) => {
-  const theme = useTheme();
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [answered, setAnswered] = useState(false);
   
   // Setup timer
   const { 
     timeRemaining, 
-    percentageRemaining,
-    isActive,
     startTimer
   } = useTimer({
     duration: timerDuration,
-    onTimeout: () => onAnswer(false),
+    onTimeout: () => onAnswer(false, { ...question, selectedAnswer: undefined }),
     isActive: true
   });
   
@@ -79,18 +74,17 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
   };
   
   // Get color based on answer status
-  const getAnswerColor = (answer: string) => {
-    if (!answered || selectedAnswer !== answer) return 'default';
+  const getAnswerColor = (answer: string): 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning' | undefined => {
+    if (!answered || selectedAnswer !== answer) return undefined;
     
     return answer === question.correctAnswer ? 'success' : 'error';
-  };
-  
+  };  
   // Get progress color based on time remaining
-  const getProgressColor = () => {
+ /* const getProgressColor = () => {
     if (percentageRemaining > 60) return theme.palette.success.main;
     if (percentageRemaining > 30) return theme.palette.warning.main;
     return theme.palette.error.main;
-  };
+  };*/
   
   // Calculate years ago
   const yearsAgo = new Date().getFullYear() - question.year;

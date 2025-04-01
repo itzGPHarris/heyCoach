@@ -1,13 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
-  Container,
-  Button,
   Typography,
-  Paper,
-  useTheme,
 } from '@mui/material';
-import { PlayArrow } from '@mui/icons-material';
+import Confetti from './Confetti';
 
 import BaseballDiamond from './BaseballDiamond';
 import QuestionSelector from './QuestionSelector';
@@ -18,9 +14,15 @@ import WelcomeScreen from './WelcomeScreen';
 import { useGameState } from '../hooks/useGameState';
 import { useQuestionDeck } from '../hooks/useQuestionDeck';
 import { Question, QuestionDifficulty } from '../types';
+import { 
+  playCorrectSound, 
+  playIncorrectSound, 
+  playScoreSound, 
+  playGameOverSound,
+  initAudio 
+} from '../utils/soundUtils';
 
 const Game: React.FC = () => {
-  const theme = useTheme();
   const { state, dispatch, isFinalAtBat } = useGameState();
   const { getQuestion, resetDeck, questionCounts, totalQuestions } = useQuestionDeck();
   const [currentQuestionData, setCurrentQuestionData] = useState<Question | null>(null);
@@ -91,10 +93,7 @@ const Game: React.FC = () => {
   };
 
   // Handle game timeout
-  const handleTimeout = () => {
-    dispatch({ type: 'TIMEOUT' });
-    setCurrentQuestionData(null);
-  };
+  
 
   // Start a new game
   const startGame = () => {
@@ -113,48 +112,6 @@ const Game: React.FC = () => {
   };
 
   // Render functions for different game states
-  const renderStartScreen = () => (
-      elevation={3}
-      sx={{
-        p: 4,
-        borderRadius: 2,
-        maxWidth: 600,
-        mx: 'auto',
-        textAlign: 'center',
-        backgroundColor: theme.palette.background.paper,
-      }}
-    >
-      <Typography variant="h4" gutterBottom>
-        Welcome to Curveball!
-      </Typography>
-      
-      <Typography variant="body1" paragraph>
-        Test your baseball knowledge in this quiz game that combines 
-        trivia with baseball mechanics. Answer questions correctly to 
-        advance runners and score points!
-      </Typography>
-      
-      <Typography variant="body2" paragraph>
-        • Choose question difficulty (Single, Double, Triple, Home Run)
-        <br />
-        • Correct answers advance runners based on hit type
-        <br />
-        • Three incorrect answers = three outs = game over
-        <br />
-        • Use passes wisely - three passes equals one out
-      </Typography>
-      
-      <Button
-        variant="contained"
-        size="large"
-        startIcon={<PlayArrow />}
-        onClick={startGame}
-        sx={{ mt: 2 }}
-      >
-        Play Ball!
-      </Button>
-    </Paper>
-  );
 
   const renderGameContent = () => (
     <>
@@ -222,3 +179,6 @@ const Game: React.FC = () => {
 };
 
 export default Game;
+
+
+

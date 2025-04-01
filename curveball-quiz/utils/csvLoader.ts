@@ -34,8 +34,8 @@ export const processCSV = (csvText: string): Question[] => {
   // Split the CSV into rows
   const rows = csvText.split('\n').filter(row => row.trim() !== '');
   
-  // First row should be column headers
-  const headers = rows[0].split(',').map(header => header.trim());
+  // Skip the header row - we're not using it currently
+  // First row (index 0) contains headers
   
   // Create questions from each subsequent row
   const questions: Question[] = [];

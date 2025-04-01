@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { Question, QuestionDifficulty } from '../types';
 import { getQuestionsByDifficulty, getRandomQuestion } from '../data/questions';
 

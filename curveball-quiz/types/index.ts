@@ -42,14 +42,15 @@ export interface Question {
   
   // Action Types for Reducer
   export type GameAction =
-    | { type: 'START_GAME' }
-    | { type: 'SELECT_DIFFICULTY'; payload: QuestionDifficulty }
-    | { type: 'SET_QUESTION'; payload: Question }
-    | { type: 'ANSWER_CORRECTLY' }
-    | { type: 'ANSWER_INCORRECTLY' }
-    | { type: 'PASS_QUESTION' }
-    | { type: 'TIMEOUT' }
-    | { type: 'RESET_GAME' };
+  | { type: 'START_GAME' }
+  | { type: 'SELECT_DIFFICULTY'; payload: QuestionDifficulty }
+  | { type: 'SET_QUESTION'; payload: Question }
+  | { type: 'ANSWER_CORRECTLY'; payload: Question } // Add payload here
+  | { type: 'ANSWER_INCORRECTLY'; payload: Question } // Add payload here
+  | { type: 'PASS_QUESTION' }
+  | { type: 'TIMEOUT' }
+  | { type: 'RESET_GAME' };
+  
   
   // Timer States
   export interface TimerState {

@@ -145,8 +145,8 @@ export const getRandomQuestion = (
 
 // Function to get a set of questions for a daily game
 // In a real implementation, this would be seeded by date
-export const getDailyQuestions = (count: number = 27): Question[] => {
-  const allQuestions = loadQuestionsFromCSV();
+export const getDailyQuestions = async (count: number = 27): Promise<Question[]> => {
+  const allQuestions = await loadQuestionsFromCSV('/questions.csv');
   
   // Shuffle the questions
   const shuffled = [...allQuestions].sort(() => 0.5 - Math.random());

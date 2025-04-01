@@ -11,6 +11,7 @@ import {
   Button,
   Drawer,
   List,
+  ListItemButton,
   ListItem,
   ListItemIcon,
   ListItemText,
@@ -171,14 +172,16 @@ const AppShell: React.FC<AppShellProps> = ({
           <List>
               {menuItems.map((item) => (
                 <ListItem 
-                  button
-                  key={item.text}
-                  onClick={() => handleNavigation(item.screen as 'game' | 'leaderboard' | 'about')}
-                  sx={{ backgroundColor: currentScreen === item.screen ? 'rgba(0, 0, 0, 0.08)' : 'inherit' }}
-                >
+                key={item.text}
+                onClick={() => handleNavigation(item.screen as 'game' | 'leaderboard' | 'about')}
+                sx={{ backgroundColor: currentScreen === item.screen ? 'rgba(0, 0, 0, 0.08)' : 'inherit' }}
+              >
+                <ListItemButton>
                   <ListItemIcon>{item.icon}</ListItemIcon>
                   <ListItemText primary={item.text} />
-                </ListItem>
+                </ListItemButton>
+              </ListItem>
+              
               ))}
           </List>
         </Box>

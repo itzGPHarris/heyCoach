@@ -8,7 +8,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { ReplayRounded } from '@mui/icons-material';
-import { Question } from '../types';
+import { Question, QuestionDifficulty } from '../types';
 
 interface GameOverScreenProps {
   score: number;

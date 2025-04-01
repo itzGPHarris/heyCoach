@@ -3,7 +3,7 @@ import {
   GameState, 
   GameAction, 
   QuestionDifficulty,
-  Question,
+  //Question,
   TIMER_DURATION,
   BaseState
 } from '../types';
@@ -166,6 +166,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
       const newStrikes = state.strikes + 1;
       let newOuts = state.outs;
       let newStrikes2 = newStrikes;
+      // eslint-disable-next-line prefer-const
       let newRemainingPasses = state.remainingPasses - 1;
       let gameOver = false;
       
