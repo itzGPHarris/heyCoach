@@ -6,7 +6,7 @@ import Confetti from './Confetti';
 
 //import BaseballDiamond from './BaseballDiamond';
 //import QuestionSelector from './QuestionSelector';
-import QuestionCard from './QuestionCard';
+//import QuestionCard from './QuestionCard';
 import GameOverScreen from './GameOverScreen';
 //import ScoreBoard from './ScoreBoard';
 import WelcomeScreen from './WelcomeScreen';
@@ -22,6 +22,7 @@ import {
 } from '../utils/soundUtils';
 import { BaseState } from '../types';
 import GamePlayArea from './GamePlayArea';
+import QuestionDialog from './QuestionDialog'; // Add this import
 
 // Import SVG assets
 import diamondUrl from '../assets/baseballDiamond.svg';
@@ -148,15 +149,15 @@ const Game: React.FC = () => {
         runnerImageUrl={getRunnerImageUrl(state.bases)}
       />
       
-      {currentQuestionData && (
-        <QuestionCard
-          question={currentQuestionData}
-          onAnswer={handleAnswer}
-          onPass={handlePass}
-          timerDuration={state.timerDuration}
-          remainingPasses={state.remainingPasses}
-        />
-      )}
+      {/* Replace QuestionCard with QuestionDialog */}
+      <QuestionDialog
+        open={!!currentQuestionData}
+        question={currentQuestionData}
+        onAnswer={handleAnswer}
+        onPass={handlePass}
+        timerDuration={state.timerDuration}
+        remainingPasses={state.remainingPasses}
+      />
     </>
   );
   
