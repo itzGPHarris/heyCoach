@@ -96,7 +96,14 @@ const AppShell: React.FC<AppShellProps> = ({
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       {/* App Bar */}
-      <AppBar position="static" color="primary" elevation={0}>
+      <AppBar position="static" 
+      sx={{ 
+        backgroundColor: '#459D46',  // Your custom green color
+        elevation: 0,
+        boxShadow: 'none',          // Remove shadow
+        borderRadius: 0             // Remove rounded corners
+
+      }}>
         <Toolbar>
           {isMobile && (
             <IconButton

@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 import { useReducer, useCallback, useEffect } from 'react';
 import { 
   GameState, 
@@ -32,52 +33,43 @@ const hasRunnersOnBase = (bases: BaseState): boolean => {
 };
 
 // Helper to advance runners based on hit type
-const advanceRunners = (bases: BaseState, hitType: QuestionDifficulty): { newBases: BaseState, runsScored: number } => {
+const advanceRunners = (bases: BaseState, hitType: QuestionDifficulty | string): { newBases: BaseState, runsScored: number } => {
   let runsScored = 0;
-  let newBases = { ...bases };
-  
-  // Determine how many bases to advance
-  const basesToAdvance = 
-    hitType === 'Single' ? 1 :
-    hitType === 'Double' ? 2 :
-    hitType === 'Triple' ? 3 : 4; // Homerun
+  // Create a new bases object to avoid mutation
+  let newBases = { first: false, second: false, third: false };
   
   // For a homerun, clear bases and score all runners plus batter
   if (hitType === 'Homerun') {
     runsScored = (bases.first ? 1 : 0) + (bases.second ? 1 : 0) + (bases.third ? 1 : 0) + 1; // +1 for batter
-    newBases = { first: false, second: false, third: false };
     return { newBases, runsScored };
   }
   
-  // Check if runner on third scores
+  // Score runner from third
   if (bases.third) {
-    runsScored += 1;
-    newBases.third = false;
+    runsScored++;
   }
   
-  // Check if runner on second advances or scores
+  // Advance runner from second to home or third
   if (bases.second) {
-    if (basesToAdvance >= 2) {
-      runsScored += 1;
+    if (hitType === 'Triple' || hitType === 'Homerun') {
+      runsScored++;
     } else {
       newBases.third = true;
     }
-    newBases.second = false;
   }
   
-  // Check if runner on first advances
+  // Advance runner from first
   if (bases.first) {
-    if (basesToAdvance >= 3) {
-      runsScored += 1;
-    } else if (basesToAdvance === 2) {
-      newBases.third = true;
-    } else {
+    if (hitType === 'Single') {
       newBases.second = true;
+    } else if (hitType === 'Double') {
+      newBases.third = true;
+    } else { // Triple or Homerun
+      runsScored++;
     }
-    newBases.first = false;
   }
   
-  // Place batter on appropriate base
+  // Place new batter on base based on hit type
   if (hitType === 'Single') {
     newBases.first = true;
   } else if (hitType === 'Double') {
@@ -166,7 +158,6 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
       const newStrikes = state.strikes + 1;
       let newOuts = state.outs;
       let newStrikes2 = newStrikes;
-      // eslint-disable-next-line prefer-const
       let newRemainingPasses = state.remainingPasses - 1;
       let gameOver = false;
       

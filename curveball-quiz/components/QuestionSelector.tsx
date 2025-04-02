@@ -4,7 +4,6 @@ import {
   Button, 
   Stack, 
   Typography,
-  Paper,
   useTheme,
   useMediaQuery
 } from '@mui/material';
@@ -14,12 +13,14 @@ interface QuestionSelectorProps {
   onSelectDifficulty: (difficulty: QuestionDifficulty) => void;
   isFinalAtBat: boolean;
   disabled: boolean;
+  compact?: boolean; // New prop
 }
 
 const QuestionSelector: React.FC<QuestionSelectorProps> = ({ 
   onSelectDifficulty, 
   isFinalAtBat,
-  disabled
+  disabled,
+  compact = false
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -44,30 +45,25 @@ const QuestionSelector: React.FC<QuestionSelectorProps> = ({
   };
 
   return (
-    <Paper 
-      elevation={3} 
-      sx={{ 
-        p: 3, 
-        borderRadius: 2,
-        backgroundColor: theme.palette.background.paper
-      }}
-    >
-      <Box textAlign="center" mb={2}>
-        <Typography variant="h5" component="h2" gutterBottom>
-          {isFinalAtBat 
-            ? "Last batter. Time to swing for the fences!" 
-            : "Choose your pitch"}
-        </Typography>
-        <Typography variant="body2" color="text.secondary" gutterBottom>
-          {isFinalAtBat 
-            ? "Only a home run can score now" 
-            : "Select the difficulty of your next question"}
-        </Typography>
-      </Box>
+    <Box sx={{ width: '100%', mt: compact ? 0 : 2 }}>
+      {!compact && (
+        <Box textAlign="center" mb={2}>
+          <Typography variant="h5" component="h2" gutterBottom>
+            {isFinalAtBat 
+              ? "Last batter. Time to swing for the fences!" 
+              : "Choose your pitch"}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" gutterBottom>
+            {isFinalAtBat 
+              ? "Only a home run can score now" 
+              : "Select the difficulty of your next question"}
+          </Typography>
+        </Box>
+      )}
 
       <Stack 
-        direction={isMobile ? "column" : "row"} 
-        spacing={2} 
+        direction={compact || !isMobile ? "row" : "column"} 
+        spacing={compact ? 1 : 2} 
         justifyContent="center"
       >
         {difficultyOptions
@@ -77,7 +73,7 @@ const QuestionSelector: React.FC<QuestionSelectorProps> = ({
             <Button
               key={difficulty}
               variant="contained"
-              size="large"
+              size={compact ? "medium" : "large"}
               fullWidth
               disabled={disabled}
               onClick={() => onSelectDifficulty(difficulty)}
@@ -88,7 +84,7 @@ const QuestionSelector: React.FC<QuestionSelectorProps> = ({
                     ? `${getDifficultyColor(difficulty)}CC` // Add transparency
                     : `${getDifficultyColor(difficulty)}EE`,
                 },
-                py: 1.5,
+                py: compact ? 1 : 1.5,
                 fontWeight: 'bold'
               }}
             >
@@ -96,7 +92,7 @@ const QuestionSelector: React.FC<QuestionSelectorProps> = ({
             </Button>
           ))}
       </Stack>
-    </Paper>
+    </Box>
   );
 };
 

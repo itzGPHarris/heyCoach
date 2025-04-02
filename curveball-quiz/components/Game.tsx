@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import {
   Box,
-  Typography,
 } from '@mui/material';
 import Confetti from './Confetti';
 
-import BaseballDiamond from './BaseballDiamond';
-import QuestionSelector from './QuestionSelector';
+//import BaseballDiamond from './BaseballDiamond';
+//import QuestionSelector from './QuestionSelector';
 import QuestionCard from './QuestionCard';
 import GameOverScreen from './GameOverScreen';
-import ScoreBoard from './ScoreBoard';
+//import ScoreBoard from './ScoreBoard';
 import WelcomeScreen from './WelcomeScreen';
 import { useGameState } from '../hooks/useGameState';
 import { useQuestionDeck } from '../hooks/useQuestionDeck';
@@ -21,12 +20,36 @@ import {
   playGameOverSound,
   initAudio 
 } from '../utils/soundUtils';
+import { BaseState } from '../types';
+import GamePlayArea from './GamePlayArea';
+
+// Import SVG assets
+import diamondUrl from '../assets/baseballDiamond.svg';
+import runnerFirstUrl from '../assets/runnerFirst.svg';
+import runnerSecondUrl from '../assets/runnerSecond.svg';
+import runnerThirdUrl from '../assets/runnerThird.svg';
+import runnerFirstSecondUrl from '../assets/runnerFirstSecond.svg';
+import runnerFirstThirdUrl from '../assets/runnerFirstThird.svg';
+import runnerSecondThirdUrl from '../assets/runnerSecondThird.svg';
+import runnerAllUrl from '../assets/runnerAll.svg';
 
 const Game: React.FC = () => {
   const { state, dispatch, isFinalAtBat } = useGameState();
   const { getQuestion, resetDeck, questionCounts, totalQuestions } = useQuestionDeck();
   const [currentQuestionData, setCurrentQuestionData] = useState<Question | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
+
+  // Determine which runner overlay to use based on base state
+  const getRunnerImageUrl = (bases: BaseState) => {
+    if (bases.first && bases.second && bases.third) return runnerAllUrl;
+    if (bases.first && bases.second) return runnerFirstSecondUrl;
+    if (bases.first && bases.third) return runnerFirstThirdUrl;
+    if (bases.second && bases.third) return runnerSecondThirdUrl;
+    if (bases.first) return runnerFirstUrl;
+    if (bases.second) return runnerSecondUrl;
+    if (bases.third) return runnerThirdUrl;
+    return null;
+  };
 
   // Get a question based on selected difficulty
   const fetchQuestion = (difficulty: QuestionDifficulty) => {
@@ -92,9 +115,6 @@ const Game: React.FC = () => {
     setCurrentQuestionData(null);
   };
 
-  // Handle game timeout
-  
-
   // Start a new game
   const startGame = () => {
     // Initialize audio (must be done after user interaction)
@@ -112,25 +132,23 @@ const Game: React.FC = () => {
   };
 
   // Render functions for different game states
-
   const renderGameContent = () => (
     <>
-      <ScoreBoard
-        score={state.score}
-        outs={state.outs}
-        strikes={state.strikes}
-        inning={state.inningNumber}
-        questionCount={totalQuestions}
-      />
-      
-      <BaseballDiamond
+      <GamePlayArea
         bases={state.bases}
         outs={state.outs}
         strikes={state.strikes}
         score={state.score}
+        inning={state.inningNumber}
+        questionCount={totalQuestions}
+        onSelectDifficulty={handleSelectDifficulty}
+        isFinalAtBat={isFinalAtBat()}
+        disabled={!!currentQuestionData || state.gameOver}
+        diamondUrl={diamondUrl}
+        runnerImageUrl={getRunnerImageUrl(state.bases)}
       />
       
-      {currentQuestionData ? (
+      {currentQuestionData && (
         <QuestionCard
           question={currentQuestionData}
           onAnswer={handleAnswer}
@@ -138,29 +156,23 @@ const Game: React.FC = () => {
           timerDuration={state.timerDuration}
           remainingPasses={state.remainingPasses}
         />
-      ) : (
-        <QuestionSelector
-          onSelectDifficulty={handleSelectDifficulty}
-          isFinalAtBat={isFinalAtBat()}
-          disabled={state.gameOver}
-        />
       )}
     </>
   );
-
+  
   return (
     <Box>
       {/* Confetti effect when scoring */}
       <Confetti active={showConfetti} />
       
-      <Box sx={{ mb: 4 }}>
+      {/*<Box sx={{ mb: 4 }}>
         <Typography variant="h3" component="h1" align="center" gutterBottom>
           Curveball Quiz
         </Typography>
         <Typography variant="subtitle1" align="center" color="text.secondary">
           The Baseball Trivia Game
         </Typography>
-      </Box>
+      </Box>*/}
 
       {!state.gameStarted && <WelcomeScreen onStartGame={startGame} />}
       
@@ -179,6 +191,3 @@ const Game: React.FC = () => {
 };
 
 export default Game;
-
-
-
