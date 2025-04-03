@@ -1,66 +1,66 @@
-// Question Types
+// types.ts
+export type QuestionDifficulty = 'Single' | 'Double' | 'Triple' | 'Homerun';
+
+export type BaseType = 'none' | 'first' | 'second' | 'third' | 'home';
+
 export interface Question {
-    id: string;
-    question: string;
-    year: number;
-    league: string;
-    category: string;
-    possibleAnswerA: string;
-    possibleAnswerB: string;
-    possibleAnswerC: string;
-    possibleAnswerD: string;
-    correctAnswer: string;
-    difficulty: QuestionDifficulty;
-    selectedAnswer?: string; // The answer selected by the user
-  }
+  id: string;
+  question: string;
+  options: string[];
+  correctOption: number;
+  difficulty: QuestionDifficulty;
+  answered?: boolean;
+  correct?: boolean;
+  category?: string;
+}
+
+export interface BaseState {
+  first: boolean;
+  second: boolean;
+  third: boolean;
+}
+
+export interface RunnerState {
+  id: string;
+  previousBase: BaseType;
+  currentBase: BaseType;
+  isAnimating: boolean;
+  path?: BaseType[]; // Path to take for animation
+}
+
+export const TIMER_DURATION = {
+  NO_RUNNERS: 20, // seconds
+  WITH_RUNNERS: 15, // seconds
+};
+
+export interface GameState {
+  score: number;
+  outs: number;
+  strikes: number;
+  bases: BaseState;
+  runners: RunnerState[];
   
-  export type QuestionDifficulty = 'Single' | 'Double' | 'Triple' | 'Homerun';
+  currentQuestion: Question | null;
+  selectedDifficulty: QuestionDifficulty | null;
+  questionHistory: Question[];
   
-  // Game State Types
-  export interface GameState {
-    score: number;
-    outs: number;
-    strikes: number;
-    bases: BaseState;
-    currentQuestion: Question | null;
-    selectedDifficulty: QuestionDifficulty | null;
-    gameOver: boolean;
-    inningNumber: number;
-    maxStrikes: number;
-    remainingPasses: number;
-    questionHistory: Question[];
-    gameStarted: boolean;
-    timerActive: boolean;
-    timerDuration: number;
-  }
+  gameStarted: boolean;
+  gameOver: boolean;
+  inningNumber: number;
+  maxStrikes: number;
+  remainingPasses: number;
   
-  export interface BaseState {
-    first: boolean;
-    second: boolean;
-    third: boolean;
-  }
-  
-  // Action Types for Reducer
-  export type GameAction =
+  timerActive: boolean;
+  timerDuration: number;
+}
+
+export type GameAction =
   | { type: 'START_GAME' }
   | { type: 'SELECT_DIFFICULTY'; payload: QuestionDifficulty }
   | { type: 'SET_QUESTION'; payload: Question }
-  | { type: 'ANSWER_CORRECTLY'; payload: Question } // Add payload here
-  | { type: 'ANSWER_INCORRECTLY'; payload: Question } // Add payload here
+  | { type: 'ANSWER_CORRECTLY'; payload: Question }
+  | { type: 'ANSWER_INCORRECTLY'; payload: Question }
   | { type: 'PASS_QUESTION' }
+  | { type: 'RESET_GAME' }
   | { type: 'TIMEOUT' }
-  | { type: 'RESET_GAME' };
-  
-  
-  // Timer States
-  export interface TimerState {
-    isActive: boolean;
-    timeRemaining: number;
-    duration: number;
-  }
-  
-  // Timer Constraints
-  export const TIMER_DURATION = {
-    NO_RUNNERS: 15, // 15 seconds if no runners on base
-    WITH_RUNNERS: 18, // 18 seconds if runners on base
-  };
+  | { type: 'RUNNER_ANIMATION_COMPLETE'; payload: string };

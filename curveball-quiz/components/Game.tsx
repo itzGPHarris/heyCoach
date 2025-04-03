@@ -42,6 +42,13 @@ const Game: React.FC = () => {
 
   // Determine which runner overlay to use based on base state
   const getRunnerImageUrl = (bases: BaseState) => {
+    // Only return a static image when we're not animating
+    const anyRunnersAnimating = state.runners && state.runners.some(r => r.isAnimating);
+    if (anyRunnersAnimating) {
+      return null;
+    }
+    
+    // Otherwise return the appropriate static image
     if (bases.first && bases.second && bases.third) return runnerAllUrl;
     if (bases.first && bases.second) return runnerFirstSecondUrl;
     if (bases.first && bases.third) return runnerFirstThirdUrl;
@@ -51,8 +58,7 @@ const Game: React.FC = () => {
     if (bases.third) return runnerThirdUrl;
     return null;
   };
-
-  // Get a question based on selected difficulty
+    // Get a question based on selected difficulty
   const fetchQuestion = (difficulty: QuestionDifficulty) => {
     const question = getQuestion(difficulty);
     if (question) {
@@ -135,19 +141,26 @@ const Game: React.FC = () => {
   // Render functions for different game states
   const renderGameContent = () => (
     <>
-      <GamePlayArea
-        bases={state.bases}
-        outs={state.outs}
-        strikes={state.strikes}
-        score={state.score}
-        inning={state.inningNumber}
-        questionCount={totalQuestions}
-        onSelectDifficulty={handleSelectDifficulty}
-        isFinalAtBat={isFinalAtBat()}
-        disabled={!!currentQuestionData || state.gameOver}
-        diamondUrl={diamondUrl}
-        runnerImageUrl={getRunnerImageUrl(state.bases)}
-      />
+<GamePlayArea
+  bases={state.bases}
+  outs={state.outs}
+  strikes={state.strikes}
+  score={state.score}
+  inning={state.inningNumber}
+  questionCount={totalQuestions}
+  onSelectDifficulty={handleSelectDifficulty}
+  isFinalAtBat={isFinalAtBat()}
+  disabled={!!currentQuestionData || state.gameOver}
+  diamondUrl={diamondUrl}
+  runnerImageUrl={getRunnerImageUrl(state.bases)}
+  runners={state.runners} // Make sure this is here
+  onRunnerAnimationComplete={(runnerId) => {
+    dispatch({ 
+      type: 'RUNNER_ANIMATION_COMPLETE', 
+      payload: runnerId 
+    });
+  }}
+/>
       
       {/* Replace QuestionCard with QuestionDialog */}
       <QuestionDialog

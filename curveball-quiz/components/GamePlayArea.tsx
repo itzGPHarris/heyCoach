@@ -1,6 +1,8 @@
 import React from 'react';
 import { Box, Typography, useTheme, Stack, Button } from '@mui/material';
-import { BaseState, QuestionDifficulty } from '../types';
+import { BaseState, QuestionDifficulty, RunnerState } from '../types';
+import BaseRunner from './BaseRunner';
+import { useEffect, useRef } from 'react';
 
 interface GamePlayAreaProps {
   bases: BaseState;
@@ -14,6 +16,8 @@ interface GamePlayAreaProps {
   disabled: boolean;
   diamondUrl: string;
   runnerImageUrl: string | null;
+  runners: RunnerState[];
+  onRunnerAnimationComplete?: (runnerId: string) => void;
 }
 
 const GamePlayArea: React.FC<GamePlayAreaProps> = ({
@@ -24,24 +28,44 @@ const GamePlayArea: React.FC<GamePlayAreaProps> = ({
   isFinalAtBat,
   disabled,
   diamondUrl,
-  runnerImageUrl
+  runnerImageUrl,
+  runners,
+  onRunnerAnimationComplete
 }) => {
   const theme = useTheme();
+  const diamondContainerRef = useRef<HTMLDivElement>(null);
+  
+  // Effect to log container dimensions for debugging
+  useEffect(() => {
+    if (diamondContainerRef.current) {
+      console.log('Diamond container size:', {
+        width: diamondContainerRef.current.clientWidth,
+        height: diamondContainerRef.current.clientHeight,
+        rect: diamondContainerRef.current.getBoundingClientRect()
+      });
+    }
+  }, []);
+
+  // Are any runners currently animating?
+  const isAnyRunnerAnimating = runners && runners.some(r => r.isAnimating);
 
   return (
     <Box sx={{ width: '100%', mb: 2 }}>
       {/* Diamond container with overlay indicators */}
       <Box sx={{ position: 'relative', mx: 'auto', maxWidth: '90%', mb: 4 }}>
-        {/* Base diamond image */}
-        <Box sx={{ position: 'relative', width: '100%' }}>
+        {/* Base diamond image with container reference */}
+        <Box 
+          ref={diamondContainerRef}
+          sx={{ position: 'relative', width: '100%' }}
+        >
           <img 
             src={diamondUrl} 
             alt="Baseball Diamond" 
             style={{ width: '100%', height: 'auto' }}
           />
           
-          {/* Runner overlay (if there are runners) */}
-          {runnerImageUrl && (
+          {/* Runner overlay (for static display when not animating) */}
+          {runnerImageUrl && !isAnyRunnerAnimating && (
             <img 
               src={runnerImageUrl} 
               alt="Base Runners" 
@@ -55,6 +79,52 @@ const GamePlayArea: React.FC<GamePlayAreaProps> = ({
               }}
             />
           )}
+          
+          {/* Display initial batter at home plate when not animating */}
+          {runners && runners.map(runner => {
+            // Initial batter - show at home plate
+            if (runner.currentBase === 'none' && !runner.isAnimating) {
+              return (
+                <BaseRunner
+                  key={runner.id}
+                  previousBase="home"
+                  currentBase="home"
+                  containerElement={diamondContainerRef.current}
+                  onAnimationComplete={() => {}}
+                />
+              );
+            } 
+            // Animating runners
+            else if (runner.isAnimating) {
+              return (
+                <BaseRunner
+                  key={runner.id}
+                  previousBase={runner.previousBase}
+                  currentBase={runner.currentBase !== 'none' ? runner.currentBase : 'home'}
+                  containerElement={diamondContainerRef.current}
+                  pathToTake={runner.path}
+                  onAnimationComplete={() => {
+                    if (onRunnerAnimationComplete) {
+                      onRunnerAnimationComplete(runner.id);
+                    }
+                  }}
+                />
+              );
+            }
+            // Runners on bases (not animating)
+            else if (runner.currentBase !== 'home' && runner.currentBase !== 'none') {
+              return (
+                <BaseRunner
+                  key={runner.id}
+                  previousBase={runner.currentBase}
+                  currentBase={runner.currentBase}
+                  containerElement={diamondContainerRef.current}
+                  onAnimationComplete={() => {}}
+                />
+              );
+            }
+            return null;
+          })}
           
           {/* Score in the middle of diamond */}
           <Box sx={{ 
@@ -167,7 +237,7 @@ const GamePlayArea: React.FC<GamePlayAreaProps> = ({
                 key={difficulty}
                 variant="contained"
                 fullWidth
-                disabled={disabled}
+                disabled={disabled || isAnyRunnerAnimating}
                 onClick={() => onSelectDifficulty(difficulty as QuestionDifficulty)}
                 sx={{
                   backgroundColor: theme.palette.grey[200],
