@@ -1,18 +1,56 @@
+
+// curveball-quiz/src/App.tsx
+// components/App.tsx
+// curveball-quiz/src/App.tsx
+// This is the main entry point for the Curveball Quiz application.
+// It initializes the question database and handles loading states and errors.
+//
+// It uses Material-UI for theming and styling, and includes a loading spinner
+// and error message display while the questions are being loaded.
+//
+// The main game component is rendered once the questions are successfully loaded.
+//
+// The application is wrapped in a ThemeProvider to apply the custom theme throughout.
+// The AppShell component provides a consistent layout for the application,
+// including a header and footer.
+// The Game component is the main game interface where users can interact with the quiz.
+// The application uses React hooks for managing state and side effects,
+// including loading states and error handling.
+// import React, { useEffect, useState } from 'react';
+// import { ThemeProvider, CssBaseline, Box, CircularProgress, Typography } from '@mui/material';
+// import theme from '../styles/theme';
+// import Game from '../components/Game';
+// import AppShell from './AppShell';
+// import { initializeQuestionDatabase } from '../data/questions';
+//
 import React, { useEffect, useState } from 'react';
-import { ThemeProvider, CssBaseline, Box, CircularProgress, Typography } from '@mui/material';
+import {
+  ThemeProvider,
+  CssBaseline,
+  Box,
+  CircularProgress,
+  Typography
+} from '@mui/material';
 import theme from '../styles/theme';
 import Game from '../components/Game';
 import AppShell from './AppShell';
-import { initializeQuestionDatabase } from '../data/questions';
+import {
+  initializeQuestionDatabase,
+  getDailyQuestions
+} from '../data/questions';
+import { Question } from '../types';
 
 const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [questions, setQuestions] = useState<Question[]>([]);
 
   useEffect(() => {
     const loadQuestions = async () => {
       try {
         await initializeQuestionDatabase();
+        const allQuestions = await getDailyQuestions();
+        setQuestions(allQuestions);
         setLoading(false);
       } catch (err) {
         console.error('Failed to initialize questions:', err);
@@ -39,7 +77,7 @@ const App: React.FC = () => {
             p={3}
           >
             <CircularProgress size={60} thickness={4} />
-            <Typography variant="h6" component="h1" sx={{ mt: 3 }}>
+            <Typography variant="h6" sx={{ mt: 3 }}>
               Loading Curveball Quiz...
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
@@ -65,10 +103,10 @@ const App: React.FC = () => {
             textAlign="center"
             p={3}
           >
-            <Typography variant="h5" component="h1" color="error" gutterBottom>
+            <Typography variant="h5" color="error" gutterBottom>
               Oops! Something went wrong
             </Typography>
-            <Typography variant="body1">{error}</Typography>
+            <Typography>{error}</Typography>
           </Box>
         </AppShell>
       </ThemeProvider>
@@ -79,7 +117,7 @@ const App: React.FC = () => {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <AppShell>
-        <Game />
+        <Game questions={questions} />
       </AppShell>
     </ThemeProvider>
   );

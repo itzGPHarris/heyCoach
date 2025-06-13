@@ -62,7 +62,9 @@ export const processCSV = (csvText: string): Question[] => {
       possibleAnswerC: values[6],
       possibleAnswerD: values[7],
       correctAnswer: values[8],
-      difficulty: normalizeDifficulty(values[9] || 'Single')
+      difficulty: normalizeDifficulty(values[9] || 'Single'),
+      options: [],
+      correctOption: 0
     };
     
     // Validate that the correct answer is among the possible answers

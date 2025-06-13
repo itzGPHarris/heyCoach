@@ -1,12 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable prefer-const */
-import { useReducer, useCallback, useEffect } from 'react';
+import { useReducer, useEffect } from 'react';
 import { 
   GameState, 
   GameAction, 
-  QuestionDifficulty,
   TIMER_DURATION,
-  BaseState,
-  RunnerState
+  BaseState
 } from '../types';
 
 // Initial state of the game
@@ -16,16 +15,6 @@ const initialState: GameState = {
   outs: 0,
   strikes: 0,
   bases: { first: false, second: false, third: false },
-  runners: [
-    // Initial runner - the batter
-    {
-      id: 'initial-batter',
-      previousBase: 'none',
-      currentBase: 'none',
-      isAnimating: false,
-      path: []
-    }
-  ],
   
   // Question handling
   currentQuestion: null,
@@ -49,172 +38,36 @@ const hasRunnersOnBase = (bases: BaseState): boolean => {
   return bases.first || bases.second || bases.third;
 };
 
-// Helper to get the next base(s) based on hit type
-const getPathForHitType = (
-  startBase: 'none' | 'first' | 'second' | 'third' | 'home',
+// Simple helper to calculate runs scored based on hit type and current bases
+{/*const calculateRunsScored = (
+  bases: BaseState,
   hitType: QuestionDifficulty
-): ('none' | 'first' | 'second' | 'third' | 'home')[] => {
-  const path: ('none' | 'first' | 'second' | 'third' | 'home')[] = [];
-  
-  // Always start from the current base
-  if (startBase === 'none') {
-    // Special case for batter - they start at home plate
-    startBase = 'home';
-  }
-  
-  // First add all the intermediate bases
-  switch (startBase) {
-    case 'home':
-      if (hitType === 'Single' || hitType === 'Double' || hitType === 'Triple' || hitType === 'Homerun') {
-        path.push('first');
-      }
-      if (hitType === 'Double' || hitType === 'Triple' || hitType === 'Homerun') {
-        path.push('second');
-      }
-      if (hitType === 'Triple' || hitType === 'Homerun') {
-        path.push('third');
-      }
-      if (hitType === 'Homerun') {
-        path.push('home');
-      }
-      break;
-
-    case 'first':
-      if (hitType === 'Single' || hitType === 'Double' || hitType === 'Triple' || hitType === 'Homerun') {
-        path.push('second');
-      }
-      if (hitType === 'Double' || hitType === 'Triple' || hitType === 'Homerun') {
-        path.push('third');
-      }
-      if (hitType === 'Triple' || hitType === 'Homerun') {
-        path.push('home');
-      }
-      break;
-
-    case 'second':
-      if (hitType === 'Single' || hitType === 'Double' || hitType === 'Triple' || hitType === 'Homerun') {
-        path.push('third');
-      }
-      if (hitType === 'Double' || hitType === 'Triple' || hitType === 'Homerun') {
-        path.push('home');
-      }
-      break;
-
-    case 'third':
-      if (hitType === 'Single' || hitType === 'Double' || hitType === 'Triple' || hitType === 'Homerun') {
-        path.push('home');
-      }
-      break;
-  }
-  
-  return path;
-};
-
-// Helper to determine the final base a runner will reach
-const getFinalBase = (
-  startBase: 'none' | 'first' | 'second' | 'third' | 'home',
-  hitType: QuestionDifficulty
-): 'first' | 'second' | 'third' | 'home' => {
-  // If the batter is starting, treat as starting from home
-  if (startBase === 'none') {
-    startBase = 'home';
-  }
-
-  switch (startBase) {
-    case 'home':
-      if (hitType === 'Single') return 'first';
-      if (hitType === 'Double') return 'second';
-      if (hitType === 'Triple') return 'third';
-      return 'home'; // Homerun
-      
-    case 'first':
-      if (hitType === 'Single') return 'second';
-      if (hitType === 'Double') return 'third';
-      return 'home'; // Triple or Homerun
-      
-    case 'second':
-      if (hitType === 'Single') return 'third';
-      return 'home'; // Double, Triple, or Homerun
-      
-    case 'third':
-      return 'home'; // Any hit scores from third
-      
-    default:
-      return 'first'; // Fallback
-  }
-};
-
-// Helper to advance runners based on hit type
-const advanceRunners = (
-  _bases: BaseState, 
-  hitType: QuestionDifficulty,
-  currentRunners: RunnerState[]
-): { 
-  newBases: BaseState, 
-  runsScored: number,
-  newRunners: RunnerState[] 
-} => {
+): number => {
   let runsScored = 0;
-  let newBases = { first: false, second: false, third: false };
-  let newRunners = [...currentRunners];
   
-  // Assign a unique ID for the new batter
-  const batterId = `runner-${Date.now()}`;
-  console.log('Creating new runners:', newRunners);
-
-  // Advance existing runners
-  newRunners.forEach(runner => {
-    // Skip runners that are already at home (already scored)
-    if (runner.currentBase === 'home') return;
-    
-    const path = getPathForHitType(runner.currentBase, hitType);
-    const finalBase = getFinalBase(runner.currentBase, hitType);
-    
-    // Update runner state
-    runner.previousBase = runner.currentBase;
-    runner.currentBase = finalBase;
-    runner.path = path;
-    runner.isAnimating = true;
-    
-    // If runner will score, increment runs
-    if (finalBase === 'home') {
-      runsScored++;
-    } else {
-      // Update bases map for final positions
-      if (finalBase === 'first') newBases.first = true;
-      if (finalBase === 'second') newBases.second = true;
-      if (finalBase === 'third') newBases.third = true;
-    }
-  });
-  
-  // Add the new batter
-  const batterPath = getPathForHitType('none', hitType);
-  const batterFinalBase = getFinalBase('none', hitType);
-  
-  // Only add a new batter if they haven't scored
-  if (batterFinalBase === 'home') {
-    runsScored++;
-  } else {
-    newRunners.push({
-      id: batterId,
-      previousBase: 'none',
-      currentBase: batterFinalBase,
-      isAnimating: true,
-      path: batterPath
-    });
-    
-    // Update bases for the batter's final position
-    if (batterFinalBase === 'first') newBases.first = true;
-    if (batterFinalBase === 'second') newBases.second = true;
-    if (batterFinalBase === 'third') newBases.third = true;
+  // Home run always scores the batter
+  if (hitType === 'Homerun') {
+    runsScored += 1;
   }
   
-  // Filter out runners who have scored (reached home)
-  // We'll keep them for now to animate, but remove them in the RUNNER_ANIMATION_COMPLETE handler
+  // Runner on third scores on any hit
+  if (bases.third) {
+    runsScored += 1;
+  }
   
-  return { newBases, runsScored, newRunners };
+  // Runner on second scores on doubles, triples, home runs
+  if (bases.second && (hitType === 'Double' || hitType === 'Triple' || hitType === 'Homerun')) {
+    runsScored += 1;
+  }
+  
+  // Runner on first scores on triples and home runs
+  if (bases.first && (hitType === 'Triple' || hitType === 'Homerun')) {
+    runsScored += 1;
+  }
+  
+  return runsScored;
 };
-
+*/}
 // Game state reducer
 const gameReducer = (state: GameState, action: GameAction): GameState => {
   switch (action.type) {
@@ -229,17 +82,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
         gameOver: false,
         remainingPasses: 3,
         inningNumber: 1,
-        questionHistory: [],
-        runners: [
-          // Reset with initial batter
-          {
-            id: 'initial-batter',
-            previousBase: 'none',
-            currentBase: 'none',
-            isAnimating: false,
-            path: []
-          }
-        ],
+        questionHistory: []
       };
       
     case 'SELECT_DIFFICULTY':
@@ -258,29 +101,27 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
         currentQuestion: action.payload,
       };
       
-    case 'ANSWER_CORRECTLY': {
-      if (!state.selectedDifficulty) return state;
+      case 'ANSWER_CORRECTLY': {
+        if (!state.selectedDifficulty) return state;
+        
+        // Calculate runs scored - but we don't need to add them here
+        // The animation will trigger UPDATE_SCORE action later
+        // We can remove or comment out this unused variable
+        // const runsScored = calculateRunsScored(state.bases, state.selectedDifficulty);
+        
+        return {
+          ...state,
+          currentQuestion: null,
+          selectedDifficulty: null,
+          timerActive: false,
+          questionHistory: [
+            ...state.questionHistory,
+            action.payload
+          ],
+          // Don't update bases or score here - will be done during animation
+        };
+      }
       
-      const { newBases, runsScored, newRunners } = advanceRunners(
-        state.bases, 
-        state.selectedDifficulty,
-        state.runners
-      );
-      
-      return {
-        ...state,
-        bases: newBases,
-        score: state.score + runsScored,
-        currentQuestion: null,
-        selectedDifficulty: null,
-        timerActive: false,
-        questionHistory: [
-          ...state.questionHistory,
-          action.payload
-        ],
-        runners: newRunners,
-      };
-    }
       
     case 'ANSWER_INCORRECTLY': {
       const newOuts = state.outs + 1;
@@ -299,19 +140,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
         questionHistory: [
           ...state.questionHistory,
           action.payload
-        ],
-        runners: gameOver 
-          ? [
-            // Reset with initial batter if game over
-            {
-              id: 'initial-batter',
-              previousBase: 'none',
-              currentBase: 'none',
-              isAnimating: false,
-              path: []
-            }
-          ] 
-          : state.runners,
+        ]
       };
     }
       
@@ -340,19 +169,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
         selectedDifficulty: null,
         bases: gameOver 
           ? { first: false, second: false, third: false } 
-          : state.bases,
-        runners: gameOver 
-          ? [
-            // Reset with initial batter if game over
-            {
-              id: 'initial-batter',
-              previousBase: 'none',
-              currentBase: 'none',
-              isAnimating: false,
-              path: []
-            }
-          ] 
-          : state.runners,
+          : state.bases
       };
     }
       
@@ -369,52 +186,21 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
         timerActive: false,
         bases: gameOver 
           ? { first: false, second: false, third: false } 
-          : state.bases,
-        runners: gameOver 
-          ? [
-            // Reset with initial batter if game over
-            {
-              id: 'initial-batter',
-              previousBase: 'none',
-              currentBase: 'none',
-              isAnimating: false,
-              path: []
-            }
-          ] 
-          : state.runners,
+          : state.bases
       };
     }
     
-    case 'RUNNER_ANIMATION_COMPLETE': {
-      // Mark a specific runner's animation as complete
-      const runnerId = action.payload;
-      
-      // Update this runner
-      let updatedRunners = state.runners.map(runner => 
-        runner.id === runnerId 
-          ? { ...runner, isAnimating: false }
-          : runner
-      );
-      
-      // Remove runners that have reached home (scored)
-      updatedRunners = updatedRunners.filter(runner => 
-        runner.currentBase !== 'home'
-      );
-      
-      // If no runners, add new batter
-      if (updatedRunners.length === 0) {
-        updatedRunners.push({
-          id: `batter-${Date.now()}`,
-          previousBase: 'none',
-          currentBase: 'none',
-          isAnimating: false,
-          path: []
-        });
-      }
-      
+    case 'UPDATE_BASES': {
       return {
         ...state,
-        runners: updatedRunners
+        bases: action.payload
+      };
+    }
+    
+    case 'UPDATE_SCORE': {
+      return {
+        ...state,
+        score: state.score + action.payload
       };
     }
       
@@ -429,11 +215,6 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
 // Hook for managing game state
 export const useGameState = () => {
   const [state, dispatch] = useReducer(gameReducer, initialState);
-  
-  // Determine if we're on the final at-bat (2 outs, runner on 3rd)
-  const isFinalAtBat = useCallback(() => {
-    return state.outs === 2 && state.bases.third;
-  }, [state.outs, state.bases.third]);
   
   // Update timer duration when runner state changes
   useEffect(() => {
@@ -451,7 +232,6 @@ export const useGameState = () => {
   
   return {
     state,
-    dispatch,
-    isFinalAtBat,
+    dispatch
   };
 };

@@ -17,99 +17,11 @@ const sampleQuestions: Question[] = [
     possibleAnswerC: 'Scott Rolen',
     possibleAnswerD: 'Barry Bonds',
     correctAnswer: 'Barry Bonds',
-    difficulty: 'Double'
-  },
-  {
-    id: '2',
-    question: 'Which MLB team has the most MVP winners?',
-    year: 2023,
-    league: 'MLB',
-    category: 'Team Records',
-    possibleAnswerA: 'Cardinals',
-    possibleAnswerB: 'Athletics',
-    possibleAnswerC: 'Yankees',
-    possibleAnswerD: 'Dodgers',
-    correctAnswer: 'Yankees',
-    difficulty: 'Triple'
-  },
-  {
-    id: '3',
-    question: 'Who holds the MLB record for most career home runs?',
-    year: 2022,
-    league: 'MLB',
-    category: 'Records',
-    possibleAnswerA: 'Babe Ruth',
-    possibleAnswerB: 'Hank Aaron',
-    possibleAnswerC: 'Barry Bonds',
-    possibleAnswerD: 'Alex Rodriguez',
-    correctAnswer: 'Barry Bonds',
-    difficulty: 'Single'
-  },
-  {
-    id: '4',
-    question: 'Which team won the first World Series in 1903?',
-    year: 1903,
-    league: 'MLB',
-    category: 'History',
-    possibleAnswerA: 'Boston Americans',
-    possibleAnswerB: 'Pittsburgh Pirates',
-    possibleAnswerC: 'New York Giants',
-    possibleAnswerD: 'Chicago Cubs',
-    correctAnswer: 'Boston Americans',
-    difficulty: 'Homerun'
-  },
-  {
-    id: '5',
-    question: 'Who was the first player to hit 500 home runs?',
-    year: 1929,
-    league: 'MLB',
-    category: 'Milestones',
-    possibleAnswerA: 'Babe Ruth',
-    possibleAnswerB: 'Lou Gehrig',
-    possibleAnswerC: 'Jimmie Foxx',
-    possibleAnswerD: 'Mel Ott',
-    correctAnswer: 'Babe Ruth',
-    difficulty: 'Double'
-  },
-  {
-    id: '6',
-    question: 'Which pitcher has the most career strikeouts?',
-    year: 2022,
-    league: 'MLB',
-    category: 'Records',
-    possibleAnswerA: 'Randy Johnson',
-    possibleAnswerB: 'Roger Clemens',
-    possibleAnswerC: 'Nolan Ryan',
-    possibleAnswerD: 'Steve Carlton',
-    correctAnswer: 'Nolan Ryan',
-    difficulty: 'Single'
-  },
-  {
-    id: '7',
-    question: 'What year did the MLB designate the Negro Leagues as "Major League"?',
-    year: 2020,
-    league: 'MLB',
-    category: 'History',
-    possibleAnswerA: '2010',
-    possibleAnswerB: '2015',
-    possibleAnswerC: '2020',
-    possibleAnswerD: '2022',
-    correctAnswer: '2020',
-    difficulty: 'Triple'
-  },
-  {
-    id: '8',
-    question: 'Who was the first player to have his number retired by any team?',
-    year: 1939,
-    league: 'MLB',
-    category: 'History',
-    possibleAnswerA: 'Babe Ruth',
-    possibleAnswerB: 'Lou Gehrig',
-    possibleAnswerC: 'Jackie Robinson',
-    possibleAnswerD: 'Ted Williams',
-    correctAnswer: 'Lou Gehrig',
-    difficulty: 'Homerun'
-  },
+    difficulty: 'Double',
+    options: ['Adrian Beltre', 'Albert Pujols', 'Scott Rolen', 'Barry Bonds'],
+    correctOption: 3,
+    selectedAnswer: undefined
+  }
 ];
 
 // Function to load questions from the database
@@ -155,6 +67,41 @@ export const getDailyQuestions = async (count: number = 27): Promise<Question[]>
   return shuffled.slice(0, count);
 };
 
+// Function to prepare CSV loaded questions to match the expected format
+export const prepareQuestions = (questions: Question[]): Question[] => {
+  return questions.map(q => {
+    // If options array is empty, populate it from possible answers
+    if (!q.options || q.options.length === 0) {
+      q.options = [
+        q.possibleAnswerA || '',
+        q.possibleAnswerB || '',
+        q.possibleAnswerC || '',
+        q.possibleAnswerD || ''
+      ].filter(option => option !== '');
+    }
+    
+    // If correctOption is not set, find it from the correctAnswer
+    if (q.correctOption === undefined && q.correctAnswer) {
+      const correctIndex = q.options.findIndex(
+        option => option === q.correctAnswer
+      );
+      q.correctOption = correctIndex >= 0 ? correctIndex : 0;
+    }
+    
+    // Ensure year is a number
+    if (typeof q.year === 'string') {
+      q.year = parseInt(q.year, 10) || new Date().getFullYear();
+    }
+    
+    // Initialize selectedAnswer as undefined if it doesn't exist
+    // This is the line that needs fixing - we shouldn't reassign undefined to undefined
+    // Just leave it as is since it's an optional property
+    
+    return q;
+  });
+};
+
+
 // Initialize the question database from a CSV file
 export const initializeQuestionDatabase = async () => {
   try {
@@ -162,7 +109,8 @@ export const initializeQuestionDatabase = async () => {
     const questions = await loadQuestionsFromCSV('/questions.csv');
     
     if (questions && questions.length > 0) {
-      questionDatabase = questions;
+      // Prepare questions to match the expected format
+      questionDatabase = prepareQuestions(questions);
       console.log(`Successfully loaded ${questions.length} questions from CSV`);
     } else {
       // Fall back to sample questions
